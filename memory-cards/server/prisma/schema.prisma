@@ -3,8 +3,8 @@ generator client {
 }
 
 datasource db {
-  provider = "postgresql"
-  url      = env("DATABASE_URL")
+  provider = "sqlite"
+  url      = "file:./dev.db"
 }
 
 model User {
@@ -41,10 +41,10 @@ model Card {
   front     String
   back      String
   cardType  String   @default("text") @map("card_type")
-  mediaUrls Json?    @map("media_urls")
+  mediaUrls String?  @map("media_urls")
   createdAt DateTime @default(now()) @map("created_at")
 
-  deck         Deck           @relation(fields: [deckId], references: [id], onDelete: Cascade)
+  deck          Deck           @relation(fields: [deckId], references: [id], onDelete: Cascade)
   reviewRecords ReviewRecord[]
 
   @@map("cards")
