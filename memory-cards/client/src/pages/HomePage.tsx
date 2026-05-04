@@ -36,7 +36,7 @@ export default function HomePage() {
         <div className="flex items-center justify-center min-h-96">
           <div className="text-center">
             <div className="w-16 h-16 border-4 border-blue-500 border-t-transparent rounded-full animate-spin mx-auto mb-4"></div>
-            <p className="text-gray-500">加载中...</p>
+            <p className="text-gray-500 dark:text-gray-400">加载中...</p>
           </div>
         </div>
       </Layout>
@@ -45,26 +45,24 @@ export default function HomePage() {
 
   const statCards = [
     { label: '待复习', value: stats?.dueCount || 0, color: 'from-red-500 to-orange-500', emoji: '📚' },
-    { label: '学习中', value: stats?.learningCount || 0, color: 'from-orange-500 to-yellow-500', emoji: '📖' },
+    { label: '学习中', value: stats?.learningCount || 0, color: 'from-blue-500 to-cyan-500', emoji: '📖' },
     { label: '已掌握', value: stats?.masteredCount || 0, color: 'from-green-500 to-emerald-500', emoji: '🎯' },
-    { label: '新卡片', value: stats?.newCount || 0, color: 'from-blue-500 to-indigo-500', emoji: '✨' },
+    { label: '新卡片', value: stats?.newCount || 0, color: 'from-purple-500 to-pink-500', emoji: '✨' },
   ];
 
   const quickActions = [
-    { icon: '📚', title: '我的卡片组', desc: '管理你的卡片', path: '/decks', gradient: 'from-violet-500 to-purple-500' },
-    { icon: '🌐', title: '社区广场', desc: '发现优质卡片', path: '/community', gradient: 'from-cyan-500 to-blue-500' },
-    { icon: '⚙️', title: '设置', desc: '个性化配置', path: '/settings', gradient: 'from-gray-500 to-slate-500' },
+    { icon: '📚', title: '我的卡片组', desc: '管理你的卡片', path: '/decks', gradient: 'from-blue-500 to-cyan-500' },
+    { icon: '🌐', title: '社区广场', desc: '发现优质卡片', path: '/community', gradient: 'from-blue-500 to-cyan-500' },
+    { icon: '⚙️', title: '设置', desc: '个性化配置', path: '/settings', gradient: 'from-blue-500 to-cyan-500' },
   ];
 
   return (
     <Layout>
       <div className="mb-8">
-        <h2 className="text-3xl font-bold mb-2">
-          <span className="bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
-            欢迎回来！
-          </span>
+        <h2 className="text-3xl font-bold mb-2 text-gray-800 dark:text-white">
+          欢迎回来！
         </h2>
-        <p className="text-gray-500">继续保持学习的热情 🎉</p>
+        <p className="text-gray-500 dark:text-gray-400">继续保持学习的热情 🎉</p>
       </div>
 
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
@@ -84,7 +82,7 @@ export default function HomePage() {
       </div>
 
       {stats && stats.dueCount > 0 && (
-        <div className="bg-gradient-to-r from-blue-600 to-purple-600 rounded-2xl p-6 mb-8 text-white shadow-lg hover:shadow-xl transition-all">
+        <div className="bg-gradient-to-r from-blue-500 to-cyan-600 rounded-2xl p-6 mb-8 text-white shadow-lg hover:shadow-xl transition-all">
           <div className="flex items-center justify-between">
             <div>
               <h3 className="text-xl font-bold mb-1">📚 今日待复习</h3>
@@ -113,8 +111,8 @@ export default function HomePage() {
         </div>
       )}
 
-      <div className="bg-white rounded-2xl shadow-lg p-6">
-        <h3 className="text-lg font-bold mb-4">快速开始</h3>
+      <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-lg p-6 transition-colors">
+        <h3 className="text-lg font-bold mb-4 text-gray-800 dark:text-white">快速开始</h3>
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
           {quickActions.map((action, index) => (
             <button
@@ -130,7 +128,7 @@ export default function HomePage() {
         </div>
       </div>
 
-      <div className="mt-8 text-center text-gray-400 text-sm">
+      <div className="mt-8 text-center text-gray-400 dark:text-gray-500 text-sm">
         <p>记忆卡片 · 艾宾浩斯记忆法 · 让学习更高效</p>
       </div>
     </Layout>
