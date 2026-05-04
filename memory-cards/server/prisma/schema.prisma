@@ -1,0 +1,68 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id           String   @id @default(uuid())
+  email        String   @unique
+  passwordHash String   @map("password_hash")
+  nickname     String?
+  avatar       String?
+  createdAt    DateTime @default(now()) @map("created_at")
+
+  decks         Deck[]
+  reviewRecords ReviewRecord[]
+
+  @@map("users")
+}
+
+model Deck {
+  id          String   @id @default(uuid())
+  userId      String   @map("user_id")
+  name        String
+  description String?
+  isPublic    Boolean  @default(false) @map("is_public")
+  createdAt   DateTime @default(now()) @map("created_at")
+
+  user  User   @relation(fields: [userId], references: [id])
+  cards Card[]
+
+  @@map("decks")
+}
+
+model Card {
+  id        String   @id @default(uuid())
+  deckId    String   @map("deck_id")
+  front     String
+  back      String
+  cardType  String   @default("text") @map("card_type")
+  mediaUrls Json?    @map("media_urls")
+  createdAt DateTime @default(now()) @map("created_at")
+
+  deck         Deck           @relation(fields: [deckId], references: [id], onDelete: Cascade)
+  reviewRecords ReviewRecord[]
+
+  @@map("cards")
+}
+
+model ReviewRecord {
+  id            String    @id @default(uuid())
+  cardId        String    @map("card_id")
+  userId        String    @map("user_id")
+  easeLevel     Int       @default(3) @map("ease_level")
+  nextReviewAt  DateTime? @map("next_review_at")
+  lastReviewAt  DateTime? @map("last_review_at")
+  reviewCount   Int       @default(0) @map("review_count")
+  createdAt     DateTime  @default(now()) @map("created_at")
+
+  card Card @relation(fields: [cardId], references: [id], onDelete: Cascade)
+  user User @relation(fields: [userId], references: [id])
+
+  @@unique([cardId, userId])
+  @@map("review_records")
+}
