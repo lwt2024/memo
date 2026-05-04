@@ -53,7 +53,10 @@ export default function DecksPage() {
     return (
       <Layout>
         <div className="flex items-center justify-center min-h-96">
-          <div className="w-16 h-16 border-4 border-blue-500 border-t-transparent rounded-full animate-spin"></div>
+          <div 
+            className="w-16 h-16 border-4 rounded-full animate-spin"
+            style={{ borderColor: 'var(--color-primary)', borderTopColor: 'transparent' }}
+          ></div>
         </div>
       </Layout>
     );
@@ -63,27 +66,32 @@ export default function DecksPage() {
     <Layout>
       <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-4 mb-8">
         <div>
-          <h2 className="text-3xl font-bold mb-2 text-gray-800 dark:text-white">
+          <h2 className="text-3xl font-bold mb-2" style={{ color: 'var(--color-text)' }}>
             我的卡片组
           </h2>
-          <p className="text-gray-500 dark:text-gray-400">共 {decks.length} 个卡片组</p>
+          <p style={{ color: 'var(--color-text-secondary)' }}>共 {decks.length} 个卡片组</p>
         </div>
         <button
           onClick={() => setShowModal(true)}
-          className="bg-gradient-to-r from-blue-500 to-cyan-600 text-white px-6 py-3 rounded-xl font-semibold hover:shadow-lg hover:scale-[1.02] transition-all flex items-center gap-2"
+          className="text-white px-6 py-3 rounded-xl font-semibold hover:shadow-lg hover:scale-[1.02] transition-all flex items-center gap-2"
+          style={{ background: 'linear-gradient(135deg, var(--color-primary), var(--color-secondary))' }}
         >
           <span className="text-xl">+</span> 新建卡片组
         </button>
       </div>
 
       {decks.length === 0 ? (
-        <div className="text-center py-20 bg-white dark:bg-gray-800 rounded-2xl shadow-lg transition-colors">
+        <div 
+          className="text-center py-20 rounded-2xl shadow-lg transition-colors"
+          style={{ backgroundColor: 'var(--color-card)' }}
+        >
           <div className="text-8xl mb-6">📚</div>
-          <h3 className="text-2xl font-bold mb-4 text-gray-700 dark:text-white">还没有卡片组</h3>
-          <p className="text-gray-500 dark:text-gray-400 mb-6">创建一个开始你的学习之旅吧</p>
+          <h3 className="text-2xl font-bold mb-4" style={{ color: 'var(--color-text)' }}>还没有卡片组</h3>
+          <p className="mb-6" style={{ color: 'var(--color-text-secondary)' }}>创建一个开始你的学习之旅吧</p>
           <button
             onClick={() => setShowModal(true)}
-            className="bg-gradient-to-r from-blue-500 to-cyan-600 text-white px-8 py-3 rounded-xl font-semibold hover:shadow-lg transition-all"
+            className="text-white px-8 py-3 rounded-xl font-semibold hover:shadow-lg transition-all"
+            style={{ background: 'linear-gradient(135deg, var(--color-primary), var(--color-secondary))' }}
           >
             创建第一个卡片组
           </button>
@@ -93,22 +101,31 @@ export default function DecksPage() {
           {decks.map((deck, index) => (
             <div
               key={deck.id}
-              className="bg-white dark:bg-gray-800 rounded-2xl shadow-lg hover:shadow-xl transition-all group overflow-hidden"
-              style={{ animationDelay: `${index * 100}ms` }}
+              className="rounded-2xl shadow-lg hover:shadow-xl transition-all group overflow-hidden"
+              style={{ backgroundColor: 'var(--color-card)', animationDelay: `${index * 100}ms` }}
             >
               <Link to={`/decks/${deck.id}`} className="block p-6">
                 <div className="flex items-start justify-between mb-4">
-                  <div className="w-12 h-12 bg-gradient-to-br from-blue-500 to-cyan-600 rounded-xl flex items-center justify-center text-white text-xl">
+                  <div 
+                    className="w-12 h-12 rounded-xl flex items-center justify-center text-white text-xl"
+                    style={{ background: 'linear-gradient(135deg, var(--color-primary), var(--color-secondary))' }}
+                  >
                     📚
                   </div>
-                  <span className="bg-blue-100 dark:bg-blue-900/30 text-blue-600 dark:text-blue-400 text-sm px-3 py-1 rounded-full">
+                  <span 
+                    className="text-sm px-3 py-1 rounded-full"
+                    style={{ backgroundColor: 'var(--color-background-secondary)', color: 'var(--color-primary)' }}
+                  >
                     {deck._count?.cards || 0} 张
                   </span>
                 </div>
-                <h3 className="font-bold text-lg mb-2 group-hover:text-blue-600 dark:group-hover:text-cyan-400 transition-colors text-gray-800 dark:text-white">
+                <h3 
+                  className="font-bold text-lg mb-2 transition-colors"
+                  style={{ color: 'var(--color-text)' }}
+                >
                   {deck.name}
                 </h3>
-                <p className="text-gray-500 dark:text-gray-400 text-sm line-clamp-2">
+                <p className="text-sm line-clamp-2" style={{ color: 'var(--color-text-secondary)' }}>
                   {deck.description || '暂无描述'}
                 </p>
               </Link>
@@ -136,28 +153,42 @@ export default function DecksPage() {
 
       {showModal && (
         <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center p-4 z-50" onClick={() => setShowModal(false)}>
-          <div className="bg-white dark:bg-gray-800 rounded-2xl p-8 w-full max-w-md shadow-2xl transition-colors" onClick={(e) => e.stopPropagation()}>
-            <h3 className="text-2xl font-bold mb-6 text-gray-800 dark:text-white">
+          <div 
+            className="rounded-2xl p-8 w-full max-w-md shadow-2xl transition-colors" 
+            onClick={(e) => e.stopPropagation()}
+            style={{ backgroundColor: 'var(--color-card)' }}
+          >
+            <h3 className="text-2xl font-bold mb-6" style={{ color: 'var(--color-text)' }}>
               新建卡片组
             </h3>
             <form onSubmit={createDeck}>
               <div className="mb-4">
-                <label className="block text-gray-700 dark:text-gray-300 font-medium mb-2">名称</label>
+                <label className="block font-medium mb-2" style={{ color: 'var(--color-text)' }}>名称</label>
                 <input
                   type="text"
                   value={newDeckName}
                   onChange={(e) => setNewDeckName(e.target.value)}
-                  className="w-full px-4 py-3 bg-white dark:bg-gray-700 border border-gray-200 dark:border-gray-600 rounded-xl text-gray-800 dark:text-white focus:outline-none focus:ring-2 focus:ring-blue-500 dark:focus:ring-cyan-500 focus:border-transparent transition-all"
+                  className="w-full px-4 py-3 border rounded-xl focus:outline-none focus:ring-2 transition-all"
+                  style={{ 
+                    backgroundColor: 'var(--color-background-secondary)', 
+                    borderColor: 'var(--color-border)',
+                    color: 'var(--color-text)'
+                  }}
                   placeholder="例如：英语单词、历史年代"
                   required
                 />
               </div>
               <div className="mb-6">
-                <label className="block text-gray-700 dark:text-gray-300 font-medium mb-2">描述（可选）</label>
+                <label className="block font-medium mb-2" style={{ color: 'var(--color-text)' }}>描述（可选）</label>
                 <textarea
                   value={newDeckDesc}
                   onChange={(e) => setNewDeckDesc(e.target.value)}
-                  className="w-full px-4 py-3 bg-white dark:bg-gray-700 border border-gray-200 dark:border-gray-600 rounded-xl text-gray-800 dark:text-white focus:outline-none focus:ring-2 focus:ring-blue-500 dark:focus:ring-cyan-500 focus:border-transparent transition-all resize-none"
+                  className="w-full px-4 py-3 border rounded-xl focus:outline-none focus:ring-2 transition-all resize-none"
+                  style={{ 
+                    backgroundColor: 'var(--color-background-secondary)', 
+                    borderColor: 'var(--color-border)',
+                    color: 'var(--color-text)'
+                  }}
                   rows={3}
                   placeholder="简单描述一下这个卡片组的内容..."
                 />
@@ -166,13 +197,18 @@ export default function DecksPage() {
                 <button
                   type="button"
                   onClick={() => setShowModal(false)}
-                  className="flex-1 py-3 text-gray-600 dark:text-gray-300 bg-gray-100 dark:bg-gray-700 rounded-xl hover:bg-gray-200 dark:hover:bg-gray-600 transition-colors font-medium"
+                  className="flex-1 py-3 rounded-xl transition-colors font-medium"
+                  style={{ 
+                    backgroundColor: 'var(--color-background-secondary)', 
+                    color: 'var(--color-text)' 
+                  }}
                 >
                   取消
                 </button>
                 <button
                   type="submit"
-                  className="flex-1 py-3 bg-gradient-to-r from-blue-500 to-cyan-600 text-white rounded-xl hover:shadow-lg transition-all font-medium"
+                  className="flex-1 py-3 text-white rounded-xl hover:shadow-lg transition-all font-medium"
+                  style={{ background: 'linear-gradient(135deg, var(--color-primary), var(--color-secondary))' }}
                 >
                   创建
                 </button>
