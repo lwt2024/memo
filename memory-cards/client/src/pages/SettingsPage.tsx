@@ -29,6 +29,8 @@ export default function SettingsPage() {
   const [showDeleteModal, setShowDeleteModal] = useState(false);
   const [deletePassword, setDeletePassword] = useState('');
   const [deleteError, setDeleteError] = useState('');
+  
+  const [showLogoutModal, setShowLogoutModal] = useState(false);
 
   useEffect(() => {
     loadProfile();
@@ -119,11 +121,13 @@ export default function SettingsPage() {
   };
 
   const handleLogout = () => {
-    if (confirm('确定要退出登录吗？')) {
-      localStorage.removeItem('token');
-      setUser({ nickname: '用户', email: '' });
-      navigate('/login');
-    }
+    setShowLogoutModal(true);
+  };
+
+  const confirmLogout = () => {
+    localStorage.removeItem('token');
+    setUser({ nickname: '用户', email: '' });
+    navigate('/login');
   };
 
   const handleDeleteAccount = async () => {
@@ -587,6 +591,42 @@ export default function SettingsPage() {
                   {isLoading ? '处理中...' : '确认注销'}
                 </button>
               </div>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {showLogoutModal && (
+        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
+          <div 
+            className="bg-[var(--color-card)] rounded-2xl p-6 max-w-sm w-full shadow-2xl"
+          >
+            <h3 className="text-xl font-bold mb-2 text-center" style={{ color: 'var(--color-text)' }}>
+              退出登录
+            </h3>
+            <p className="text-center mb-6" style={{ color: 'var(--color-text-secondary)' }}>
+              确定要退出登录吗？
+            </p>
+            
+            <div className="flex gap-3">
+              <button
+                onClick={() => setShowLogoutModal(false)}
+                className="flex-1 py-3 rounded-xl font-medium"
+                style={{
+                  backgroundColor: 'var(--color-background)',
+                  borderColor: 'var(--color-border)',
+                  color: 'var(--color-text)'
+                }}
+              >
+                取消
+              </button>
+              <button
+                onClick={confirmLogout}
+                className="flex-1 py-3 rounded-xl text-white font-medium"
+                style={{ background: 'linear-gradient(135deg, var(--color-primary), var(--color-secondary))' }}
+              >
+                确定
+              </button>
             </div>
           </div>
         </div>
