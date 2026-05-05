@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect, useRef, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { authApi } from '../services/api';
 import { useTheme } from '../context/ThemeContext';
@@ -9,9 +9,40 @@ function LoginPage() {
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
   const [isLoading, setIsLoading] = useState(false);
+  const [showEmailDropdown, setShowEmailDropdown] = useState(false);
+  const [emailHistory, setEmailHistory] = useState<string[]>([]);
+  const emailInputRef = useRef<HTMLInputElement>(null);
+  const dropdownRef = useRef<HTMLDivElement>(null);
   const navigate = useNavigate();
   const { mode, toggleMode } = useTheme();
   const { setUser } = useUser();
+
+  useEffect(() => {
+    const saved = localStorage.getItem('emailHistory');
+    if (saved) {
+      setEmailHistory(JSON.parse(saved));
+    }
+  }, []);
+
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (dropdownRef.current && !dropdownRef.current.contains(event.target as Node) &&
+          emailInputRef.current && !emailInputRef.current.contains(event.target as Node)) {
+        setShowEmailDropdown(false);
+      }
+    };
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => document.removeEventListener('mousedown', handleClickOutside);
+  }, []);
+
+  const saveEmailToHistory = useCallback((email: string) => {
+    setEmailHistory(prev => {
+      const filtered = prev.filter(e => e !== email);
+      const updated = [email, ...filtered].slice(0, 5);
+      localStorage.setItem('emailHistory', JSON.stringify(updated));
+      return updated;
+    });
+  }, []);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -24,6 +55,7 @@ function LoginPage() {
       if (res.data.user) {
         setUser(res.data.user);
       }
+      saveEmailToHistory(email);
       navigate('/');
     } catch (err: any) {
       const errorMessage = err.response?.data?.error || err.response?.data?.message || '登录失败，请稍后重试';
@@ -31,6 +63,21 @@ function LoginPage() {
     } finally {
       setIsLoading(false);
     }
+  };
+
+  const selectEmail = (selectedEmail: string) => {
+    setEmail(selectedEmail);
+    setShowEmailDropdown(false);
+    emailInputRef.current?.focus();
+  };
+
+  const removeEmail = (e: React.MouseEvent, emailToRemove: string) => {
+    e.stopPropagation();
+    setEmailHistory(prev => {
+      const filtered = prev.filter(e => e !== emailToRemove);
+      localStorage.setItem('emailHistory', JSON.stringify(filtered));
+      return filtered;
+    });
   };
 
   return (
@@ -82,19 +129,56 @@ function LoginPage() {
             <label className="block text-sm font-medium mb-2" style={{ color: 'var(--color-text)' }}>
               邮箱
             </label>
-            <input
-              type="email"
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-              className="w-full px-4 py-3 border rounded-xl focus:outline-none focus:ring-2 transition-all"
-              style={{ 
-                backgroundColor: 'var(--color-card)', 
-                borderColor: 'var(--color-border)',
-                color: 'var(--color-text)'
-              }}
-              placeholder="输入你的邮箱"
-              required
-            />
+            <div className="relative">
+              <input
+                ref={emailInputRef}
+                type="email"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                onFocus={() => setShowEmailDropdown(true)}
+                className="w-full px-4 py-3 border rounded-xl focus:outline-none focus:ring-2 transition-all"
+                style={{ 
+                  backgroundColor: 'var(--color-card)', 
+                  borderColor: 'var(--color-border)',
+                  color: 'var(--color-text)'
+                }}
+                placeholder="输入你的邮箱"
+                required
+              />
+              
+              {showEmailDropdown && emailHistory.length > 0 && (
+                <div
+                  ref={dropdownRef}
+                  className="absolute top-full left-0 right-0 mt-1 bg-[var(--color-card)] border rounded-xl shadow-lg overflow-hidden z-10"
+                  style={{ borderColor: 'var(--color-border)' }}
+                >
+                  <div className="p-2 border-b" style={{ borderColor: 'var(--color-border)' }}>
+                    <span className="text-xs px-2" style={{ color: 'var(--color-text-secondary)' }}>
+                      历史登录邮箱
+                    </span>
+                  </div>
+                  {emailHistory.map((savedEmail) => (
+                    <div
+                      key={savedEmail}
+                      className="flex items-center justify-between px-4 py-2 hover:bg-[var(--color-background-secondary)] cursor-pointer transition-colors"
+                      onClick={() => selectEmail(savedEmail)}
+                    >
+                      <span className="text-sm truncate" style={{ color: 'var(--color-text)' }}>
+                        {savedEmail}
+                      </span>
+                      <button
+                        type="button"
+                        onClick={(e) => removeEmail(e, savedEmail)}
+                        className="p-1 text-xs hover:text-red-500 transition-colors"
+                        style={{ color: 'var(--color-text-secondary)' }}
+                      >
+                        ✕
+                      </button>
+                    </div>
+                  ))}
+                </div>
+              )}
+            </div>
           </div>
 
           <div>
