@@ -13,6 +13,7 @@ export async function getProfileHandler(req: AuthRequest, res: Response) {
       where: { id: req.userId },
       select: {
         id: true,
+        username: true,
         email: true,
         nickname: true,
         avatar: true,

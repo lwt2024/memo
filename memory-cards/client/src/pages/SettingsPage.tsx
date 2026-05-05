@@ -12,7 +12,7 @@ export default function SettingsPage() {
   
   const [editMode, setEditMode] = useState(false);
   const [nickname, setNickname] = useState(user.nickname || '');
-  const [email, setEmail] = useState(user.email || '');
+  const [username, setUsername] = useState(user.username || '');
   const [avatar, setAvatar] = useState(user.avatar || '');
   const [avatarFile, setAvatarFile] = useState<File | null>(null);
   
@@ -41,7 +41,7 @@ export default function SettingsPage() {
       const res = await userApi.getProfile();
       setUser(res.data.user);
       setNickname(res.data.user.nickname || '');
-      setEmail(res.data.user.email || '');
+      setUsername(res.data.user.username || '');
       setAvatar(res.data.user.avatar || '');
     } catch (error) {
       console.error('加载用户信息失败', error);
@@ -68,7 +68,6 @@ export default function SettingsPage() {
     try {
       const formData = new FormData();
       formData.append('nickname', nickname);
-      formData.append('email', email);
       if (avatarFile) {
         formData.append('avatar', avatarFile);
       }
@@ -126,7 +125,7 @@ export default function SettingsPage() {
 
   const confirmLogout = () => {
     localStorage.removeItem('token');
-    setUser({ nickname: '用户', email: '' });
+    setUser({ nickname: '用户', username: '' });
     navigate('/login');
   };
 
@@ -137,7 +136,7 @@ export default function SettingsPage() {
     try {
       await userApi.deleteAccount(deletePassword);
       localStorage.removeItem('token');
-      setUser({ nickname: '用户', email: '' });
+      setUser({ nickname: '用户', username: '' });
       navigate('/login');
     } catch (error: any) {
       setDeleteError(error.response?.data?.error || '注销失败');
@@ -225,6 +224,20 @@ export default function SettingsPage() {
               </div>
 
               <div>
+                <label className="block text-sm font-medium mb-2 text-[var(--color-text)]">用户名</label>
+                <input
+                  type="text"
+                  value={username}
+                  disabled
+                  className="w-full px-4 py-3 border rounded-xl bg-[var(--color-border)]"
+                  style={{
+                    color: 'var(--color-text-secondary)'
+                  }}
+                  placeholder="用户名（不可修改）"
+                />
+              </div>
+
+              <div>
                 <label className="block text-sm font-medium mb-2 text-[var(--color-text)]">昵称</label>
                 <input
                   type="text"
@@ -237,23 +250,6 @@ export default function SettingsPage() {
                     color: 'var(--color-text)'
                   }}
                   placeholder="输入昵称"
-                />
-              </div>
-
-              <div>
-                <label className="block text-sm font-medium mb-2 text-[var(--color-text)]">邮箱</label>
-                <input
-                  type="email"
-                  value={email}
-                  onChange={(e) => setEmail(e.target.value)}
-                  className="w-full px-4 py-3 border rounded-xl"
-                  style={{
-                    backgroundColor: 'var(--color-background)',
-                    borderColor: 'var(--color-border)',
-                    color: 'var(--color-text)'
-                  }}
-                  placeholder="输入邮箱"
-                  required
                 />
               </div>
 
@@ -271,7 +267,7 @@ export default function SettingsPage() {
                   onClick={() => {
                     setEditMode(false);
                     setNickname(user.nickname || '');
-                    setEmail(user.email || '');
+                    setUsername(user.username || '');
                     setAvatar(user.avatar || '');
                   }}
                   className="flex-1 py-3 rounded-xl font-medium"
@@ -294,12 +290,12 @@ export default function SettingsPage() {
                 {user.avatar ? (
                   <img src={user.avatar} alt="头像" className="w-full h-full object-cover" />
                 ) : (
-                  user.nickname?.charAt(0).toUpperCase() || 'U'
+                  (user.nickname || user.username)?.charAt(0).toUpperCase() || 'U'
                 )}
               </div>
               <div>
-                <p className="font-medium text-[var(--color-text)]">{user.nickname || '未设置昵称'}</p>
-                <p className="text-[var(--color-text-secondary)]">{user.email || '未设置邮箱'}</p>
+                <p className="font-medium text-[var(--color-text)]">{user.nickname || user.username || '未设置昵称'}</p>
+                <p className="text-[var(--color-text-secondary)]">@{user.username}</p>
               </div>
             </div>
           )}
@@ -526,7 +522,7 @@ export default function SettingsPage() {
             🗑️ 注销账号
           </button>
           <p className="text-xs text-[var(--color-text-secondary)] mt-2 text-center">
-            注销后所有数据将被永久删除，且可使用原邮箱重新注册
+            注销后所有数据将被永久删除，且可使用原用户名重新注册
           </p>
         </div>
       </div>

@@ -82,8 +82,8 @@ export default function Sidebar({ onToggleTheme, currentMode }: SidebarProps) {
             )}
           </div>
           <div className="flex-1 min-w-0">
-            <p className="font-medium truncate" style={{ color: 'var(--color-text)' }}>{user.nickname}</p>
-            <p className="text-xs truncate" style={{ color: 'var(--color-text-secondary)' }}>{user.email}</p>
+            <p className="font-medium truncate" style={{ color: 'var(--color-text)' }}>{user.nickname || user.username}</p>
+            <p className="text-xs truncate" style={{ color: 'var(--color-text-secondary)' }}>@{user.username}</p>
           </div>
           <button
             onClick={onToggleTheme}

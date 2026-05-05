@@ -13,14 +13,10 @@ api.interceptors.request.use((config) => {
 });
 
 export const authApi = {
-  sendCode: (email: string) => api.post('/auth/send-code', { email }),
-  verifyCode: (email: string, code: string) => api.post('/auth/verify-code', { email, code }),
-  register: (email: string, password: string, nickname?: string) =>
-    api.post('/auth/register', { email, password, nickname }),
-  login: (email: string, password: string) =>
-    api.post('/auth/login', { email, password }),
-  resetPassword: (email: string, code: string, newPassword: string) =>
-    api.post('/auth/reset-password', { email, code, newPassword }),
+  register: (username: string, password: string, nickname?: string) =>
+    api.post('/auth/register', { username, password, nickname }),
+  login: (username: string, password: string) =>
+    api.post('/auth/login', { username, password }),
 };
 
 export const userApi = {

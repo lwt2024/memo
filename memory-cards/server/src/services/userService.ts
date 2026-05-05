@@ -53,6 +53,7 @@ export async function updateProfile(userId: string, data: {
     data: updateData,
     select: {
       id: true,
+      username: true,
       email: true,
       nickname: true,
       avatar: true,
