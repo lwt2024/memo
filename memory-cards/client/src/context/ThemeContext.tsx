@@ -264,7 +264,7 @@ export function ThemeProvider({ children }: { children: ReactNode }) {
 
   const [style, setStyleState] = useState<ThemeStyle>(() => {
     const saved = localStorage.getItem('themeStyle');
-    return (saved as ThemeStyle) || 'ocean';
+    return (saved as ThemeStyle) || 'morandi';
   });
 
   useEffect(() => {
