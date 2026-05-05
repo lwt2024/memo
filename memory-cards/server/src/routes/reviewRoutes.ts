@@ -10,5 +10,6 @@ router.get('/due', reviewController.getDueCards);
 router.get('/deck/:deckId', reviewController.getDeckReviewCards);
 router.post('/submit', reviewController.submitReview);
 router.get('/stats', reviewController.getStats);
+router.get('/daily-stats', reviewController.getDailyStats);
 
 export default router;

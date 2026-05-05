@@ -38,3 +38,12 @@ export async function getStats(req: AuthRequest, res: Response) {
     res.status(400).json({ error: error.message });
   }
 }
+
+export async function getDailyStats(req: AuthRequest, res: Response) {
+  try {
+    const stats = await reviewService.getDailyStats(req.userId!);
+    res.json(stats);
+  } catch (error: any) {
+    res.status(400).json({ error: error.message });
+  }
+}
