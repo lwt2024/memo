@@ -79,21 +79,21 @@ export default function HomePage() {
             <div className="flex items-center justify-between mb-2">
               <span className="text-3xl">{stat.emoji}</span>
             </div>
-            <p className="text-4xl font-bold text-white mb-1">{stat.value}</p>
-            <p className="text-white/80 text-sm">{stat.label}</p>
+            <p className="text-4xl font-bold mb-1" style={{ color: 'var(--color-stat-text)' }}>{stat.value}</p>
+            <p className="text-sm" style={{ color: 'var(--color-stat-text-secondary)' }}>{stat.label}</p>
           </div>
         ))}
       </div>
 
       {stats && stats.dueCount > 0 && (
         <div 
-          className="rounded-2xl p-6 mb-8 text-white shadow-lg hover:shadow-xl transition-all"
+          className="rounded-2xl p-6 mb-8 shadow-lg hover:shadow-xl transition-all"
           style={{ background: 'linear-gradient(135deg, var(--color-primary), var(--color-secondary))' }}
         >
           <div className="flex items-center justify-between">
             <div>
-              <h3 className="text-xl font-bold mb-1">📚 今日待复习</h3>
-              <p className="text-white/80">你有 <span className="font-bold text-white">{stats.dueCount}</span> 张卡片需要复习</p>
+              <h3 className="text-xl font-bold mb-1" style={{ color: 'var(--color-stat-text)' }}>📚 今日待复习</h3>
+              <p style={{ color: 'var(--color-stat-text-secondary)' }}>你有 <span className="font-bold" style={{ color: 'var(--color-stat-text)' }}>{stats.dueCount}</span> 张卡片需要复习</p>
             </div>
             <button
               onClick={() => navigate('/review')}
@@ -108,14 +108,14 @@ export default function HomePage() {
 
       {stats && stats.dueCount === 0 && (
         <div 
-          className="rounded-2xl p-6 mb-8 text-white shadow-lg"
+          className="rounded-2xl p-6 mb-8 shadow-lg"
           style={{ background: 'var(--color-completion)' }}
         >
           <div className="flex items-center gap-4">
             <span className="text-5xl">🎉</span>
             <div>
-              <h3 className="text-xl font-bold mb-1">太棒了！</h3>
-              <p className="text-white/80">今日所有卡片都已复习完毕，继续保持！</p>
+              <h3 className="text-xl font-bold mb-1" style={{ color: 'var(--color-stat-text)' }}>太棒了！</h3>
+              <p style={{ color: 'var(--color-stat-text-secondary)' }}>今日所有卡片都已复习完毕，继续保持！</p>
             </div>
           </div>
         </div>

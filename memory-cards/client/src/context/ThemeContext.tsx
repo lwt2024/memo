@@ -32,6 +32,8 @@ const themeStyles = {
       statMastered: 'linear-gradient(135deg, #22c55e, #10b981)',
       statNew: 'linear-gradient(135deg, #a855f7, #ec4899)',
       completion: 'linear-gradient(135deg, #22c55e, #10b981)',
+      statText: '#ffffff',
+      statTextSecondary: 'rgba(255,255,255,0.8)',
     },
     dark: {
       primary: '#38bdf8',
@@ -49,6 +51,8 @@ const themeStyles = {
       statMastered: 'linear-gradient(135deg, #16a34a, #059669)',
       statNew: 'linear-gradient(135deg, #9333ea, #db2777)',
       completion: 'linear-gradient(135deg, #16a34a, #059669)',
+      statText: '#ffffff',
+      statTextSecondary: 'rgba(255,255,255,0.8)',
     },
   },
   morandi: {
@@ -70,6 +74,8 @@ const themeStyles = {
       statMastered: 'linear-gradient(135deg, #8dc7a0, #a6d4b7)',
       statNew: 'linear-gradient(135deg, #b58dc7, #d4a6e0)',
       completion: 'linear-gradient(135deg, #8dc7a0, #a6d4b7)',
+      statText: '#ffffff',
+      statTextSecondary: 'rgba(255,255,255,0.8)',
     },
     dark: {
       primary: '#a89a8c',
@@ -87,6 +93,8 @@ const themeStyles = {
       statMastered: 'linear-gradient(135deg, #66a87f, #77b88f)',
       statNew: 'linear-gradient(135deg, #8866a8, #9977b8)',
       completion: 'linear-gradient(135deg, #66a87f, #77b88f)',
+      statText: '#ffffff',
+      statTextSecondary: 'rgba(255,255,255,0.8)',
     },
   },
   vibrant: {
@@ -108,6 +116,8 @@ const themeStyles = {
       statMastered: 'linear-gradient(135deg, #16a34a, #22c55e)',
       statNew: 'linear-gradient(135deg, #9333ea, #a855f7)',
       completion: 'linear-gradient(135deg, #16a34a, #22c55e)',
+      statText: '#ffffff',
+      statTextSecondary: 'rgba(255,255,255,0.8)',
     },
     dark: {
       primary: '#fb923c',
@@ -125,6 +135,8 @@ const themeStyles = {
       statMastered: 'linear-gradient(135deg, #15803d, #16a34a)',
       statNew: 'linear-gradient(135deg, #7e22ce, #9333ea)',
       completion: 'linear-gradient(135deg, #15803d, #16a34a)',
+      statText: '#ffffff',
+      statTextSecondary: 'rgba(255,255,255,0.8)',
     },
   },
   minimal: {
@@ -146,6 +158,8 @@ const themeStyles = {
       statMastered: 'linear-gradient(135deg, #27272a, #3f3f46)',
       statNew: 'linear-gradient(135deg, #18181b, #27272a)',
       completion: 'linear-gradient(135deg, #27272a, #3f3f46)',
+      statText: '#ffffff',
+      statTextSecondary: 'rgba(255,255,255,0.85)',
     },
     dark: {
       primary: '#fafafa',
@@ -163,6 +177,8 @@ const themeStyles = {
       statMastered: 'linear-gradient(135deg, #71717a, #a1a1aa)',
       statNew: 'linear-gradient(135deg, #52525b, #71717a)',
       completion: 'linear-gradient(135deg, #71717a, #a1a1aa)',
+      statText: '#18181b',
+      statTextSecondary: 'rgba(24,24,27,0.7)',
     },
   },
 };
@@ -200,6 +216,8 @@ export function ThemeProvider({ children }: { children: ReactNode }) {
     root.style.setProperty('--color-stat-mastered', theme.statMastered);
     root.style.setProperty('--color-stat-new', theme.statNew);
     root.style.setProperty('--color-completion', theme.completion);
+    root.style.setProperty('--color-stat-text', theme.statText);
+    root.style.setProperty('--color-stat-text-secondary', theme.statTextSecondary);
     
     if (mode === 'dark') {
       root.classList.add('dark');
