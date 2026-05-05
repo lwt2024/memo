@@ -9,12 +9,8 @@ function RegisterPage() {
   const [password, setPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
   const [nickname, setNickname] = useState('');
-  const [code, setCode] = useState('');
   const [error, setError] = useState('');
-  const [codeMessage, setCodeMessage] = useState('');
-  const [codeSent, setCodeSent] = useState(false);
-  const [isCodeLoading, setIsCodeLoading] = useState(false);
-  const [countdown, setCountdown] = useState(0);
+  const [isLoading, setIsLoading] = useState(false);
   const [passwordStrength, setPasswordStrength] = useState({
     length: false,
     number: false,
@@ -25,15 +21,6 @@ function RegisterPage() {
   const { setUser } = useUser();
 
   useEffect(() => {
-    if (countdown > 0) {
-      const timer = setInterval(() => {
-        setCountdown(countdown - 1);
-      }, 1000);
-      return () => clearInterval(timer);
-    }
-  }, [countdown]);
-
-  useEffect(() => {
     setPasswordStrength({
       length: password.length >= 8,
       number: /\d/.test(password),
@@ -41,47 +28,28 @@ function RegisterPage() {
     });
   }, [password]);
 
-  const handleSendCode = async () => {
-    if (!email) {
-      setError('请先输入邮箱');
-      return;
-    }
-    setIsCodeLoading(true);
-    try {
-      const res = await authApi.sendCode(email);
-      setCodeMessage(res.data.message);
-      setCodeSent(true);
-      setCountdown(300);
-    } catch (err: any) {
-      setError(err.response?.data?.error || '发送失败');
-    } finally {
-      setIsCodeLoading(false);
-    }
-  };
-
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setError('');
+    setIsLoading(true);
     
     if (!passwordStrength.length) {
       setError('密码长度不能少于8位');
+      setIsLoading(false);
       return;
     }
     if (!passwordStrength.number || !passwordStrength.letter) {
       setError('密码必须包含数字和字母');
+      setIsLoading(false);
       return;
     }
     if (password !== confirmPassword) {
       setError('密码不一致');
-      return;
-    }
-    if (!codeSent || !code) {
-      setError('请先获取并填写邮箱验证码');
+      setIsLoading(false);
       return;
     }
     
     try {
-      await authApi.verifyCode(email, code);
       const res = await authApi.register(email, password, nickname);
       localStorage.setItem('token', res.data.token);
       if (res.data.user) {
@@ -90,6 +58,8 @@ function RegisterPage() {
       navigate('/');
     } catch (err: any) {
       setError(err.response?.data?.error || '注册失败');
+    } finally {
+      setIsLoading(false);
     }
   };
 
@@ -131,19 +101,6 @@ function RegisterPage() {
           </div>
         )}
 
-        {codeMessage && (
-          <div 
-            className="border p-4 rounded-xl mb-6 text-center"
-            style={{ 
-              backgroundColor: mode === 'dark' ? 'rgba(34, 197, 94, 0.15)' : '#f0fdf4',
-              borderColor: mode === 'dark' ? 'rgba(34, 197, 94, 0.5)' : '#86efac',
-              color: mode === 'dark' ? '#86efac' : '#166534'
-            }}
-          >
-            ✅ {codeMessage}
-          </div>
-        )}
-
         <form onSubmit={handleSubmit} className="space-y-5">
           <div>
             <label className="block text-sm font-medium mb-2" style={{ color: 'var(--color-text)' }}>
@@ -180,39 +137,6 @@ function RegisterPage() {
               placeholder="输入你的邮箱"
               required
             />
-          </div>
-
-          <div>
-            <label className="block text-sm font-medium mb-2" style={{ color: 'var(--color-text)' }}>
-              邮箱验证码
-            </label>
-            <div className="flex gap-3">
-              <input
-                type="text"
-                value={code}
-                onChange={(e) => setCode(e.target.value)}
-                className="flex-1 px-4 py-3 border rounded-xl focus:outline-none focus:ring-2 transition-all"
-                style={{ 
-                  backgroundColor: 'var(--color-card)', 
-                  borderColor: 'var(--color-border)',
-                  color: 'var(--color-text)'
-                }}
-                placeholder="输入验证码"
-                maxLength={6}
-              />
-              <button
-                type="button"
-                onClick={handleSendCode}
-                disabled={isCodeLoading || countdown > 0}
-                className="px-6 py-3 rounded-xl font-medium transition-all disabled:opacity-50"
-                style={{ 
-                  backgroundColor: countdown > 0 ? 'var(--color-border)' : 'var(--color-primary)',
-                  color: 'white'
-                }}
-              >
-                {isCodeLoading ? '发送中...' : (countdown > 0 ? `${countdown}s` : '获取验证码')}
-              </button>
-            </div>
           </div>
 
           <div>
@@ -275,10 +199,18 @@ function RegisterPage() {
 
           <button
             type="submit"
-            className="w-full py-3 text-white font-semibold rounded-xl hover:shadow-lg transition-all transform hover:scale-[1.02]"
+            disabled={isLoading}
+            className="w-full py-3 text-white font-semibold rounded-xl hover:shadow-lg transition-all transform hover:scale-[1.02] disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none"
             style={{ background: 'linear-gradient(135deg, var(--color-primary), var(--color-secondary))' }}
           >
-            注册
+            {isLoading ? (
+              <span className="flex items-center justify-center gap-2">
+                <span className="animate-spin">⏳</span>
+                注册中...
+              </span>
+            ) : (
+              '注册'
+            )}
           </button>
         </form>
 
