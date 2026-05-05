@@ -1,13 +1,26 @@
 import { Request, Response } from 'express';
-import { register, login, sendVerificationCode, verifyCode } from '../services/authService.js';
+import { register, login, sendVerificationCode, verifyCode, resetPassword } from '../services/authService.js';
 
 export async function sendCodeHandler(req: Request, res: Response) {
   try {
-    const { email } = req.body;
+    const { email, type = 'register' } = req.body;
     if (!email) {
       return res.status(400).json({ error: '邮箱不能为空' });
     }
-    const result = await sendVerificationCode(email);
+    const result = await sendVerificationCode(email, type as 'register' | 'reset');
+    res.json(result);
+  } catch (error: any) {
+    res.status(400).json({ error: error.message });
+  }
+}
+
+export async function resetPasswordHandler(req: Request, res: Response) {
+  try {
+    const { email, code, newPassword } = req.body;
+    if (!email || !code || !newPassword) {
+      return res.status(400).json({ error: '邮箱、验证码和新密码不能为空' });
+    }
+    const result = await resetPassword(email, code, newPassword);
     res.json(result);
   } catch (error: any) {
     res.status(400).json({ error: error.message });
