@@ -55,9 +55,13 @@ export default function SettingsPage() {
                 onClick={() => mode === 'dark' && toggleMode()}
                 className={`flex-1 py-3 px-4 rounded-xl font-medium transition-all ${
                   mode === 'light' 
-                    ? 'bg-[var(--color-primary)] text-white shadow-lg' 
+                    ? 'shadow-lg' 
                     : 'bg-[var(--color-background-secondary)] text-[var(--color-text)] hover:bg-[var(--color-border)]'
                 }`}
+                style={mode === 'light' ? {
+                  background: 'var(--color-active-background)',
+                  color: 'var(--color-active-text)'
+                } : {}}
               >
                 ☀️ 浅色模式
               </button>
@@ -65,9 +69,13 @@ export default function SettingsPage() {
                 onClick={() => mode === 'light' && toggleMode()}
                 className={`flex-1 py-3 px-4 rounded-xl font-medium transition-all ${
                   mode === 'dark' 
-                    ? 'bg-[var(--color-primary)] text-white shadow-lg' 
+                    ? 'shadow-lg' 
                     : 'bg-[var(--color-background-secondary)] text-[var(--color-text)] hover:bg-[var(--color-border)]'
                 }`}
+                style={mode === 'dark' ? {
+                  background: 'var(--color-active-background)',
+                  color: 'var(--color-active-text)'
+                } : {}}
               >
                 🌙 深色模式
               </button>

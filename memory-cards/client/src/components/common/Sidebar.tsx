@@ -57,10 +57,13 @@ export default function Sidebar({ onToggleTheme, currentMode }: SidebarProps) {
               to={item.path}
               className={`flex items-center gap-3 px-4 py-3 rounded-xl mb-2 transition-all ${
                 isActive
-                  ? 'text-white shadow-lg'
+                  ? 'shadow-lg'
                   : 'hover:bg-[var(--color-background-secondary)]'
               }`}
-              style={isActive ? { background: 'linear-gradient(135deg, var(--color-primary), var(--color-secondary))' } : { color: 'var(--color-text)' }}
+              style={isActive ? { 
+                background: 'var(--color-active-background)',
+                color: 'var(--color-active-text)'
+              } : { color: 'var(--color-text)' }}
             >
               <span className="text-xl">{item.icon}</span>
               <span className="font-medium">{item.label}</span>

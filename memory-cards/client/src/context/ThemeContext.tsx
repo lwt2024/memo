@@ -36,6 +36,8 @@ const themeStyles = {
       statTextSecondary: 'rgba(255,255,255,0.8)',
       buttonBackground: 'linear-gradient(135deg, #0ea5e9, #06b6d4)',
       buttonText: '#ffffff',
+      activeBackground: 'linear-gradient(135deg, #0ea5e9, #06b6d4)',
+      activeText: '#ffffff',
     },
     dark: {
       primary: '#38bdf8',
@@ -57,6 +59,8 @@ const themeStyles = {
       statTextSecondary: 'rgba(255,255,255,0.8)',
       buttonBackground: 'linear-gradient(135deg, #38bdf8, #22d3ee)',
       buttonText: '#0f172a',
+      activeBackground: 'linear-gradient(135deg, #38bdf8, #22d3ee)',
+      activeText: '#0f172a',
     },
   },
   morandi: {
@@ -82,6 +86,8 @@ const themeStyles = {
       statTextSecondary: 'rgba(255,255,255,0.8)',
       buttonBackground: 'linear-gradient(135deg, #9c8c7c, #b5a99a)',
       buttonText: '#ffffff',
+      activeBackground: 'linear-gradient(135deg, #9c8c7c, #b5a99a)',
+      activeText: '#ffffff',
     },
     dark: {
       primary: '#a89a8c',
@@ -103,6 +109,8 @@ const themeStyles = {
       statTextSecondary: 'rgba(255,255,255,0.8)',
       buttonBackground: 'linear-gradient(135deg, #a89a8c, #9c8c7c)',
       buttonText: '#1c1917',
+      activeBackground: 'linear-gradient(135deg, #a89a8c, #9c8c7c)',
+      activeText: '#1c1917',
     },
   },
   vibrant: {
@@ -128,6 +136,8 @@ const themeStyles = {
       statTextSecondary: 'rgba(255,255,255,0.8)',
       buttonBackground: 'linear-gradient(135deg, #f97316, #fb923c)',
       buttonText: '#ffffff',
+      activeBackground: 'linear-gradient(135deg, #f97316, #fb923c)',
+      activeText: '#ffffff',
     },
     dark: {
       primary: '#fb923c',
@@ -149,6 +159,8 @@ const themeStyles = {
       statTextSecondary: 'rgba(255,255,255,0.8)',
       buttonBackground: 'linear-gradient(135deg, #fb923c, #fbbf24)',
       buttonText: '#1c1917',
+      activeBackground: 'linear-gradient(135deg, #fb923c, #fbbf24)',
+      activeText: '#1c1917',
     },
   },
   minimal: {
@@ -174,6 +186,8 @@ const themeStyles = {
       statTextSecondary: 'rgba(255,255,255,0.85)',
       buttonBackground: 'linear-gradient(135deg, #18181b, #3f3f46)',
       buttonText: '#ffffff',
+      activeBackground: 'linear-gradient(135deg, #18181b, #3f3f46)',
+      activeText: '#ffffff',
     },
     dark: {
       primary: '#fafafa',
@@ -195,6 +209,8 @@ const themeStyles = {
       statTextSecondary: 'rgba(24,24,27,0.7)',
       buttonBackground: 'linear-gradient(135deg, #71717a, #a1a1aa)',
       buttonText: '#09090b',
+      activeBackground: 'linear-gradient(135deg, #52525b, #71717a)',
+      activeText: '#09090b',
     },
   },
 };
@@ -236,6 +252,8 @@ export function ThemeProvider({ children }: { children: ReactNode }) {
     root.style.setProperty('--color-stat-text-secondary', theme.statTextSecondary);
     root.style.setProperty('--color-button-background', theme.buttonBackground);
     root.style.setProperty('--color-button-text', theme.buttonText);
+    root.style.setProperty('--color-active-background', theme.activeBackground);
+    root.style.setProperty('--color-active-text', theme.activeText);
     
     if (mode === 'dark') {
       root.classList.add('dark');
