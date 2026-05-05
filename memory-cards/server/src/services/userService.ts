@@ -106,9 +106,9 @@ export async function deleteUser(userId: string, password: string) {
     }
   }
   
+  await prisma.reviewRecord.deleteMany({ where: { userId } });
   await prisma.card.deleteMany({ where: { deck: { userId } } });
   await prisma.deck.deleteMany({ where: { userId } });
-  await prisma.review.deleteMany({ where: { userId } });
   await prisma.user.delete({ where: { id: userId } });
   
   return { message: '账号注销成功' };
