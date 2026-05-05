@@ -142,17 +142,21 @@ export default function ReviewPage() {
           />
         </div>
 
+        {/* 简单的翻转效果 - 不使用 3D 变换 */}
         <div
-          className={`relative cursor-pointer perspective-1000 ${isAnimating ? 'animate-pulse' : ''}`}
+          className={`relative cursor-pointer ${isAnimating ? 'animate-pulse' : ''}`}
           onClick={handleFlip}
         >
           <div
-            className={`rounded-2xl shadow-2xl p-8 min-h-[50vh] max-h-[70vh] flex flex-col transition-all duration-500 transform-style-preserve-3d ${
-              isFlipped ? 'rotate-y-180' : ''
-            } hover:shadow-3xl overflow-hidden`}
+            className="rounded-2xl shadow-2xl p-8 min-h-[50vh] max-h-[70vh] flex flex-col hover:shadow-3xl overflow-hidden"
             style={{ backgroundColor: 'var(--color-card)' }}
           >
-            <div className="absolute inset-0 backface-hidden p-8 flex flex-col overflow-hidden">
+            {/* 问题面 */}
+            <div
+              className={`flex flex-col overflow-hidden transition-opacity duration-300 ${
+                isFlipped ? 'opacity-0 absolute inset-0' : 'opacity-100'
+              }`}
+            >
               <p className="text-sm mb-4 text-center flex-shrink-0" style={{ color: 'var(--color-text-secondary)' }}>
                 问题
               </p>
@@ -166,7 +170,13 @@ export default function ReviewPage() {
                 点击翻转查看答案
               </p>
             </div>
-            <div className="absolute inset-0 backface-hidden rotate-y-180 p-8 flex flex-col overflow-hidden">
+
+            {/* 答案面 */}
+            <div
+              className={`flex flex-col overflow-hidden transition-opacity duration-300 ${
+                isFlipped ? 'opacity-100' : 'opacity-0 absolute inset-0'
+              }`}
+            >
               <p className="text-sm mb-4 text-center flex-shrink-0" style={{ color: 'var(--color-text-secondary)' }}>
                 答案
               </p>
@@ -215,18 +225,6 @@ export default function ReviewPage() {
       </div>
 
       <style>{`
-        .perspective-1000 {
-          perspective: 1000px;
-        }
-        .transform-style-preserve-3d {
-          transform-style: preserve-3d;
-        }
-        .backface-hidden {
-          backface-visibility: hidden;
-        }
-        .rotate-y-180 {
-          transform: rotateY(180deg);
-        }
         @keyframes fade-in {
           from { opacity: 0; transform: translateY(20px); }
           to { opacity: 1; transform: translateY(0); }
