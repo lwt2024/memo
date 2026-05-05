@@ -19,4 +19,12 @@ export const authApi = {
     api.post('/auth/login', { email, password }),
 };
 
+export const userApi = {
+  getProfile: () => api.get('/user/profile'),
+  updateProfile: (data: { nickname?: string; email?: string; avatar?: string }) =>
+    api.put('/user/profile', data),
+  changePassword: (oldPassword: string, newPassword: string) =>
+    api.put('/user/password', { oldPassword, newPassword }),
+};
+
 export default api;
