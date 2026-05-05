@@ -113,7 +113,7 @@ export default function ReviewPage() {
   return (
     <Layout>
       <div className="max-w-3xl mx-auto">
-        <div className="mb-6">
+        <div className="mb-8">
           <button 
             onClick={() => navigate(id ? `/decks/${id}` : '/')} 
             className="transition-colors flex items-center gap-2"
@@ -132,7 +132,7 @@ export default function ReviewPage() {
           </span>
         </div>
 
-        <div className="mb-4 rounded-full h-3 overflow-hidden" style={{ backgroundColor: 'var(--color-background-secondary)' }}>
+        <div className="mb-8 rounded-full h-3 overflow-hidden" style={{ backgroundColor: 'var(--color-background-secondary)' }}>
           <div
             className="h-full rounded-full transition-all duration-500"
             style={{
@@ -142,22 +142,19 @@ export default function ReviewPage() {
           />
         </div>
 
-        {/* 简单的翻转效果 - 不使用 3D 变换 */}
+        {/* 3D 翻转卡片 */}
         <div
-          className={`relative cursor-pointer ${isAnimating ? 'animate-pulse' : ''}`}
-          onClick={handleFlip}
+          className={`perspective-1000 ${isAnimating ? 'animate-pulse' : ''}`}
         >
           <div
-            className="rounded-2xl shadow-2xl p-8 min-h-[50vh] max-h-[70vh] flex flex-col hover:shadow-3xl overflow-hidden"
-            style={{ backgroundColor: 'var(--color-card)' }}
+            className={`relative w-full h-[500px] cursor-pointer transform-style-preserve-3d transition-transform duration-600 ${
+              isFlipped ? 'rotate-y-180' : ''
+            }`}
+            onClick={handleFlip}
           >
             {/* 问题面 */}
-            <div
-              className={`flex flex-col overflow-hidden transition-opacity duration-300 ${
-                isFlipped ? 'opacity-0 absolute inset-0' : 'opacity-100'
-              }`}
-            >
-              <p className="text-sm mb-4 text-center flex-shrink-0" style={{ color: 'var(--color-text-secondary)' }}>
+            <div className="absolute inset-0 backface-hidden rounded-2xl shadow-2xl p-8 flex flex-col overflow-hidden" style={{ backgroundColor: 'var(--color-card)' }}>
+              <p className="text-sm mb-6 text-center flex-shrink-0" style={{ color: 'var(--color-text-secondary)' }}>
                 问题
               </p>
               <div
@@ -172,12 +169,8 @@ export default function ReviewPage() {
             </div>
 
             {/* 答案面 */}
-            <div
-              className={`flex flex-col overflow-hidden transition-opacity duration-300 ${
-                isFlipped ? 'opacity-100' : 'opacity-0 absolute inset-0'
-              }`}
-            >
-              <p className="text-sm mb-4 text-center flex-shrink-0" style={{ color: 'var(--color-text-secondary)' }}>
+            <div className="absolute inset-0 backface-hidden rounded-2xl shadow-2xl p-8 flex flex-col overflow-hidden" style={{ backgroundColor: 'var(--color-card)', transform: 'rotateY(180deg)' }}>
+              <p className="text-sm mb-6 text-center flex-shrink-0" style={{ color: 'var(--color-text-secondary)' }}>
                 答案
               </p>
               <div
@@ -191,20 +184,20 @@ export default function ReviewPage() {
         </div>
 
         {isFlipped && (
-          <div className="mt-8 animate-fade-in">
-            <p className="text-center mb-4 font-medium" style={{ color: 'var(--color-text)' }}>
+          <div className="mt-12 animate-fade-in">
+            <p className="text-center mb-6 font-medium text-lg" style={{ color: 'var(--color-text)' }}>
               你记得怎么样？
             </p>
-            <div className="grid grid-cols-5 gap-2">
+            <div className="grid grid-cols-5 gap-3">
               {ratingButtons.map((btn) => (
                 <button
                   key={btn.level}
                   onClick={() => handleRating(btn.level)}
-                  className="text-white py-4 rounded-xl hover:scale-105 hover:shadow-lg transition-all flex flex-col items-center gap-1"
+                  className="text-white py-5 rounded-xl hover:scale-105 hover:shadow-lg transition-all flex flex-col items-center gap-2"
                   style={{ background: `var(${btn.colorVar})` }}
                 >
-                  <span className="text-2xl">{btn.emoji}</span>
-                  <span className="text-xs font-medium">{btn.label}</span>
+                  <span className="text-3xl">{btn.emoji}</span>
+                  <span className="text-sm font-medium">{btn.label}</span>
                 </button>
               ))}
             </div>
@@ -212,10 +205,10 @@ export default function ReviewPage() {
         )}
 
         {!isFlipped && (
-          <div className="mt-8 text-center">
+          <div className="mt-12 text-center">
             <button
               onClick={handleFlip}
-              className="text-white px-8 py-3 rounded-full hover:shadow-lg hover:scale-105 transition-all"
+              className="text-white px-10 py-4 rounded-full hover:shadow-lg hover:scale-105 transition-all text-lg font-medium"
               style={{ background: 'var(--color-button-background)' }}
             >
               翻转卡片
@@ -225,6 +218,18 @@ export default function ReviewPage() {
       </div>
 
       <style>{`
+        .perspective-1000 {
+          perspective: 1000px;
+        }
+        .transform-style-preserve-3d {
+          transform-style: preserve-3d;
+        }
+        .backface-hidden {
+          backface-visibility: hidden;
+        }
+        .rotate-y-180 {
+          transform: rotateY(180deg);
+        }
         @keyframes fade-in {
           from { opacity: 0; transform: translateY(20px); }
           to { opacity: 1; transform: translateY(0); }
