@@ -253,21 +253,21 @@ export default function DeckDetailPage() {
 
       {/* 添加/编辑模态框 */}
       {showModal && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
-          <div className="rounded-lg p-6 w-full max-w-md" style={{ backgroundColor: 'var(--color-card)' }}>
-            <h3 className="text-xl font-bold mb-4" style={{ color: 'var(--color-text)' }}>
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50 overflow-y-auto">
+          <div className="rounded-lg p-8 w-full max-w-4xl my-8" style={{ backgroundColor: 'var(--color-card)' }}>
+            <h3 className="text-2xl font-bold mb-6" style={{ color: 'var(--color-text)' }}>
               {editingCard ? '编辑卡片' : '添加卡片'}
             </h3>
             <form onSubmit={saveCard}>
-              <div className="mb-4">
-                <label className="block mb-2" style={{ color: 'var(--color-text)' }}>
+              <div className="mb-6">
+                <label className="block mb-3 text-lg font-medium" style={{ color: 'var(--color-text)' }}>
                   正面（问题）
                 </label>
                 <textarea
                   value={cardFront}
                   onChange={(e) => setCardFront(e.target.value)}
-                  className="w-full px-4 py-2 rounded border"
-                  rows={3}
+                  className="w-full px-4 py-3 rounded border font-mono"
+                  rows={8}
                   required
                   style={{
                     backgroundColor: 'var(--color-background)',
@@ -276,15 +276,15 @@ export default function DeckDetailPage() {
                   }}
                 />
               </div>
-              <div className="mb-4">
-                <label className="block mb-2" style={{ color: 'var(--color-text)' }}>
+              <div className="mb-6">
+                <label className="block mb-3 text-lg font-medium" style={{ color: 'var(--color-text)' }}>
                   背面（答案）
                 </label>
                 <textarea
                   value={cardBack}
                   onChange={(e) => setCardBack(e.target.value)}
-                  className="w-full px-4 py-2 rounded border"
-                  rows={3}
+                  className="w-full px-4 py-3 rounded border font-mono"
+                  rows={12}
                   required
                   style={{
                     backgroundColor: 'var(--color-background)',
@@ -293,11 +293,11 @@ export default function DeckDetailPage() {
                   }}
                 />
               </div>
-              <div className="flex justify-end gap-3">
+              <div className="flex justify-end gap-4">
                 <button
                   type="button"
                   onClick={() => setShowModal(false)}
-                  className="px-4 py-2 rounded"
+                  className="px-6 py-3 rounded-lg text-lg"
                   style={{
                     backgroundColor: 'var(--color-background)',
                     color: 'var(--color-text)',
@@ -308,7 +308,7 @@ export default function DeckDetailPage() {
                 </button>
                 <button
                   type="submit"
-                  className="px-4 py-2 rounded text-white"
+                  className="px-6 py-3 rounded-lg text-white text-lg"
                   style={{
                     background: 'linear-gradient(135deg, #0ea5e9, #06b6d4)'
                   }}
