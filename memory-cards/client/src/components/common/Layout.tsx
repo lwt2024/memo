@@ -8,7 +8,7 @@ interface LayoutProps {
 }
 
 export default function Layout({ children }: LayoutProps) {
-  const { mode, style, toggleMode } = useTheme();
+  const { mode, toggleMode } = useTheme();
 
   return (
     <div 

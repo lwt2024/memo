@@ -19,6 +19,7 @@ export interface Deck {
   createdAt: string;
   cardCount?: number;
   _count?: { cards: number };
+  cards?: Card[];
 }
 
 export interface Card {

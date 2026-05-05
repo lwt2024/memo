@@ -3,12 +3,10 @@ import { useParams, useNavigate } from 'react-router-dom';
 import api from '../services/api';
 import { Card, Deck } from '../types';
 import Layout from '../components/common/Layout';
-import { useTheme } from '../context/ThemeContext';
 
 export default function DeckDetailPage() {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
-  const { mode } = useTheme();
   const [deck, setDeck] = useState<Deck | null>(null);
   const [loading, setLoading] = useState(true);
   const [showModal, setShowModal] = useState(false);
@@ -136,40 +134,41 @@ export default function DeckDetailPage() {
       <div className="mb-6 p-4 rounded-lg" style={{ backgroundColor: 'var(--color-card)', border: '1px solid var(--color-border)' }}>
         <div className="flex flex-wrap gap-4 items-center">
           <div className="flex gap-2 items-center">
-          <span className="font-medium" style={{ color: 'var(--color-text)' }}>排序:</span>
-          <select
-            value={sortBy}
-            onChange={(e) => setSortBy(e.target.value as any)}
-            className="px-3 py-1 rounded border"
-            style={{ backgroundColor: 'var(--color-background)', color: 'var(--color-text)', borderColor: 'var(--color-border)' }}
-          >
-            <option value="createdAt">创建时间</option>
-            <option value="masteryLevel">掌握程度</option>
-          </select>
-          <button
-            onClick={() => setSortOrder(prev => prev === 'asc' ? 'desc' : 'asc')}
-            className="px-2 py-1 rounded border hover:bg-gray-100"
-            style={{ borderColor: 'var(--color-border)', color: 'var(--color-text)' }}
-          >
-            {sortOrder === 'asc' ? '↑' : '↓'}
-          </button>
-        </div>
-        <div className="flex gap-2 items-center">
-          <span className="font-medium" style={{ color: 'var(--color-text)' }}>掌握程度:</span>
-          <select
-            value={masteryFilter}
-            onChange={(e) => setMasteryFilter(e.target.value === '' ? '' : parseInt(e.target.value))}
-            className="px-3 py-1 rounded border"
-            style={{ backgroundColor: 'var(--color-background)', color: 'var(--color-text)', borderColor: 'var(--color-border)' }}
-          >
-            <option value="">全部</option>
-            <option value="0">未学习</option>
-            <option value="1">初识</option>
-            <option value="2">熟悉</option>
-            <option value="3">掌握</option>
-            <option value="4">熟练</option>
-            <option value="5">精通</option>
-          </select>
+            <span className="font-medium" style={{ color: 'var(--color-text)' }}>排序:</span>
+            <select
+              value={sortBy}
+              onChange={(e) => setSortBy(e.target.value as any)}
+              className="px-3 py-1 rounded border"
+              style={{ backgroundColor: 'var(--color-background)', color: 'var(--color-text)', borderColor: 'var(--color-border)' }}
+            >
+              <option value="createdAt">创建时间</option>
+              <option value="masteryLevel">掌握程度</option>
+            </select>
+            <button
+              onClick={() => setSortOrder(prev => prev === 'asc' ? 'desc' : 'asc')}
+              className="px-2 py-1 rounded border hover:bg-gray-100"
+              style={{ borderColor: 'var(--color-border)', color: 'var(--color-text)' }}
+            >
+              {sortOrder === 'asc' ? '↑' : '↓'}
+            </button>
+          </div>
+          <div className="flex gap-2 items-center">
+            <span className="font-medium" style={{ color: 'var(--color-text)' }}>掌握程度:</span>
+            <select
+              value={masteryFilter}
+              onChange={(e) => setMasteryFilter(e.target.value === '' ? '' : parseInt(e.target.value))}
+              className="px-3 py-1 rounded border"
+              style={{ backgroundColor: 'var(--color-background)', color: 'var(--color-text)', borderColor: 'var(--color-border)' }}
+            >
+              <option value="">全部</option>
+              <option value="0">未学习</option>
+              <option value="1">初识</option>
+              <option value="2">熟悉</option>
+              <option value="3">掌握</option>
+              <option value="4">熟练</option>
+              <option value="5">精通</option>
+            </select>
+          </div>
         </div>
       </div>
 
@@ -181,15 +180,14 @@ export default function DeckDetailPage() {
             <p>还没有卡片，添加第一张吧！</p>
           </div>
         ) : (
-          <div className="divide-y" style={{ borderColor: 'var(--color-border)' }}>
+          <div>
             {deck.cards?.map((card, index) => (
               <div
                 key={card.id}
                 className="p-4 cursor-pointer transition-colors"
                 onClick={() => toggleCard(card.id)}
                 style={{
-                  borderBottomColor: 'var(--color-border)',
-                  borderBottomWidth: '1px'
+                  borderBottom: '1px solid var(--color-border)'
                 }}
               >
                 <div className="flex items-start gap-4">

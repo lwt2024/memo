@@ -3,7 +3,6 @@ import { useParams, useNavigate } from 'react-router-dom';
 import api from '../services/api';
 import { Card } from '../types';
 import Layout from '../components/common/Layout';
-import { useTheme } from '../context/ThemeContext';
 
 interface ReviewCard extends Card {
   deck?: { name: string };
@@ -34,7 +33,6 @@ const isCodeContent = (text: string): boolean => {
 export default function ReviewPage() {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
-  const { mode } = useTheme();
   const [cards, setCards] = useState<ReviewCard[]>([]);
   const [currentIndex, setCurrentIndex] = useState(0);
   const [isFlipped, setIsFlipped] = useState(false);

@@ -1,5 +1,4 @@
 import { Link, useLocation } from 'react-router-dom';
-import { useTheme } from '../../context/ThemeContext';
 
 interface User {
   nickname: string;
