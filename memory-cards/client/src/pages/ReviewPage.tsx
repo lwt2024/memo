@@ -147,7 +147,7 @@ export default function ReviewPage() {
           className={`perspective-1000 ${isAnimating ? 'animate-pulse' : ''}`}
         >
           <div
-            className={`relative w-full h-[500px] cursor-pointer transform-style-preserve-3d transition-transform duration-600 ${
+            className={`relative w-full h-[500px] cursor-pointer transform-style-preserve-3d transition-transform duration-1000 ${
               isFlipped ? 'rotate-y-180' : ''
             }`}
             onClick={handleFlip}
