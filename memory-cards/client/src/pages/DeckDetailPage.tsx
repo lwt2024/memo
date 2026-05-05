@@ -28,7 +28,7 @@ export default function DeckDetailPage() {
     if (!searchQuery) return true;
     const query = searchQuery.toLowerCase();
     return (
-      card.front.toLowerCase().includes(query) || 
+      card.front.toLowerCase().includes(query) ||
       card.back.toLowerCase().includes(query)
     );
   });
@@ -234,7 +234,8 @@ export default function DeckDetailPage() {
                 className="p-4 cursor-pointer transition-colors"
                 onClick={() => toggleCard(card.id)}
                 style={{
-                  borderBottom: '1px solid var(--color-border)'
+                  borderBottom: '1px solid var(--color-border)',
+                  marginBottom: index < (filteredCards?.length || 0) - 1 ? '0.5rem' : '0'
                 }}
               >
                 <div className="flex items-start gap-4">
@@ -319,7 +320,21 @@ export default function DeckDetailPage() {
                   style={{
                     backgroundColor: 'var(--color-background)',
                     color: 'var(--color-text)',
-                    borderColor: 'var(--color-border)'
+                    borderColor: 'var(--color-border)',
+                    whiteSpace: 'pre-wrap'
+                  }}
+                  onKeyDown={(e) => {
+                    if (e.key === 'Enter' && !e.shiftKey) {
+                      e.preventDefault();
+                      const target = e.target as HTMLTextAreaElement;
+                      const start = target.selectionStart;
+                      const end = target.selectionEnd;
+                      const newValue = cardFront.substring(0, start) + '\n' + cardFront.substring(end);
+                      setCardFront(newValue);
+                      setTimeout(() => {
+                        target.selectionStart = target.selectionEnd = start + 1;
+                      }, 0);
+                    }
                   }}
                 />
               </div>
@@ -336,7 +351,21 @@ export default function DeckDetailPage() {
                   style={{
                     backgroundColor: 'var(--color-background)',
                     color: 'var(--color-text)',
-                    borderColor: 'var(--color-border)'
+                    borderColor: 'var(--color-border)',
+                    whiteSpace: 'pre-wrap'
+                  }}
+                  onKeyDown={(e) => {
+                    if (e.key === 'Enter' && !e.shiftKey) {
+                      e.preventDefault();
+                      const target = e.target as HTMLTextAreaElement;
+                      const start = target.selectionStart;
+                      const end = target.selectionEnd;
+                      const newValue = cardBack.substring(0, start) + '\n' + cardBack.substring(end);
+                      setCardBack(newValue);
+                      setTimeout(() => {
+                        target.selectionStart = target.selectionEnd = start + 1;
+                      }, 0);
+                    }
                   }}
                 />
               </div>
