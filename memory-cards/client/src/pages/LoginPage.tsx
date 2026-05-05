@@ -20,7 +20,18 @@ function LoginPage() {
   useEffect(() => {
     const saved = localStorage.getItem('emailHistory');
     if (saved) {
-      setEmailHistory(JSON.parse(saved));
+      try {
+        const parsed = JSON.parse(saved);
+        if (Array.isArray(parsed)) {
+          setEmailHistory(parsed);
+        }
+      } catch (e) {
+        console.error('Failed to parse email history:', e);
+      }
+    } else {
+      const demoEmails = ['demo@example.com', 'test@memory.com', 'user@study.com'];
+      localStorage.setItem('emailHistory', JSON.stringify(demoEmails));
+      setEmailHistory(demoEmails);
     }
   }, []);
 
