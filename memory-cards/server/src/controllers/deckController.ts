@@ -23,7 +23,20 @@ export async function getDecks(req: AuthRequest, res: Response) {
 
 export async function getDeck(req: AuthRequest, res: Response) {
   try {
-    const deck = await deckService.getDeckById(req.params.id, req.userId!);
+    const { sortBy, sortOrder, masteryLevel } = req.query;
+    const filters: any = {};
+    
+    if (sortBy === 'createdAt' || sortBy === 'masteryLevel') {
+      filters.sortBy = sortBy;
+    }
+    if (sortOrder === 'asc' || sortOrder === 'desc') {
+      filters.sortOrder = sortOrder;
+    }
+    if (masteryLevel !== undefined && masteryLevel !== null && masteryLevel !== '') {
+      filters.masteryLevel = parseInt(masteryLevel as string);
+    }
+
+    const deck = await deckService.getDeckById(req.params.id, req.userId!, filters);
     if (!deck) {
       return res.status(404).json({ error: '卡片组不存在' });
     }

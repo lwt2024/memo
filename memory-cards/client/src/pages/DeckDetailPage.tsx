@@ -10,29 +10,30 @@ export default function DeckDetailPage() {
   const navigate = useNavigate();
   const { mode } = useTheme();
   const [deck, setDeck] = useState<Deck | null>(null);
-  const [cards, setCards] = useState<Card[]>([]);
   const [loading, setLoading] = useState(true);
   const [showModal, setShowModal] = useState(false);
   const [editingCard, setEditingCard] = useState<Card | null>(null);
   const [cardFront, setCardFront] = useState('');
   const [cardBack, setCardBack] = useState('');
   const [expandedCardId, setExpandedCardId] = useState<string | null>(null);
-
-  const toggleCard = (cardId: string) => {
-    setExpandedCardId(prev => prev === cardId ? null : cardId);
-  };
+  const [sortBy, setSortBy] = useState<'createdAt' | 'masteryLevel'>('createdAt');
+  const [sortOrder, setSortOrder] = useState<'asc' | 'desc'>('asc');
+  const [masteryFilter, setMasteryFilter] = useState<number | ''>('');
 
   useEffect(() => {
     if (id) fetchDeckData();
-  }, [id]);
+  }, [id, sortBy, sortOrder, masteryFilter]);
 
   const fetchDeckData = async () => {
     try {
-      const res = await api.get(`/decks/${id}`);
+      const params: any = { sortBy, sortOrder };
+      if (masteryFilter !== '') {
+        params.masteryLevel = masteryFilter;
+      }
+      const res = await api.get(`/decks/${id}`, { params });
       setDeck(res.data);
-      setCards(res.data.cards || []);
-    } catch (err) {
-      console.error('获取卡片组失败', err);
+    } catch (error) {
+      console.error('获取卡片组失败', error);
       navigate('/decks');
     } finally {
       setLoading(false);
@@ -63,8 +64,8 @@ export default function DeckDetailPage() {
       }
       setShowModal(false);
       fetchDeckData();
-    } catch (err) {
-      console.error('保存卡片失败', err);
+    } catch (error) {
+      console.error('保存卡片失败', error);
     }
   };
 
@@ -73,35 +74,57 @@ export default function DeckDetailPage() {
     try {
       await api.delete(`/cards/${cardId}`);
       fetchDeckData();
-    } catch (err) {
-      console.error('删除卡片失败', err);
+    } catch (error) {
+      console.error('删除卡片失败', error);
     }
   };
 
-  if (loading) return <Layout><div className="text-center py-10">加载中...</div></Layout>;
+  const toggleCard = (cardId: string) => {
+    setExpandedCardId(prev => prev === cardId ? null : cardId);
+  };
+
+  const formatDate = (dateString: string) => {
+    const date = new Date(dateString);
+    return date.toLocaleDateString('zh-CN', {
+      year: 'numeric', month: '2-digit', day: '2-digit' });
+  };
+
+  const getMasteryLevelColor = (level: number) => {
+    const colors = ['#ef4444', '#f97316', '#eab308', '#22c55e', '#3b82f6', '#8b5cf6'];
+    return colors[Math.min(level, colors.length - 1)];
+  };
+
+  const getMasteryLabel = (level: number) => {
+    const labels = ['未学习', '初识', '熟悉', '掌握', '熟练', '精通'];
+    return labels[Math.min(level, labels.length - 1)];
+  };
+
+  if (loading) return <Layout><div className="text-center py-10" style={{ color: 'var(--color-text)' }}>加载中...</div></Layout>;
   if (!deck) return null;
 
   return (
     <Layout>
       <div className="mb-6">
-        <button onClick={() => navigate('/decks')} className="text-blue-500 hover:underline mb-4">
+        <button onClick={() => navigate('/decks')} className="mb-4" style={{ color: 'var(--color-primary)' }}>
           ← 返回卡片组列表
         </button>
         <div className="flex flex-col md:flex-row md:justify-between md:items-start gap-4">
           <div>
-            <h2 className="text-2xl font-bold">{deck.name}</h2>
-            <p className="text-gray-500">{deck.description || '暂无描述'}</p>
+            <h2 className="text-2xl font-bold" style={{ color: 'var(--color-text)' }}>{deck.name}</h2>
+            <p style={{ color: 'var(--color-text-secondary)' }}>{deck.description || '暂无描述'}</p>
           </div>
           <div className="flex flex-wrap gap-3">
             <button
               onClick={() => navigate(`/decks/${id}/review`)}
-              className="bg-green-500 text-white px-4 py-2 rounded-lg hover:bg-green-600"
+              className="px-4 py-2 rounded-lg text-white"
+              style={{ background: 'linear-gradient(135deg, #22c55e, #16a34a)' }}
             >
               开始复习
             </button>
             <button
               onClick={openCreateModal}
-              className="bg-blue-500 text-white px-4 py-2 rounded-lg hover:bg-blue-600"
+              className="px-4 py-2 rounded-lg text-white"
+              style={{ background: 'linear-gradient(135deg, #0ea5e9, #06b6d4)' }}
             >
               + 添加卡片
             </button>
@@ -109,45 +132,120 @@ export default function DeckDetailPage() {
         </div>
       </div>
 
+      {/* 筛选和排序 */}
+      <div className="mb-6 p-4 rounded-lg" style={{ backgroundColor: 'var(--color-card)', border: '1px solid var(--color-border)' }}>
+        <div className="flex flex-wrap gap-4 items-center">
+          <div className="flex gap-2 items-center">
+          <span className="font-medium" style={{ color: 'var(--color-text)' }}>排序:</span>
+          <select
+            value={sortBy}
+            onChange={(e) => setSortBy(e.target.value as any)}
+            className="px-3 py-1 rounded border"
+            style={{ backgroundColor: 'var(--color-background)', color: 'var(--color-text)', borderColor: 'var(--color-border)' }}
+          >
+            <option value="createdAt">创建时间</option>
+            <option value="masteryLevel">掌握程度</option>
+          </select>
+          <button
+            onClick={() => setSortOrder(prev => prev === 'asc' ? 'desc' : 'asc')}
+            className="px-2 py-1 rounded border hover:bg-gray-100"
+            style={{ borderColor: 'var(--color-border)', color: 'var(--color-text)' }}
+          >
+            {sortOrder === 'asc' ? '↑' : '↓'}
+          </button>
+        </div>
+        <div className="flex gap-2 items-center">
+          <span className="font-medium" style={{ color: 'var(--color-text)' }}>掌握程度:</span>
+          <select
+            value={masteryFilter}
+            onChange={(e) => setMasteryFilter(e.target.value === '' ? '' : parseInt(e.target.value))}
+            className="px-3 py-1 rounded border"
+            style={{ backgroundColor: 'var(--color-background)', color: 'var(--color-text)', borderColor: 'var(--color-border)' }}
+          >
+            <option value="">全部</option>
+            <option value="0">未学习</option>
+            <option value="1">初识</option>
+            <option value="2">熟悉</option>
+            <option value="3">掌握</option>
+            <option value="4">熟练</option>
+            <option value="5">精通</option>
+          </select>
+        </div>
+      </div>
+
+      {/* 卡片列表 */}
       <div className="rounded-lg shadow" style={{ backgroundColor: 'var(--color-card)' }}>
-        {cards.length === 0 ? (
+        {deck.cards?.length === 0 ? (
           <div className="text-center py-10" style={{ color: 'var(--color-text-secondary)' }}>
             <p className="text-4xl mb-4">📝</p>
             <p>还没有卡片，添加第一张吧！</p>
           </div>
         ) : (
           <div className="divide-y" style={{ borderColor: 'var(--color-border)' }}>
-            {cards.map((card, index) => (
-              <div 
-                key={card.id} 
-                className="p-4 flex items-start gap-4 cursor-pointer transition-colors"
-                style={{ 
-                  borderBottomColor: 'var(--color-border)',
-                }}
+            {deck.cards?.map((card, index) => (
+              <div
+                key={card.id}
+                className="p-4 cursor-pointer transition-colors"
                 onClick={() => toggleCard(card.id)}
+                style={{
+                  borderBottomColor: 'var(--color-border)',
+                  borderBottomWidth: '1px'
+                }}
               >
-                <span className="font-medium min-w-[2rem] flex-shrink-0" style={{ color: 'var(--color-text-secondary)' }}>
-                  {index + 1}
-                </span>
-                <div className="flex-1 min-w-0">
-                  <p className="font-medium whitespace-pre-wrap" style={{ color: 'var(--color-text)' }}>
-                    {card.front}
-                  </p>
-                  {expandedCardId === card.id && (
-                    <div className="mt-3 pt-3 border-t" style={{ borderColor: 'var(--color-border)' }}>
-                      <p className="whitespace-pre-wrap font-mono text-sm" style={{ color: 'var(--color-primary)' }}>
-                        {card.back}
-                      </p>
+                <div className="flex items-start gap-4">
+                  <span className="font-medium min-w-[2rem] flex-shrink-0" style={{ color: 'var(--color-text-secondary)' }}>
+                    {index + 1}
+                  </span>
+                  <div className="flex-1 min-w-0">
+                    <p className="font-medium whitespace-pre-wrap" style={{ color: 'var(--color-text)' }}>
+                      {card.front}
+                    </p>
+                    {/* 卡片元数据 */}
+                    <div className="flex flex-wrap gap-2 mt-2 items-center text-sm">
+                      <span style={{ color: 'var(--color-text-secondary)' }}>
+                        📅 {formatDate(card.createdAt)}
+                      </span>
+                      <span style={{ color: 'var(--color-text-secondary)' }}>
+                        🔄 复习 {card.reviewRecord?.reviewCount || 0} 次
+                      </span>
+                      <span
+                        className="px-2 py-0.5 rounded-full text-xs font-medium"
+                        style={{
+                          backgroundColor: getMasteryLevelColor(card.reviewRecord?.masteryLevel || 0),
+                          color: 'white'
+                        }}
+                      >
+                        {getMasteryLabel(card.reviewRecord?.masteryLevel || 0)}
+                      </span>
                     </div>
-                  )}
-                </div>
-                <div className="flex gap-2 flex-shrink-0" onClick={(e) => e.stopPropagation()}>
-                  <button onClick={() => openEditModal(card)} className="hover:underline" style={{ color: 'var(--color-primary)' }}>
-                    编辑
-                  </button>
-                  <button onClick={() => deleteCard(card.id)} className="hover:underline" style={{ color: '#ef4444' }}>
-                    删除
-                  </button>
+                    {/* 展开的背面 */}
+                    {expandedCardId === card.id && (
+                      <div className="mt-3 pt-3 border-t" style={{ borderColor: 'var(--color-border)' }}>
+                        <p
+                          className="whitespace-pre-wrap font-mono text-sm"
+                          style={{ color: 'var(--color-primary)' }}
+                        >
+                          {card.back}
+                        </p>
+                      </div>
+                    )}
+                  </div>
+                  <div className="flex gap-2 flex-shrink-0" onClick={(e) => e.stopPropagation()}>
+                    <button
+                      onClick={() => openEditModal(card)}
+                      className="hover:underline"
+                      style={{ color: 'var(--color-primary)' }}
+                    >
+                      编辑
+                    </button>
+                    <button
+                      onClick={() => deleteCard(card.id)}
+                      className="hover:underline"
+                      style={{ color: '#ef4444' }}
+                    >
+                      删除
+                    </button>
+                  </div>
                 </div>
               </div>
             ))}
@@ -155,40 +253,68 @@ export default function DeckDetailPage() {
         )}
       </div>
 
+      {/* 添加/编辑模态框 */}
       {showModal && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
-          <div className="bg-white rounded-lg p-6 w-full max-w-md">
-            <h3 className="text-xl font-bold mb-4">{editingCard ? '编辑卡片' : '添加卡片'}</h3>
+          <div className="rounded-lg p-6 w-full max-w-md" style={{ backgroundColor: 'var(--color-card)' }}>
+            <h3 className="text-xl font-bold mb-4" style={{ color: 'var(--color-text)' }}>
+              {editingCard ? '编辑卡片' : '添加卡片'}
+            </h3>
             <form onSubmit={saveCard}>
               <div className="mb-4">
-                <label className="block text-gray-700 mb-2">正面（问题）</label>
+                <label className="block mb-2" style={{ color: 'var(--color-text)' }}>
+                  正面（问题）
+                </label>
                 <textarea
                   value={cardFront}
                   onChange={(e) => setCardFront(e.target.value)}
-                  className="w-full px-4 py-2 border rounded focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  className="w-full px-4 py-2 rounded border"
                   rows={3}
                   required
+                  style={{
+                    backgroundColor: 'var(--color-background)',
+                    color: 'var(--color-text)',
+                    borderColor: 'var(--color-border)'
+                  }}
                 />
               </div>
               <div className="mb-4">
-                <label className="block text-gray-700 mb-2">背面（答案）</label>
+                <label className="block mb-2" style={{ color: 'var(--color-text)' }}>
+                  背面（答案）
+                </label>
                 <textarea
                   value={cardBack}
                   onChange={(e) => setCardBack(e.target.value)}
-                  className="w-full px-4 py-2 border rounded focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  className="w-full px-4 py-2 rounded border"
                   rows={3}
                   required
+                  style={{
+                    backgroundColor: 'var(--color-background)',
+                    color: 'var(--color-text)',
+                    borderColor: 'var(--color-border)'
+                  }}
                 />
               </div>
               <div className="flex justify-end gap-3">
                 <button
                   type="button"
                   onClick={() => setShowModal(false)}
-                  className="px-4 py-2 text-gray-600 hover:bg-gray-100 rounded"
+                  className="px-4 py-2 rounded"
+                  style={{
+                    backgroundColor: 'var(--color-background)',
+                    color: 'var(--color-text)',
+                    border: '1px solid var(--color-border)'
+                  }}
                 >
                   取消
                 </button>
-                <button type="submit" className="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600">
+                <button
+                  type="submit"
+                  className="px-4 py-2 rounded text-white"
+                  style={{
+                    background: 'linear-gradient(135deg, #0ea5e9, #06b6d4)'
+                  }}
+                >
                   保存
                 </button>
               </div>

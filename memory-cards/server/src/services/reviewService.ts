@@ -96,6 +96,22 @@ export async function submitReview(cardId: string, userId: string, easeLevel: nu
   const existingRecord = card.reviewRecords[0];
   const reviewCount = existingRecord ? existingRecord.reviewCount + 1 : 1;
   const nextReviewAt = calculateNextReview(easeLevel, reviewCount);
+  
+  // 计算掌握程度：根据 easeLevel 调整
+  let masteryLevel = existingRecord ? existingRecord.masteryLevel : 0;
+  
+  if (easeLevel === 1) {
+    // 忘记了，降低掌握程度
+    masteryLevel = Math.max(0, masteryLevel - 1);
+  } else if (easeLevel >= 4) {
+    // 很熟悉，提高掌握程度
+    masteryLevel = Math.min(5, masteryLevel + 1);
+  } else if (easeLevel === 3 && masteryLevel < 3) {
+    // 一般，适当提高掌握程度
+    masteryLevel = Math.min(5, masteryLevel + 0.5);
+  }
+  // 确保是整数
+  masteryLevel = Math.round(masteryLevel);
 
   if (existingRecord) {
     return prisma.reviewRecord.update({
@@ -105,6 +121,7 @@ export async function submitReview(cardId: string, userId: string, easeLevel: nu
         lastReviewAt: new Date(),
         nextReviewAt,
         reviewCount,
+        masteryLevel,
       },
     });
   } else {
@@ -116,6 +133,7 @@ export async function submitReview(cardId: string, userId: string, easeLevel: nu
         lastReviewAt: new Date(),
         nextReviewAt,
         reviewCount,
+        masteryLevel,
       },
     });
   }

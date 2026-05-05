@@ -92,8 +92,8 @@ export default function ReviewPage() {
       <Layout>
         <div className="flex items-center justify-center min-h-96">
           <div className="text-center">
-            <div className="w-16 h-16 border-4 border-blue-500 border-t-transparent rounded-full animate-spin mx-auto mb-4"></div>
-            <p className="text-gray-500">加载中...</p>
+            <div className="w-16 h-16 border-4 border-t-transparent rounded-full animate-spin mx-auto mb-4" style={{ borderColor: 'var(--color-primary)', borderTopColor: 'transparent' }}></div>
+            <p style={{ color: 'var(--color-text-secondary)' }}>加载中...</p>
           </div>
         </div>
       </Layout>
@@ -105,13 +105,16 @@ export default function ReviewPage() {
       <Layout>
         <div className="text-center py-20">
           <div className="text-8xl mb-6">🎉</div>
-          <h2 className="text-3xl font-bold mb-4 bg-gradient-to-r from-blue-500 to-purple-500 bg-clip-text text-transparent">
+          <h2 className="text-3xl font-bold mb-4" style={{ color: 'var(--color-text)' }}>
             太棒了！
           </h2>
-          <p className="text-gray-500 text-lg mb-8">今日没有待复习的卡片</p>
+          <p className="text-lg mb-8" style={{ color: 'var(--color-text-secondary)' }}>
+            今日没有待复习的卡片
+          </p>
           <button
             onClick={() => navigate(id ? `/decks/${id}` : '/')}
-            className="bg-gradient-to-r from-blue-500 to-purple-500 text-white px-8 py-3 rounded-full hover:shadow-lg hover:scale-105 transition-all"
+            className="text-white px-8 py-3 rounded-full hover:shadow-lg hover:scale-105 transition-all"
+            style={{ background: 'var(--color-button-background)' }}
           >
             返回
           </button>
@@ -137,25 +140,29 @@ export default function ReviewPage() {
         <div className="mb-6">
           <button 
             onClick={() => navigate(id ? `/decks/${id}` : '/')} 
-            className="text-gray-500 hover:text-gray-700 transition-colors flex items-center gap-2"
+            className="transition-colors flex items-center gap-2"
+            style={{ color: 'var(--color-text-secondary)' }}
           >
             <span>←</span> 返回
           </button>
         </div>
 
         <div className="flex justify-between items-center mb-4">
-          <span className="text-gray-600 bg-gray-100 px-3 py-1 rounded-full text-sm">
+          <span className="px-3 py-1 rounded-full text-sm" style={{ backgroundColor: 'var(--color-background-secondary)', color: 'var(--color-text-secondary)' }}>
             {currentCard.deck?.name || '复习'}
           </span>
-          <span className="text-gray-600 font-medium">
+          <span className="font-medium" style={{ color: 'var(--color-text)' }}>
             {currentIndex + 1} / {cards.length}
           </span>
         </div>
 
-        <div className="mb-4 bg-gray-200 rounded-full h-3 overflow-hidden">
+        <div className="mb-4 rounded-full h-3 overflow-hidden" style={{ backgroundColor: 'var(--color-background-secondary)' }}>
           <div
-            className="bg-gradient-to-r from-blue-500 to-purple-500 h-full rounded-full transition-all duration-500"
-            style={{ width: `${progress}%` }}
+            className="h-full rounded-full transition-all duration-500"
+            style={{
+              width: `${progress}%`,
+              background: 'var(--color-button-background)'
+            }}
           />
         </div>
 
@@ -164,36 +171,51 @@ export default function ReviewPage() {
           onClick={handleFlip}
         >
           <div
-          className={`rounded-2xl shadow-2xl p-8 min-h-80 flex flex-col items-center justify-center transition-all duration-500 transform-style-preserve-3d ${
-            isFlipped ? 'rotate-y-180' : ''
-          } hover:shadow-3xl`}
-          style={{ backgroundColor: 'var(--color-card)' }}
-        >
-          <div className="absolute inset-0 backface-hidden p-8 flex flex-col items-center justify-center">
-            <p className="text-sm mb-4 text-center" style={{ color: 'var(--color-text-secondary)' }}>问题</p>
-            <div className={`text-center leading-relaxed ${isCodeContent(currentCard.front) ? 'font-mono text-sm whitespace-pre-wrap max-h-60 overflow-auto' : 'text-xl'}`} style={{ color: 'var(--color-text)' }}>
-              {currentCard.front}
+            className={`rounded-2xl shadow-2xl p-8 min-h-80 flex flex-col items-center justify-center transition-all duration-500 transform-style-preserve-3d ${
+              isFlipped ? 'rotate-y-180' : ''
+            } hover:shadow-3xl`}
+            style={{ backgroundColor: 'var(--color-card)' }}
+          >
+            <div className="absolute inset-0 backface-hidden p-8 flex flex-col items-center justify-center">
+              <p className="text-sm mb-4 text-center" style={{ color: 'var(--color-text-secondary)' }}>
+                问题
+              </p>
+              <div
+                className={`text-center leading-relaxed ${isCodeContent(currentCard.front) ? 'font-mono text-sm whitespace-pre-wrap max-h-60 overflow-auto' : 'text-xl'}`}
+                style={{ color: 'var(--color-text)' }}
+              >
+                {currentCard.front}
+              </div>
+              <p className="text-sm mt-6 text-center" style={{ color: 'var(--color-text-secondary)' }}>
+                点击翻转查看答案
+              </p>
             </div>
-            <p className="text-sm mt-6 text-center" style={{ color: 'var(--color-text-secondary)' }}>点击翻转查看答案</p>
-          </div>
-          <div className="absolute inset-0 backface-hidden rotate-y-180 p-8 flex flex-col items-center justify-center">
-            <p className="text-sm mb-4 text-center" style={{ color: 'var(--color-text-secondary)' }}>答案</p>
-            <div className={`text-center leading-relaxed ${isCodeContent(currentCard.back) ? 'font-mono text-sm whitespace-pre-wrap max-h-60 overflow-auto' : 'text-xl'}`} style={{ color: 'var(--color-primary)' }}>
-              {currentCard.back}
+            <div className="absolute inset-0 backface-hidden rotate-y-180 p-8 flex flex-col items-center justify-center">
+              <p className="text-sm mb-4 text-center" style={{ color: 'var(--color-text-secondary)' }}>
+                答案
+              </p>
+              <div
+                className={`text-center leading-relaxed ${isCodeContent(currentCard.back) ? 'font-mono text-sm whitespace-pre-wrap max-h-60 overflow-auto' : 'text-xl'}`}
+                style={{ color: 'var(--color-primary)' }}
+              >
+                {currentCard.back}
+              </div>
             </div>
           </div>
-        </div>
         </div>
 
         {isFlipped && (
           <div className="mt-8 animate-fade-in">
-            <p className="text-center text-gray-600 mb-4 font-medium">你记得怎么样？</p>
+            <p className="text-center mb-4 font-medium" style={{ color: 'var(--color-text)' }}>
+              你记得怎么样？
+            </p>
             <div className="grid grid-cols-5 gap-2">
               {ratingButtons.map((btn) => (
                 <button
                   key={btn.level}
                   onClick={() => handleRating(btn.level)}
-                  className={`bg-gradient-to-br ${btn.color} text-white py-4 rounded-xl hover:scale-105 hover:shadow-lg transition-all flex flex-col items-center gap-1`}
+                  className="text-white py-4 rounded-xl hover:scale-105 hover:shadow-lg transition-all flex flex-col items-center gap-1"
+                  style={{ background: `var(${btn.colorVar})` }}
                 >
                   <span className="text-2xl">{btn.emoji}</span>
                   <span className="text-xs font-medium">{btn.label}</span>
@@ -207,7 +229,8 @@ export default function ReviewPage() {
           <div className="mt-8 text-center">
             <button
               onClick={handleFlip}
-              className="bg-gradient-to-r from-blue-500 to-purple-500 text-white px-8 py-3 rounded-full hover:shadow-lg hover:scale-105 transition-all"
+              className="text-white px-8 py-3 rounded-full hover:shadow-lg hover:scale-105 transition-all"
+              style={{ background: 'var(--color-button-background)' }}
             >
               翻转卡片
             </button>

@@ -29,6 +29,7 @@ export interface Card {
   cardType: 'text' | 'rich_text' | 'image' | 'audio';
   mediaUrls?: string[];
   createdAt: string;
+  reviewRecord?: ReviewRecord;
 }
 
 export interface ReviewRecord {
@@ -39,4 +40,6 @@ export interface ReviewRecord {
   nextReviewAt?: string;
   lastReviewAt?: string;
   reviewCount: number;
+  masteryLevel: number;
+  createdAt: string;
 }
