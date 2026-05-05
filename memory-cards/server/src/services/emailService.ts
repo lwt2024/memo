@@ -1,21 +1,38 @@
 import nodemailer from 'nodemailer';
 
-const transporter = nodemailer.createTransport({
-  service: 'Gmail',
-  auth: {
-    user: process.env.EMAIL_USER || 'memorycards.dev@gmail.com',
-    pass: process.env.EMAIL_PASS || 'testpassword123',
-  },
-});
+let transporter: nodemailer.Transporter;
+
+if (process.env.USE_REAL_EMAIL === 'true') {
+  transporter = nodemailer.createTransport({
+    host: 'smtp.ethereal.email',
+    port: 587,
+    secure: false,
+    auth: {
+      user: 'delphia.farrell@ethereal.email',
+      pass: 'xWn9cT6wY4mP2qR8',
+    },
+  });
+} else {
+  transporter = nodemailer.createTransport({
+    host: 'localhost',
+    port: 1025,
+    secure: false,
+  });
+}
 
 export async function sendEmail(to: string, subject: string, html: string) {
   try {
     const info = await transporter.sendMail({
-      from: '"记忆卡片" <memorycards.dev@gmail.com>',
+      from: '"记忆卡片" <no-reply@memorycards.dev>',
       to,
       subject,
       html,
     });
+
+    if (process.env.USE_REAL_EMAIL === 'true') {
+      console.log('预览邮件:', nodemailer.getTestMessageUrl(info));
+    }
+
     console.log('邮件发送成功:', info.messageId);
     return info;
   } catch (error) {
