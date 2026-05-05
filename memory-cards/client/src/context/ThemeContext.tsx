@@ -27,6 +27,11 @@ const themeStyles = {
       textSecondary: '#64748b',
       border: '#e2e8f0',
       gradient: 'from-sky-500 to-cyan-600',
+      statDue: 'linear-gradient(135deg, #ef4444, #f97316)',
+      statLearning: 'linear-gradient(135deg, #3b82f6, #06b6d4)',
+      statMastered: 'linear-gradient(135deg, #22c55e, #10b981)',
+      statNew: 'linear-gradient(135deg, #a855f7, #ec4899)',
+      completion: 'linear-gradient(135deg, #22c55e, #10b981)',
     },
     dark: {
       primary: '#38bdf8',
@@ -39,6 +44,11 @@ const themeStyles = {
       textSecondary: '#94a3b8',
       border: '#334155',
       gradient: 'from-sky-400 to-cyan-500',
+      statDue: 'linear-gradient(135deg, #dc2626, #ea580c)',
+      statLearning: 'linear-gradient(135deg, #2563eb, #0891b2)',
+      statMastered: 'linear-gradient(135deg, #16a34a, #059669)',
+      statNew: 'linear-gradient(135deg, #9333ea, #db2777)',
+      completion: 'linear-gradient(135deg, #16a34a, #059669)',
     },
   },
   morandi: {
@@ -55,6 +65,11 @@ const themeStyles = {
       textSecondary: '#7a7572',
       border: '#d9d5d0',
       gradient: 'from-stone-400 to-stone-500',
+      statDue: 'linear-gradient(135deg, #c78d8d, #d4a6a6)',
+      statLearning: 'linear-gradient(135deg, #8d9cc7, #a6b5d4)',
+      statMastered: 'linear-gradient(135deg, #8dc7a0, #a6d4b7)',
+      statNew: 'linear-gradient(135deg, #b58dc7, #d4a6e0)',
+      completion: 'linear-gradient(135deg, #8dc7a0, #a6d4b7)',
     },
     dark: {
       primary: '#a89a8c',
@@ -67,6 +82,11 @@ const themeStyles = {
       textSecondary: '#a8a29e',
       border: '#44403c',
       gradient: 'from-stone-400 to-stone-500',
+      statDue: 'linear-gradient(135deg, #a86666, #b87777)',
+      statLearning: 'linear-gradient(135deg, #6677a8, #7788b8)',
+      statMastered: 'linear-gradient(135deg, #66a87f, #77b88f)',
+      statNew: 'linear-gradient(135deg, #8866a8, #9977b8)',
+      completion: 'linear-gradient(135deg, #66a87f, #77b88f)',
     },
   },
   vibrant: {
@@ -83,6 +103,11 @@ const themeStyles = {
       textSecondary: '#78716c',
       border: '#fde68a',
       gradient: 'from-orange-500 to-amber-500',
+      statDue: 'linear-gradient(135deg, #dc2626, #f97316)',
+      statLearning: 'linear-gradient(135deg, #2563eb, #3b82f6)',
+      statMastered: 'linear-gradient(135deg, #16a34a, #22c55e)',
+      statNew: 'linear-gradient(135deg, #9333ea, #a855f7)',
+      completion: 'linear-gradient(135deg, #16a34a, #22c55e)',
     },
     dark: {
       primary: '#fb923c',
@@ -95,6 +120,11 @@ const themeStyles = {
       textSecondary: '#a8a29e',
       border: '#44403c',
       gradient: 'from-orange-400 to-amber-400',
+      statDue: 'linear-gradient(135deg, #b91c1c, #ea580c)',
+      statLearning: 'linear-gradient(135deg, #1d4ed8, #2563eb)',
+      statMastered: 'linear-gradient(135deg, #15803d, #16a34a)',
+      statNew: 'linear-gradient(135deg, #7e22ce, #9333ea)',
+      completion: 'linear-gradient(135deg, #15803d, #16a34a)',
     },
   },
   minimal: {
@@ -111,6 +141,11 @@ const themeStyles = {
       textSecondary: '#71717a',
       border: '#e4e4e7',
       gradient: 'from-zinc-700 to-zinc-800',
+      statDue: 'linear-gradient(135deg, #52525b, #71717a)',
+      statLearning: 'linear-gradient(135deg, #3f3f46, #52525b)',
+      statMastered: 'linear-gradient(135deg, #27272a, #3f3f46)',
+      statNew: 'linear-gradient(135deg, #18181b, #27272a)',
+      completion: 'linear-gradient(135deg, #27272a, #3f3f46)',
     },
     dark: {
       primary: '#fafafa',
@@ -123,6 +158,11 @@ const themeStyles = {
       textSecondary: '#a1a1aa',
       border: '#27272a',
       gradient: 'from-zinc-400 to-zinc-500',
+      statDue: 'linear-gradient(135deg, #d4d4d8, #e4e4e7)',
+      statLearning: 'linear-gradient(135deg, #a1a1aa, #d4d4d8)',
+      statMastered: 'linear-gradient(135deg, #71717a, #a1a1aa)',
+      statNew: 'linear-gradient(135deg, #52525b, #71717a)',
+      completion: 'linear-gradient(135deg, #71717a, #a1a1aa)',
     },
   },
 };
@@ -155,6 +195,11 @@ export function ThemeProvider({ children }: { children: ReactNode }) {
     root.style.setProperty('--color-text', theme.text);
     root.style.setProperty('--color-text-secondary', theme.textSecondary);
     root.style.setProperty('--color-border', theme.border);
+    root.style.setProperty('--color-stat-due', theme.statDue);
+    root.style.setProperty('--color-stat-learning', theme.statLearning);
+    root.style.setProperty('--color-stat-mastered', theme.statMastered);
+    root.style.setProperty('--color-stat-new', theme.statNew);
+    root.style.setProperty('--color-completion', theme.completion);
     
     if (mode === 'dark') {
       root.classList.add('dark');

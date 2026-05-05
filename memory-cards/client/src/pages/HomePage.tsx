@@ -47,10 +47,10 @@ export default function HomePage() {
   }
 
   const statCards = [
-    { label: '待复习', value: stats?.dueCount || 0, gradient: 'from-red-500 to-orange-500', emoji: '📚' },
-    { label: '学习中', value: stats?.learningCount || 0, gradient: 'from-blue-500 to-cyan-500', emoji: '📖' },
-    { label: '已掌握', value: stats?.masteredCount || 0, gradient: 'from-green-500 to-emerald-500', emoji: '🎯' },
-    { label: '新卡片', value: stats?.newCount || 0, gradient: 'from-purple-500 to-pink-500', emoji: '✨' },
+    { label: '待复习', value: stats?.dueCount || 0, color: 'var(--color-stat-due)', emoji: '📚' },
+    { label: '学习中', value: stats?.learningCount || 0, color: 'var(--color-stat-learning)', emoji: '📖' },
+    { label: '已掌握', value: stats?.masteredCount || 0, color: 'var(--color-stat-mastered)', emoji: '🎯' },
+    { label: '新卡片', value: stats?.newCount || 0, color: 'var(--color-stat-new)', emoji: '✨' },
   ];
 
   const quickActions = [
@@ -72,7 +72,8 @@ export default function HomePage() {
         {statCards.map((stat, index) => (
           <div
             key={index}
-            className={`bg-gradient-to-br ${stat.gradient} p-6 rounded-2xl shadow-lg hover:shadow-xl transition-all hover:scale-[1.02] cursor-pointer`}
+            className="p-6 rounded-2xl shadow-lg hover:shadow-xl transition-all hover:scale-[1.02] cursor-pointer"
+            style={{ background: stat.color }}
             onClick={() => stat.label === '待复习' && (stats?.dueCount ?? 0) > 0 && navigate('/review')}
           >
             <div className="flex items-center justify-between mb-2">
@@ -106,7 +107,10 @@ export default function HomePage() {
       )}
 
       {stats && stats.dueCount === 0 && (
-        <div className="bg-gradient-to-r from-green-500 to-emerald-500 rounded-2xl p-6 mb-8 text-white shadow-lg">
+        <div 
+          className="rounded-2xl p-6 mb-8 text-white shadow-lg"
+          style={{ background: 'var(--color-completion)' }}
+        >
           <div className="flex items-center gap-4">
             <span className="text-5xl">🎉</span>
             <div>
