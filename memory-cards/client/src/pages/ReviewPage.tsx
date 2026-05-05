@@ -8,28 +8,6 @@ interface ReviewCard extends Card {
   deck?: { name: string };
 }
 
-const isCodeContent = (text: string): boolean => {
-  const codePatterns = [
-    /function\s+\w+\s*\(/,
-    /const\s+\w+\s*=/,
-    /let\s+\w+\s*=/,
-    /var\s+\w+\s*=/,
-    /import\s+.*from/,
-    /export\s+(default\s+)?/,
-    /class\s+\w+/,
-    /=>\s*\{/,
-    /```[\s\S]*```/,
-    /<\/?[\w]+>/,
-    /console\.(log|error|warn)/,
-    /\/\/.*$/,
-    /#.*$/,
-    /def\s+\w+/,
-    /def\s+\w+\(/,
-    /=>/,
-  ];
-  return codePatterns.some(pattern => pattern.test(text));
-};
-
 export default function ReviewPage() {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
@@ -88,7 +66,7 @@ export default function ReviewPage() {
   if (loading) {
     return (
       <Layout>
-        <div className="flex items-center justify-center min-h-96">
+        <div className="flex items-center justify-center min-h-[60vh]">
           <div className="text-center">
             <div className="w-16 h-16 border-4 border-t-transparent rounded-full animate-spin mx-auto mb-4" style={{ borderColor: 'var(--color-primary)', borderTopColor: 'transparent' }}></div>
             <p style={{ color: 'var(--color-text-secondary)' }}>加载中...</p>
@@ -134,7 +112,7 @@ export default function ReviewPage() {
 
   return (
     <Layout>
-      <div className="max-w-2xl mx-auto">
+      <div className="max-w-3xl mx-auto">
         <div className="mb-6">
           <button 
             onClick={() => navigate(id ? `/decks/${id}` : '/')} 
@@ -169,31 +147,31 @@ export default function ReviewPage() {
           onClick={handleFlip}
         >
           <div
-            className={`rounded-2xl shadow-2xl p-8 min-h-80 flex flex-col items-center justify-center transition-all duration-500 transform-style-preserve-3d ${
+            className={`rounded-2xl shadow-2xl p-8 min-h-[50vh] max-h-[70vh] flex flex-col transition-all duration-500 transform-style-preserve-3d ${
               isFlipped ? 'rotate-y-180' : ''
-            } hover:shadow-3xl`}
+            } hover:shadow-3xl overflow-hidden`}
             style={{ backgroundColor: 'var(--color-card)' }}
           >
-            <div className="absolute inset-0 backface-hidden p-8 flex flex-col items-center justify-center">
-              <p className="text-sm mb-4 text-center" style={{ color: 'var(--color-text-secondary)' }}>
+            <div className="absolute inset-0 backface-hidden p-8 flex flex-col overflow-hidden">
+              <p className="text-sm mb-4 text-center flex-shrink-0" style={{ color: 'var(--color-text-secondary)' }}>
                 问题
               </p>
               <div
-                className={`text-center leading-relaxed ${isCodeContent(currentCard.front) ? 'font-mono text-sm whitespace-pre-wrap max-h-60 overflow-auto' : 'text-xl'}`}
+                className="flex-1 overflow-auto whitespace-pre-wrap leading-relaxed text-xl"
                 style={{ color: 'var(--color-text)' }}
               >
                 {currentCard.front}
               </div>
-              <p className="text-sm mt-6 text-center" style={{ color: 'var(--color-text-secondary)' }}>
+              <p className="text-sm mt-6 text-center flex-shrink-0" style={{ color: 'var(--color-text-secondary)' }}>
                 点击翻转查看答案
               </p>
             </div>
-            <div className="absolute inset-0 backface-hidden rotate-y-180 p-8 flex flex-col items-center justify-center">
-              <p className="text-sm mb-4 text-center" style={{ color: 'var(--color-text-secondary)' }}>
+            <div className="absolute inset-0 backface-hidden rotate-y-180 p-8 flex flex-col overflow-hidden">
+              <p className="text-sm mb-4 text-center flex-shrink-0" style={{ color: 'var(--color-text-secondary)' }}>
                 答案
               </p>
               <div
-                className={`text-center leading-relaxed ${isCodeContent(currentCard.back) ? 'font-mono text-sm whitespace-pre-wrap max-h-60 overflow-auto' : 'text-xl'}`}
+                className="flex-1 overflow-auto whitespace-pre-wrap leading-relaxed text-xl"
                 style={{ color: 'var(--color-primary)' }}
               >
                 {currentCard.back}
