@@ -237,6 +237,20 @@ export default function ReviewPage() {
         .animate-fade-in {
           animation: fade-in 0.5s ease-out;
         }
+        /* 美化滚动条 */
+        .overflow-auto::-webkit-scrollbar {
+          width: 6px;
+        }
+        .overflow-auto::-webkit-scrollbar-track {
+          background: transparent;
+        }
+        .overflow-auto::-webkit-scrollbar-thumb {
+          background-color: rgba(0, 0, 0, 0.2);
+          border-radius: 3px;
+        }
+        .overflow-auto::-webkit-scrollbar-thumb:hover {
+          background-color: rgba(0, 0, 0, 0.3);
+        }
       `}</style>
     </Layout>
   );
