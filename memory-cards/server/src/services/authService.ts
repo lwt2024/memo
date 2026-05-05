@@ -1,8 +1,10 @@
 import { PrismaClient } from '@prisma/client';
 import bcrypt from 'bcryptjs';
 import jwt from 'jsonwebtoken';
+import { sendVerificationEmail } from './emailService.js';
 
 const prisma = new PrismaClient();
+const USE_REAL_EMAIL = process.env.USE_REAL_EMAIL === 'true';
 
 const emailVerificationCodes = new Map<string, { code: string; expiresAt: number; type: 'register' | 'reset' }>();
 
@@ -26,8 +28,14 @@ export async function sendVerificationCode(email: string, type: 'register' | 're
     type,
   });
 
-  console.log(`发送${type === 'register' ? '注册' : '重置密码'}验证码到 ${email}: ${code}`);
-  return { message: '验证码已发送（测试模式：验证码为 ' + code + '）' };
+  if (USE_REAL_EMAIL) {
+    await sendVerificationEmail(email, code, type);
+    console.log(`发送${type === 'register' ? '注册' : '重置密码'}验证码到 ${email}: ${code}`);
+    return { message: '验证码已发送到您的邮箱' };
+  } else {
+    console.log(`发送${type === 'register' ? '注册' : '重置密码'}验证码到 ${email}: ${code}`);
+    return { message: '验证码已发送（测试模式：验证码为 ' + code + '）' };
+  }
 }
 
 export async function verifyCode(email: string, code: string) {
