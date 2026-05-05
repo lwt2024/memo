@@ -5,42 +5,42 @@ import { useTheme } from '../context/ThemeContext';
 import { useUser } from '../context/UserContext';
 
 function LoginPage() {
-  const [email, setEmail] = useState('');
+  const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
   const [isLoading, setIsLoading] = useState(false);
-  const [showEmailDropdown, setShowEmailDropdown] = useState(false);
-  const [emailHistory, setEmailHistory] = useState<string[]>([]);
+  const [showUsernameDropdown, setShowUsernameDropdown] = useState(false);
+  const [usernameHistory, setUsernameHistory] = useState<string[]>([]);
   const [rememberMe, setRememberMe] = useState(false);
-  const emailInputRef = useRef<HTMLInputElement>(null);
+  const usernameInputRef = useRef<HTMLInputElement>(null);
   const dropdownRef = useRef<HTMLDivElement>(null);
   const navigate = useNavigate();
   const { mode, toggleMode } = useTheme();
   const { setUser } = useUser();
 
   useEffect(() => {
-    const saved = localStorage.getItem('emailHistory');
+    const saved = localStorage.getItem('usernameHistory');
     if (saved) {
       try {
         const parsed = JSON.parse(saved);
         if (Array.isArray(parsed)) {
-          setEmailHistory(parsed);
+          setUsernameHistory(parsed);
         }
       } catch (e) {
-        console.error('Failed to parse email history:', e);
+        console.error('Failed to parse username history:', e);
       }
     } else {
-      const demoEmails = ['demo@example.com', 'test@memory.com', 'user@study.com'];
-      localStorage.setItem('emailHistory', JSON.stringify(demoEmails));
-      setEmailHistory(demoEmails);
+      const demoUsernames = ['demo', 'test', 'user'];
+      localStorage.setItem('usernameHistory', JSON.stringify(demoUsernames));
+      setUsernameHistory(demoUsernames);
     }
 
     const remembered = localStorage.getItem('rememberedUser');
     if (remembered) {
       try {
         const parsed = JSON.parse(remembered);
-        if (parsed.email) {
-          setEmail(parsed.email);
+        if (parsed.username) {
+          setUsername(parsed.username);
           setRememberMe(true);
           if (parsed.password) {
             setPassword(parsed.password);
@@ -55,28 +55,25 @@ function LoginPage() {
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
       if (dropdownRef.current && !dropdownRef.current.contains(event.target as Node) &&
-          emailInputRef.current && !emailInputRef.current.contains(event.target as Node)) {
-        setShowEmailDropdown(false);
+          usernameInputRef.current && !usernameInputRef.current.contains(event.target as Node)) {
+        setShowUsernameDropdown(false);
       }
     };
     document.addEventListener('mousedown', handleClickOutside);
     return () => document.removeEventListener('mousedown', handleClickOutside);
   }, []);
 
-  const saveEmailToHistory = useCallback((email: string) => {
-    setEmailHistory(prev => {
-      const filtered = prev.filter(e => e !== email);
-      const updated = [email, ...filtered].slice(0, 5);
-      localStorage.setItem('emailHistory', JSON.stringify(updated));
+  const saveUsernameToHistory = useCallback((username: string) => {
+    setUsernameHistory(prev => {
+      const filtered = prev.filter(u => u !== username);
+      const updated = [username, ...filtered].slice(0, 5);
+      localStorage.setItem('usernameHistory', JSON.stringify(updated));
       return updated;
     });
   }, []);
 
-  const handleEmailChange = (value: string) => {
-    setEmail(value);
-    if (value.includes('@')) {
-      setShowEmailDropdown(false);
-    }
+  const handleUsernameChange = (value: string) => {
+    setUsername(value);
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -85,15 +82,15 @@ function LoginPage() {
     setIsLoading(true);
     
     try {
-      const res = await authApi.login(email, password);
+      const res = await authApi.login(username, password);
       localStorage.setItem('token', res.data.token);
       if (res.data.user) {
         setUser(res.data.user);
       }
-      saveEmailToHistory(email);
+      saveUsernameToHistory(username);
       
       if (rememberMe) {
-        localStorage.setItem('rememberedUser', JSON.stringify({ email, password }));
+        localStorage.setItem('rememberedUser', JSON.stringify({ username, password }));
       } else {
         localStorage.removeItem('rememberedUser');
       }
@@ -107,17 +104,17 @@ function LoginPage() {
     }
   };
 
-  const selectEmail = (selectedEmail: string) => {
-    setEmail(selectedEmail);
-    setShowEmailDropdown(false);
-    emailInputRef.current?.focus();
+  const selectUsername = (selectedUsername: string) => {
+    setUsername(selectedUsername);
+    setShowUsernameDropdown(false);
+    usernameInputRef.current?.focus();
   };
 
-  const removeEmail = (e: React.MouseEvent, emailToRemove: string) => {
+  const removeUsername = (e: React.MouseEvent, usernameToRemove: string) => {
     e.stopPropagation();
-    setEmailHistory(prev => {
-      const filtered = prev.filter(e => e !== emailToRemove);
-      localStorage.setItem('emailHistory', JSON.stringify(filtered));
+    setUsernameHistory(prev => {
+      const filtered = prev.filter(u => u !== usernameToRemove);
+      localStorage.setItem('usernameHistory', JSON.stringify(filtered));
       return filtered;
     });
   };
@@ -169,26 +166,26 @@ function LoginPage() {
         <form onSubmit={handleSubmit} className="space-y-5">
           <div>
             <label className="block text-sm font-medium mb-2" style={{ color: 'var(--color-text)' }}>
-              邮箱
+              用户名
             </label>
             <div className="relative">
               <input
-                ref={emailInputRef}
-                type="email"
-                value={email}
-                onChange={(e) => handleEmailChange(e.target.value)}
-                onFocus={() => setShowEmailDropdown(true)}
+                ref={usernameInputRef}
+                type="text"
+                value={username}
+                onChange={(e) => handleUsernameChange(e.target.value)}
+                onFocus={() => setShowUsernameDropdown(true)}
                 className="w-full px-4 py-3 border rounded-xl focus:outline-none focus:ring-2 transition-all"
                 style={{ 
                   backgroundColor: 'var(--color-card)', 
                   borderColor: 'var(--color-border)',
                   color: 'var(--color-text)'
                 }}
-                placeholder="输入你的邮箱"
+                placeholder="输入你的用户名"
                 required
               />
               
-              {showEmailDropdown && emailHistory.length > 0 && (
+              {showUsernameDropdown && usernameHistory.length > 0 && (
                 <div
                   ref={dropdownRef}
                   className="absolute top-full left-0 right-0 mt-1 bg-[var(--color-card)] border rounded-xl shadow-lg overflow-hidden z-10"
@@ -196,21 +193,21 @@ function LoginPage() {
                 >
                   <div className="p-2 border-b" style={{ borderColor: 'var(--color-border)' }}>
                     <span className="text-xs px-2" style={{ color: 'var(--color-text-secondary)' }}>
-                      历史登录邮箱
+                      历史登录用户名
                     </span>
                   </div>
-                  {emailHistory.map((savedEmail) => (
+                  {usernameHistory.map((savedUsername) => (
                     <div
-                      key={savedEmail}
+                      key={savedUsername}
                       className="flex items-center justify-between px-4 py-2 hover:bg-[var(--color-background-secondary)] cursor-pointer transition-colors"
-                      onClick={() => selectEmail(savedEmail)}
+                      onClick={() => selectUsername(savedUsername)}
                     >
                       <span className="text-sm truncate" style={{ color: 'var(--color-text)' }}>
-                        {savedEmail}
+                        {savedUsername}
                       </span>
                       <button
                         type="button"
-                        onClick={(e) => removeEmail(e, savedEmail)}
+                        onClick={(e) => removeUsername(e, savedUsername)}
                         className="p-1 text-xs hover:text-red-500 transition-colors"
                         style={{ color: 'var(--color-text-secondary)', cursor: 'pointer' }}
                       >

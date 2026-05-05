@@ -1,52 +1,13 @@
 import { Request, Response } from 'express';
-import { register, login, sendVerificationCode, verifyCode, resetPassword } from '../services/authService.js';
-
-export async function sendCodeHandler(req: Request, res: Response) {
-  try {
-    const { email, type = 'register' } = req.body;
-    if (!email) {
-      return res.status(400).json({ error: '邮箱不能为空' });
-    }
-    const result = await sendVerificationCode(email, type as 'register' | 'reset');
-    res.json(result);
-  } catch (error: any) {
-    res.status(400).json({ error: error.message });
-  }
-}
-
-export async function resetPasswordHandler(req: Request, res: Response) {
-  try {
-    const { email, code, newPassword } = req.body;
-    if (!email || !code || !newPassword) {
-      return res.status(400).json({ error: '邮箱、验证码和新密码不能为空' });
-    }
-    const result = await resetPassword(email, code, newPassword);
-    res.json(result);
-  } catch (error: any) {
-    res.status(400).json({ error: error.message });
-  }
-}
-
-export async function verifyCodeHandler(req: Request, res: Response) {
-  try {
-    const { email, code } = req.body;
-    if (!email || !code) {
-      return res.status(400).json({ error: '邮箱和验证码不能为空' });
-    }
-    const result = await verifyCode(email, code);
-    res.json(result);
-  } catch (error: any) {
-    res.status(400).json({ error: error.message });
-  }
-}
+import { register, login } from '../services/authService.js';
 
 export async function registerHandler(req: Request, res: Response) {
   try {
-    const { email, password, nickname } = req.body;
-    if (!email || !password) {
-      return res.status(400).json({ error: '邮箱和密码不能为空' });
+    const { username, password, nickname } = req.body;
+    if (!username || !password) {
+      return res.status(400).json({ error: '用户名和密码不能为空' });
     }
-    const result = await register(email, password, nickname);
+    const result = await register(username, password, nickname);
     res.status(201).json(result);
   } catch (error: any) {
     res.status(400).json({ error: error.message });
@@ -55,11 +16,11 @@ export async function registerHandler(req: Request, res: Response) {
 
 export async function loginHandler(req: Request, res: Response) {
   try {
-    const { email, password } = req.body;
-    if (!email || !password) {
-      return res.status(400).json({ error: '邮箱和密码不能为空' });
+    const { username, password } = req.body;
+    if (!username || !password) {
+      return res.status(400).json({ error: '用户名和密码不能为空' });
     }
-    const result = await login(email, password);
+    const result = await login(username, password);
     res.json(result);
   } catch (error: any) {
     res.status(401).json({ error: error.message });

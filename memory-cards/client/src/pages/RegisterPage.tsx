@@ -5,7 +5,7 @@ import { useTheme } from '../context/ThemeContext';
 import { useUser } from '../context/UserContext';
 
 function RegisterPage() {
-  const [email, setEmail] = useState('');
+  const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
   const [nickname, setNickname] = useState('');
@@ -33,6 +33,12 @@ function RegisterPage() {
     setError('');
     setIsLoading(true);
     
+    if (!username.trim()) {
+      setError('请输入用户名');
+      setIsLoading(false);
+      return;
+    }
+    
     if (!passwordStrength.length) {
       setError('密码长度不能少于8位');
       setIsLoading(false);
@@ -50,7 +56,7 @@ function RegisterPage() {
     }
     
     try {
-      const res = await authApi.register(email, password, nickname);
+      const res = await authApi.register(username, password, nickname);
       localStorage.setItem('token', res.data.token);
       if (res.data.user) {
         setUser(res.data.user);
@@ -104,7 +110,26 @@ function RegisterPage() {
         <form onSubmit={handleSubmit} className="space-y-5">
           <div>
             <label className="block text-sm font-medium mb-2" style={{ color: 'var(--color-text)' }}>
-              昵称
+              用户名
+            </label>
+            <input
+              type="text"
+              value={username}
+              onChange={(e) => setUsername(e.target.value)}
+              className="w-full px-4 py-3 border rounded-xl focus:outline-none focus:ring-2 transition-all"
+              style={{ 
+                backgroundColor: 'var(--color-card)', 
+                borderColor: 'var(--color-border)',
+                color: 'var(--color-text)'
+              }}
+              placeholder="设置用户名"
+              required
+            />
+          </div>
+
+          <div>
+            <label className="block text-sm font-medium mb-2" style={{ color: 'var(--color-text)' }}>
+              昵称（可选）
             </label>
             <input
               type="text"
@@ -116,26 +141,7 @@ function RegisterPage() {
                 borderColor: 'var(--color-border)',
                 color: 'var(--color-text)'
               }}
-              placeholder="给自己起个昵称"
-            />
-          </div>
-
-          <div>
-            <label className="block text-sm font-medium mb-2" style={{ color: 'var(--color-text)' }}>
-              邮箱
-            </label>
-            <input
-              type="email"
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-              className="w-full px-4 py-3 border rounded-xl focus:outline-none focus:ring-2 transition-all"
-              style={{ 
-                backgroundColor: 'var(--color-card)', 
-                borderColor: 'var(--color-border)',
-                color: 'var(--color-text)'
-              }}
-              placeholder="输入你的邮箱"
-              required
+              placeholder="给自己起个昵称（不填则使用用户名）"
             />
           </div>
 
