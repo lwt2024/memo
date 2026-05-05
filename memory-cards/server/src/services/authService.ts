@@ -26,12 +26,12 @@ export async function register(email: string, password: string, nickname?: strin
 export async function login(email: string, password: string) {
   const user = await prisma.user.findUnique({ where: { email } });
   if (!user) {
-    throw new Error('邮箱或密码错误');
+    throw new Error('账号不存在，请检查邮箱或先注册账号');
   }
 
   const valid = await bcrypt.compare(password, user.passwordHash);
   if (!valid) {
-    throw new Error('邮箱或密码错误');
+    throw new Error('密码错误，请重新输入正确的密码');
   }
 
   const token = generateToken(user.id);

@@ -7,11 +7,15 @@ function LoginPage() {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
+  const [isLoading, setIsLoading] = useState(false);
   const navigate = useNavigate();
   const { mode, toggleMode } = useTheme();
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    setError('');
+    setIsLoading(true);
+    
     try {
       const res = await authApi.login(email, password);
       localStorage.setItem('token', res.data.token);
@@ -20,7 +24,10 @@ function LoginPage() {
       }
       navigate('/');
     } catch (err: any) {
-      setError(err.response?.data?.message || '登录失败');
+      const errorMessage = err.response?.data?.error || err.response?.data?.message || '登录失败，请稍后重试';
+      setError(errorMessage);
+    } finally {
+      setIsLoading(false);
     }
   };
 
@@ -51,14 +58,20 @@ function LoginPage() {
 
         {error && (
           <div 
-            className="border p-4 rounded-xl mb-6 text-center"
+            className="border-2 p-4 rounded-xl mb-6 animate-shake"
             style={{ 
-              backgroundColor: mode === 'dark' ? 'rgba(239, 68, 68, 0.2)' : '#fef2f2',
-              borderColor: mode === 'dark' ? 'rgba(239, 68, 68, 0.5)' : '#fecaca',
+              backgroundColor: mode === 'dark' ? 'rgba(239, 68, 68, 0.15)' : '#fef2f2',
+              borderColor: mode === 'dark' ? '#ef4444' : '#dc2626',
               color: mode === 'dark' ? '#fca5a5' : '#dc2626'
             }}
           >
-            {error}
+            <div className="flex items-start gap-3">
+              <span className="text-2xl">⚠️</span>
+              <div>
+                <p className="font-semibold mb-1">登录失败</p>
+                <p className="text-sm">{error}</p>
+              </div>
+            </div>
           </div>
         )}
 
@@ -103,10 +116,18 @@ function LoginPage() {
 
           <button
             type="submit"
-            className="w-full py-3 text-white font-semibold rounded-xl hover:shadow-lg transition-all transform hover:scale-[1.02]"
+            disabled={isLoading}
+            className="w-full py-3 text-white font-semibold rounded-xl hover:shadow-lg transition-all transform hover:scale-[1.02] disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none"
             style={{ background: 'linear-gradient(135deg, var(--color-primary), var(--color-secondary))' }}
           >
-            登录
+            {isLoading ? (
+              <span className="flex items-center justify-center gap-2">
+                <span className="animate-spin">⏳</span>
+                登录中...
+              </span>
+            ) : (
+              '登录'
+            )}
           </button>
         </form>
 
@@ -124,6 +145,18 @@ function LoginPage() {
         </div>
       </div>
     </div>
+
+    <style>{`
+      @keyframes shake {
+        0%, 100% { transform: translateX(0); }
+        10%, 30%, 50%, 70%, 90% { transform: translateX(-5px); }
+        20%, 40%, 60%, 80% { transform: translateX(5px); }
+      }
+      
+      .animate-shake {
+        animation: shake 0.6s ease-in-out;
+      }
+    `}</style>
   );
 }
 
