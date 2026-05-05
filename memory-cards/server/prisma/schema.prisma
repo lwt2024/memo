@@ -58,6 +58,7 @@ model ReviewRecord {
   nextReviewAt  DateTime? @map("next_review_at")
   lastReviewAt  DateTime? @map("last_review_at")
   reviewCount   Int       @default(0) @map("review_count")
+  masteryLevel  Int       @default(0) @map("mastery_level") // 0-5，越高越熟悉
   createdAt     DateTime  @default(now()) @map("created_at")
 
   card Card @relation(fields: [cardId], references: [id], onDelete: Cascade)

@@ -124,11 +124,11 @@ export default function ReviewPage() {
   const progress = ((currentIndex + 1) / cards.length) * 100;
 
   const ratingButtons = [
-    { level: 1, label: '忘记', color: 'from-red-400 to-red-600', emoji: '😵' },
-    { level: 2, label: '困难', color: 'from-orange-400 to-orange-600', emoji: '😓' },
-    { level: 3, label: '一般', color: 'from-yellow-400 to-yellow-600', emoji: '🤔' },
-    { level: 4, label: '简单', color: 'from-green-400 to-green-600', emoji: '😊' },
-    { level: 5, label: '太简单', color: 'from-blue-400 to-blue-600', emoji: '🤩' },
+    { level: 1, label: '忘记', colorVar: '--color-rating-failed', emoji: '😵' },
+    { level: 2, label: '困难', colorVar: '--color-rating-hard', emoji: '😓' },
+    { level: 3, label: '一般', colorVar: '--color-rating-medium', emoji: '🤔' },
+    { level: 4, label: '简单', colorVar: '--color-rating-easy', emoji: '😊' },
+    { level: 5, label: '太简单', colorVar: '--color-rating-very-easy', emoji: '🤩' },
   ];
 
   return (

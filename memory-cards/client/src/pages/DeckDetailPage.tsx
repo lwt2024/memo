@@ -3,10 +3,12 @@ import { useParams, useNavigate } from 'react-router-dom';
 import api from '../services/api';
 import { Card, Deck } from '../types';
 import Layout from '../components/common/Layout';
+import { useTheme } from '../context/ThemeContext';
 
 export default function DeckDetailPage() {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
+  const { mode } = useTheme();
   const [deck, setDeck] = useState<Deck | null>(null);
   const [cards, setCards] = useState<Card[]>([]);
   const [loading, setLoading] = useState(true);
@@ -14,6 +16,11 @@ export default function DeckDetailPage() {
   const [editingCard, setEditingCard] = useState<Card | null>(null);
   const [cardFront, setCardFront] = useState('');
   const [cardBack, setCardBack] = useState('');
+  const [expandedCardId, setExpandedCardId] = useState<string | null>(null);
+
+  const toggleCard = (cardId: string) => {
+    setExpandedCardId(prev => prev === cardId ? null : cardId);
+  };
 
   useEffect(() => {
     if (id) fetchDeckData();
@@ -102,26 +109,43 @@ export default function DeckDetailPage() {
         </div>
       </div>
 
-      <div className="bg-white rounded-lg shadow">
+      <div className="rounded-lg shadow" style={{ backgroundColor: 'var(--color-card)' }}>
         {cards.length === 0 ? (
-          <div className="text-center py-10 text-gray-500">
+          <div className="text-center py-10" style={{ color: 'var(--color-text-secondary)' }}>
             <p className="text-4xl mb-4">📝</p>
             <p>还没有卡片，添加第一张吧！</p>
           </div>
         ) : (
-          <div className="divide-y">
+          <div className="divide-y" style={{ borderColor: 'var(--color-border)' }}>
             {cards.map((card, index) => (
-              <div key={card.id} className="p-4 flex items-start gap-4 hover:bg-gray-50">
-                <span className="text-gray-400 font-medium min-w-[2rem]">{index + 1}</span>
-                <div className="flex-1">
-                  <p className="font-medium">正面: {card.front}</p>
-                  <p className="text-gray-600">背面: {card.back}</p>
+              <div 
+                key={card.id} 
+                className="p-4 flex items-start gap-4 cursor-pointer transition-colors"
+                style={{ 
+                  borderBottomColor: 'var(--color-border)',
+                }}
+                onClick={() => toggleCard(card.id)}
+              >
+                <span className="font-medium min-w-[2rem] flex-shrink-0" style={{ color: 'var(--color-text-secondary)' }}>
+                  {index + 1}
+                </span>
+                <div className="flex-1 min-w-0">
+                  <p className="font-medium whitespace-pre-wrap" style={{ color: 'var(--color-text)' }}>
+                    {card.front}
+                  </p>
+                  {expandedCardId === card.id && (
+                    <div className="mt-3 pt-3 border-t" style={{ borderColor: 'var(--color-border)' }}>
+                      <p className="whitespace-pre-wrap font-mono text-sm" style={{ color: 'var(--color-primary)' }}>
+                        {card.back}
+                      </p>
+                    </div>
+                  )}
                 </div>
-                <div className="flex gap-2">
-                  <button onClick={() => openEditModal(card)} className="text-blue-500 hover:underline">
+                <div className="flex gap-2 flex-shrink-0" onClick={(e) => e.stopPropagation()}>
+                  <button onClick={() => openEditModal(card)} className="hover:underline" style={{ color: 'var(--color-primary)' }}>
                     编辑
                   </button>
-                  <button onClick={() => deleteCard(card.id)} className="text-red-500 hover:underline">
+                  <button onClick={() => deleteCard(card.id)} className="hover:underline" style={{ color: '#ef4444' }}>
                     删除
                   </button>
                 </div>
