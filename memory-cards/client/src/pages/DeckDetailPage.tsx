@@ -17,10 +17,21 @@ export default function DeckDetailPage() {
   const [sortBy, setSortBy] = useState<'createdAt' | 'masteryLevel'>('createdAt');
   const [sortOrder, setSortOrder] = useState<'asc' | 'desc'>('asc');
   const [masteryFilter, setMasteryFilter] = useState<number | ''>('');
+  const [searchQuery, setSearchQuery] = useState('');
 
   useEffect(() => {
     if (id) fetchDeckData();
   }, [id, sortBy, sortOrder, masteryFilter]);
+
+  // 过滤卡片
+  const filteredCards = deck?.cards?.filter(card => {
+    if (!searchQuery) return true;
+    const query = searchQuery.toLowerCase();
+    return (
+      card.front.toLowerCase().includes(query) || 
+      card.back.toLowerCase().includes(query)
+    );
+  });
 
   const fetchDeckData = async () => {
     try {
@@ -130,58 +141,94 @@ export default function DeckDetailPage() {
         </div>
       </div>
 
-      {/* 筛选和排序 */}
+      {/* 搜索、筛选和排序 */}
       <div className="mb-6 p-4 rounded-lg" style={{ backgroundColor: 'var(--color-card)', border: '1px solid var(--color-border)' }}>
-        <div className="flex flex-wrap gap-4 items-center">
-          <div className="flex gap-2 items-center">
-            <span className="font-medium" style={{ color: 'var(--color-text)' }}>排序:</span>
-            <select
-              value={sortBy}
-              onChange={(e) => setSortBy(e.target.value as any)}
-              className="px-3 py-1 rounded border"
-              style={{ backgroundColor: 'var(--color-background)', color: 'var(--color-text)', borderColor: 'var(--color-border)' }}
-            >
-              <option value="createdAt">创建时间</option>
-              <option value="masteryLevel">掌握程度</option>
-            </select>
-            <button
-              onClick={() => setSortOrder(prev => prev === 'asc' ? 'desc' : 'asc')}
-              className="px-2 py-1 rounded border hover:bg-gray-100"
-              style={{ borderColor: 'var(--color-border)', color: 'var(--color-text)' }}
-            >
-              {sortOrder === 'asc' ? '↑' : '↓'}
-            </button>
+        <div className="flex flex-col lg:flex-row gap-4">
+          {/* 搜索框 */}
+          <div className="flex-1">
+            <div className="flex gap-2 items-center">
+              <span className="font-medium" style={{ color: 'var(--color-text)' }}>搜索:</span>
+              <input
+                type="text"
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+                placeholder="搜索卡片内容..."
+                className="flex-1 px-3 py-2 rounded border"
+                style={{ backgroundColor: 'var(--color-background)', color: 'var(--color-text)', borderColor: 'var(--color-border)' }}
+              />
+              {searchQuery && (
+                <button
+                  onClick={() => setSearchQuery('')}
+                  className="px-2 py-2 rounded border hover:bg-gray-100"
+                  style={{ borderColor: 'var(--color-border)', color: 'var(--color-text-secondary)' }}
+                >
+                  ✕
+                </button>
+              )}
+            </div>
           </div>
-          <div className="flex gap-2 items-center">
-            <span className="font-medium" style={{ color: 'var(--color-text)' }}>掌握程度:</span>
-            <select
-              value={masteryFilter}
-              onChange={(e) => setMasteryFilter(e.target.value === '' ? '' : parseInt(e.target.value))}
-              className="px-3 py-1 rounded border"
-              style={{ backgroundColor: 'var(--color-background)', color: 'var(--color-text)', borderColor: 'var(--color-border)' }}
-            >
-              <option value="">全部</option>
-              <option value="0">未学习</option>
-              <option value="1">初识</option>
-              <option value="2">熟悉</option>
-              <option value="3">掌握</option>
-              <option value="4">熟练</option>
-              <option value="5">精通</option>
-            </select>
+          {/* 排序和筛选 */}
+          <div className="flex flex-wrap gap-4 items-center">
+            <div className="flex gap-2 items-center">
+              <span className="font-medium" style={{ color: 'var(--color-text)' }}>排序:</span>
+              <select
+                value={sortBy}
+                onChange={(e) => setSortBy(e.target.value as any)}
+                className="px-3 py-2 rounded border"
+                style={{ backgroundColor: 'var(--color-background)', color: 'var(--color-text)', borderColor: 'var(--color-border)' }}
+              >
+                <option value="createdAt">创建时间</option>
+                <option value="masteryLevel">掌握程度</option>
+              </select>
+              <button
+                onClick={() => setSortOrder(prev => prev === 'asc' ? 'desc' : 'asc')}
+                className="px-2 py-2 rounded border hover:bg-gray-100"
+                style={{ borderColor: 'var(--color-border)', color: 'var(--color-text)' }}
+              >
+                {sortOrder === 'asc' ? '↑' : '↓'}
+              </button>
+            </div>
+            <div className="flex gap-2 items-center">
+              <span className="font-medium" style={{ color: 'var(--color-text)' }}>掌握程度:</span>
+              <select
+                value={masteryFilter}
+                onChange={(e) => setMasteryFilter(e.target.value === '' ? '' : parseInt(e.target.value))}
+                className="px-3 py-2 rounded border"
+                style={{ backgroundColor: 'var(--color-background)', color: 'var(--color-text)', borderColor: 'var(--color-border)' }}
+              >
+                <option value="">全部</option>
+                <option value="0">未学习</option>
+                <option value="1">初识</option>
+                <option value="2">熟悉</option>
+                <option value="3">掌握</option>
+                <option value="4">熟练</option>
+                <option value="5">精通</option>
+              </select>
+            </div>
           </div>
         </div>
+        {/* 搜索结果计数 */}
+        {searchQuery && filteredCards && (
+          <div className="mt-3 text-sm" style={{ color: 'var(--color-text-secondary)' }}>
+            找到 {filteredCards.length} 张卡片
+          </div>
+        )}
       </div>
 
       {/* 卡片列表 */}
       <div className="rounded-lg shadow" style={{ backgroundColor: 'var(--color-card)' }}>
-        {deck.cards?.length === 0 ? (
+        {filteredCards?.length === 0 ? (
           <div className="text-center py-10" style={{ color: 'var(--color-text-secondary)' }}>
-            <p className="text-4xl mb-4">📝</p>
-            <p>还没有卡片，添加第一张吧！</p>
+            <p className="text-4xl mb-4">🔍</p>
+            {searchQuery ? (
+              <p>没有找到匹配的卡片</p>
+            ) : (
+              <p>还没有卡片，添加第一张吧！</p>
+            )}
           </div>
         ) : (
           <div>
-            {deck.cards?.map((card, index) => (
+            {filteredCards?.map((card, index) => (
               <div
                 key={card.id}
                 className="p-4 cursor-pointer transition-colors"
