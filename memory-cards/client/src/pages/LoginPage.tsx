@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { authApi } from '../services/api';
 import { useTheme } from '../context/ThemeContext';
+import { useUser } from '../context/UserContext';
 
 function LoginPage() {
   const [email, setEmail] = useState('');
@@ -10,6 +11,7 @@ function LoginPage() {
   const [isLoading, setIsLoading] = useState(false);
   const navigate = useNavigate();
   const { mode, toggleMode } = useTheme();
+  const { setUser } = useUser();
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -20,7 +22,7 @@ function LoginPage() {
       const res = await authApi.login(email, password);
       localStorage.setItem('token', res.data.token);
       if (res.data.user) {
-        localStorage.setItem('user', JSON.stringify(res.data.user));
+        setUser(res.data.user);
       }
       navigate('/');
     } catch (err: any) {

@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { authApi } from '../services/api';
 import { useTheme } from '../context/ThemeContext';
+import { useUser } from '../context/UserContext';
 
 function RegisterPage() {
   const [email, setEmail] = useState('');
@@ -21,6 +22,7 @@ function RegisterPage() {
   });
   const navigate = useNavigate();
   const { mode, toggleMode } = useTheme();
+  const { setUser } = useUser();
 
   useEffect(() => {
     if (countdown > 0) {
@@ -83,7 +85,7 @@ function RegisterPage() {
       const res = await authApi.register(email, password, nickname);
       localStorage.setItem('token', res.data.token);
       if (res.data.user) {
-        localStorage.setItem('user', JSON.stringify(res.data.user));
+        setUser(res.data.user);
       }
       navigate('/');
     } catch (err: any) {

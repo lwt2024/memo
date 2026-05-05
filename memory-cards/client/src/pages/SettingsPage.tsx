@@ -2,20 +2,18 @@ import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import Layout from '../components/common/Layout';
 import { useTheme, themeStyles, ThemeStyle } from '../context/ThemeContext';
-import { User } from '../types';
+import { useUser } from '../context/UserContext';
 import { userApi } from '../services/api';
-
-const defaultUser = JSON.parse(localStorage.getItem('user') || '{}') as User;
 
 export default function SettingsPage() {
   const navigate = useNavigate();
   const { mode, style, toggleMode, setStyle } = useTheme();
+  const { user, updateUser, setUser } = useUser();
   
-  const [profile, setProfile] = useState<User>(defaultUser);
   const [editMode, setEditMode] = useState(false);
-  const [nickname, setNickname] = useState(defaultUser.nickname || '');
-  const [email, setEmail] = useState(defaultUser.email || '');
-  const [avatar, setAvatar] = useState(defaultUser.avatar || '');
+  const [nickname, setNickname] = useState(user.nickname || '');
+  const [email, setEmail] = useState(user.email || '');
+  const [avatar, setAvatar] = useState(user.avatar || '');
   const [avatarFile, setAvatarFile] = useState<File | null>(null);
   
   const [showPasswordForm, setShowPasswordForm] = useState(false);
@@ -35,11 +33,10 @@ export default function SettingsPage() {
   const loadProfile = async () => {
     try {
       const res = await userApi.getProfile();
-      setProfile(res.data.user);
+      setUser(res.data.user);
       setNickname(res.data.user.nickname || '');
       setEmail(res.data.user.email || '');
       setAvatar(res.data.user.avatar || '');
-      localStorage.setItem('user', JSON.stringify(res.data.user));
     } catch (error) {
       console.error('加载用户信息失败', error);
     }
@@ -71,8 +68,7 @@ export default function SettingsPage() {
       }
       
       const res = await userApi.updateProfile(formData);
-      setProfile(res.data.user);
-      localStorage.setItem('user', JSON.stringify(res.data.user));
+      updateUser(res.data.user);
       setProfileMessage('个人信息更新成功！');
       setAvatarFile(null);
       setEditMode(false);
@@ -121,7 +117,7 @@ export default function SettingsPage() {
   const handleLogout = () => {
     if (confirm('确定要退出登录吗？')) {
       localStorage.removeItem('token');
-      localStorage.removeItem('user');
+      setUser({ nickname: '用户', email: '' });
       navigate('/login');
     }
   };
@@ -250,9 +246,9 @@ export default function SettingsPage() {
                   type="button"
                   onClick={() => {
                     setEditMode(false);
-                    setNickname(profile.nickname || '');
-                    setEmail(profile.email || '');
-                    setAvatar(profile.avatar || '');
+                    setNickname(user.nickname || '');
+                    setEmail(user.email || '');
+                    setAvatar(user.avatar || '');
                   }}
                   className="flex-1 py-3 rounded-xl font-medium"
                   style={{
@@ -271,15 +267,15 @@ export default function SettingsPage() {
                 className="w-16 h-16 rounded-full flex items-center justify-center text-white text-2xl font-bold shadow-lg overflow-hidden"
                 style={{ background: `linear-gradient(135deg, var(--color-primary), var(--color-secondary))` }}
               >
-                {profile.avatar ? (
-                  <img src={profile.avatar} alt="头像" className="w-full h-full object-cover" />
+                {user.avatar ? (
+                  <img src={user.avatar} alt="头像" className="w-full h-full object-cover" />
                 ) : (
-                  profile.nickname?.charAt(0).toUpperCase() || 'U'
+                  user.nickname?.charAt(0).toUpperCase() || 'U'
                 )}
               </div>
               <div>
-                <p className="font-medium text-[var(--color-text)]">{profile.nickname || '未设置昵称'}</p>
-                <p className="text-[var(--color-text-secondary)]">{profile.email || '未设置邮箱'}</p>
+                <p className="font-medium text-[var(--color-text)]">{user.nickname || '未设置昵称'}</p>
+                <p className="text-[var(--color-text-secondary)]">{user.email || '未设置邮箱'}</p>
               </div>
             </div>
           )}

@@ -1,18 +1,13 @@
 import { Link, useLocation } from 'react-router-dom';
-
-interface User {
-  nickname: string;
-  email: string;
-}
+import { useUser } from '../../context/UserContext';
 
 interface SidebarProps {
   onToggleTheme: () => void;
   currentMode: 'light' | 'dark';
 }
 
-const user = JSON.parse(localStorage.getItem('user') || '{"nickname":"用户","email":""}') as User;
-
 export default function Sidebar({ onToggleTheme, currentMode }: SidebarProps) {
+  const { user } = useUser();
   const location = useLocation();
 
   const navItems = [
@@ -77,10 +72,14 @@ export default function Sidebar({ onToggleTheme, currentMode }: SidebarProps) {
       >
         <div className="flex items-center gap-3">
           <div 
-            className="w-10 h-10 rounded-full flex items-center justify-center text-white font-bold shadow"
+            className="w-10 h-10 rounded-full flex items-center justify-center text-white font-bold shadow overflow-hidden"
             style={{ background: 'linear-gradient(135deg, var(--color-primary), var(--color-secondary))' }}
           >
-            {user.nickname?.charAt(0).toUpperCase()}
+            {user.avatar ? (
+              <img src={user.avatar} alt="头像" className="w-full h-full object-cover" />
+            ) : (
+              user.nickname?.charAt(0).toUpperCase()
+            )}
           </div>
           <div className="flex-1 min-w-0">
             <p className="font-medium truncate" style={{ color: 'var(--color-text)' }}>{user.nickname}</p>
