@@ -131,12 +131,15 @@ export default function HomePage() {
             <button
               key={index}
               onClick={() => navigate(action.path)}
-              className="p-6 rounded-xl text-white text-left hover:shadow-lg transition-all hover:scale-[1.02]"
-              style={{ background: 'linear-gradient(135deg, var(--color-primary), var(--color-secondary))' }}
+              className="p-6 rounded-xl text-left hover:shadow-lg transition-all hover:scale-[1.02]"
+              style={{ 
+                background: 'var(--color-button-background)',
+                color: 'var(--color-button-text)'
+              }}
             >
               <span className="text-3xl mb-3 block">{action.icon}</span>
               <p className="font-bold text-lg mb-1">{action.title}</p>
-              <p className="text-white/80 text-sm">{action.desc}</p>
+              <p className="text-sm opacity-80">{action.desc}</p>
             </button>
           ))}
         </div>
