@@ -3,15 +3,30 @@ import nodemailer from 'nodemailer';
 let transporter: nodemailer.Transporter;
 
 if (process.env.USE_REAL_EMAIL === 'true') {
-  transporter = nodemailer.createTransport({
-    host: 'smtp.ethereal.email',
-    port: 587,
-    secure: false,
-    auth: {
-      user: 'delphia.farrell@ethereal.email',
-      pass: 'xWn9cT6wY4mP2qR8',
-    },
-  });
+  const emailUser = process.env.EMAIL_USER || 'delphia.farrell@ethereal.email';
+  const emailPass = process.env.EMAIL_PASS || 'xWn9cT6wY4mP2qR8';
+  
+  if (emailUser.includes('@gmail.com')) {
+    transporter = nodemailer.createTransport({
+      host: 'smtp.gmail.com',
+      port: 587,
+      secure: false,
+      auth: {
+        user: emailUser,
+        pass: emailPass,
+      },
+    });
+  } else {
+    transporter = nodemailer.createTransport({
+      host: 'smtp.ethereal.email',
+      port: 587,
+      secure: false,
+      auth: {
+        user: emailUser,
+        pass: emailPass,
+      },
+    });
+  }
 } else {
   transporter = nodemailer.createTransport({
     host: 'localhost',
