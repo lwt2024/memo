@@ -86,3 +86,30 @@ export async function changePassword(userId: string, oldPassword: string, newPas
   
   return { message: '密码修改成功' };
 }
+
+export async function deleteUser(userId: string, password: string) {
+  const user = await prisma.user.findUnique({ where: { id: userId } });
+  
+  if (!user) {
+    throw new Error('用户不存在');
+  }
+  
+  const valid = await bcrypt.compare(password, user.passwordHash);
+  if (!valid) {
+    throw new Error('密码错误');
+  }
+  
+  if (user.avatar) {
+    const avatarPath = path.join(__dirname, '../../', user.avatar.replace('/', ''));
+    if (fs.existsSync(avatarPath)) {
+      fs.unlinkSync(avatarPath);
+    }
+  }
+  
+  await prisma.card.deleteMany({ where: { deck: { userId } } });
+  await prisma.deck.deleteMany({ where: { userId } });
+  await prisma.review.deleteMany({ where: { userId } });
+  await prisma.user.delete({ where: { id: userId } });
+  
+  return { message: '账号注销成功' };
+}
