@@ -3,14 +3,38 @@ import { useParams, useNavigate } from 'react-router-dom';
 import api from '../services/api';
 import { Card } from '../types';
 import Layout from '../components/common/Layout';
+import { useTheme } from '../context/ThemeContext';
 
 interface ReviewCard extends Card {
   deck?: { name: string };
 }
 
+const isCodeContent = (text: string): boolean => {
+  const codePatterns = [
+    /function\s+\w+\s*\(/,
+    /const\s+\w+\s*=/,
+    /let\s+\w+\s*=/,
+    /var\s+\w+\s*=/,
+    /import\s+.*from/,
+    /export\s+(default\s+)?/,
+    /class\s+\w+/,
+    /=>\s*\{/,
+    /```[\s\S]*```/,
+    /<\/?[\w]+>/,
+    /console\.(log|error|warn)/,
+    /\/\/.*$/,
+    /#.*$/,
+    /def\s+\w+/,
+    /def\s+\w+\(/,
+    /=>/,
+  ];
+  return codePatterns.some(pattern => pattern.test(text));
+};
+
 export default function ReviewPage() {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
+  const { mode } = useTheme();
   const [cards, setCards] = useState<ReviewCard[]>([]);
   const [currentIndex, setCurrentIndex] = useState(0);
   const [isFlipped, setIsFlipped] = useState(false);
@@ -140,20 +164,25 @@ export default function ReviewPage() {
           onClick={handleFlip}
         >
           <div
-            className={`bg-white rounded-2xl shadow-2xl p-8 min-h-80 flex flex-col items-center justify-center transition-all duration-500 transform-style-preserve-3d ${
-              isFlipped ? 'rotate-y-180' : ''
-            } hover:shadow-3xl`}
-          >
-            <div className="absolute inset-0 backface-hidden">
-              <p className="text-gray-400 text-sm mb-4 text-center">问题</p>
-              <p className="text-xl text-center leading-relaxed">{currentCard.front}</p>
-              <p className="text-gray-400 text-sm mt-6 text-center">点击翻转查看答案</p>
+          className={`rounded-2xl shadow-2xl p-8 min-h-80 flex flex-col items-center justify-center transition-all duration-500 transform-style-preserve-3d ${
+            isFlipped ? 'rotate-y-180' : ''
+          } hover:shadow-3xl`}
+          style={{ backgroundColor: 'var(--color-card)' }}
+        >
+          <div className="absolute inset-0 backface-hidden p-8 flex flex-col items-center justify-center">
+            <p className="text-sm mb-4 text-center" style={{ color: 'var(--color-text-secondary)' }}>问题</p>
+            <div className={`text-center leading-relaxed ${isCodeContent(currentCard.front) ? 'font-mono text-sm whitespace-pre-wrap max-h-60 overflow-auto' : 'text-xl'}`} style={{ color: 'var(--color-text)' }}>
+              {currentCard.front}
             </div>
-            <div className="absolute inset-0 backface-hidden rotate-y-180">
-              <p className="text-gray-400 text-sm mb-4 text-center">答案</p>
-              <p className="text-xl text-center leading-relaxed text-blue-600">{currentCard.back}</p>
+            <p className="text-sm mt-6 text-center" style={{ color: 'var(--color-text-secondary)' }}>点击翻转查看答案</p>
+          </div>
+          <div className="absolute inset-0 backface-hidden rotate-y-180 p-8 flex flex-col items-center justify-center">
+            <p className="text-sm mb-4 text-center" style={{ color: 'var(--color-text-secondary)' }}>答案</p>
+            <div className={`text-center leading-relaxed ${isCodeContent(currentCard.back) ? 'font-mono text-sm whitespace-pre-wrap max-h-60 overflow-auto' : 'text-xl'}`} style={{ color: 'var(--color-primary)' }}>
+              {currentCard.back}
             </div>
           </div>
+        </div>
         </div>
 
         {isFlipped && (
