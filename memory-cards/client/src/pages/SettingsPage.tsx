@@ -16,6 +16,7 @@ export default function SettingsPage() {
   const [nickname, setNickname] = useState(defaultUser.nickname || '');
   const [email, setEmail] = useState(defaultUser.email || '');
   const [avatar, setAvatar] = useState(defaultUser.avatar || '');
+  const [avatarFile, setAvatarFile] = useState<File | null>(null);
   
   const [showPasswordForm, setShowPasswordForm] = useState(false);
   const [oldPassword, setOldPassword] = useState('');
@@ -44,16 +45,36 @@ export default function SettingsPage() {
     }
   };
 
+  const handleAvatarChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (file) {
+      setAvatarFile(file);
+      const reader = new FileReader();
+      reader.onload = (e) => {
+        setAvatar(e.target?.result as string);
+      };
+      reader.readAsDataURL(file);
+    }
+  };
+
   const handleProfileUpdate = async (e: React.FormEvent) => {
     e.preventDefault();
     setProfileMessage('');
     setIsLoading(true);
     
     try {
-      const res = await userApi.updateProfile({ nickname, email, avatar });
+      const formData = new FormData();
+      formData.append('nickname', nickname);
+      formData.append('email', email);
+      if (avatarFile) {
+        formData.append('avatar', avatarFile);
+      }
+      
+      const res = await userApi.updateProfile(formData);
       setProfile(res.data.user);
       localStorage.setItem('user', JSON.stringify(res.data.user));
       setProfileMessage('个人信息更新成功！');
+      setAvatarFile(null);
       setEditMode(false);
       setTimeout(() => setProfileMessage(''), 3000);
     } catch (error: any) {
@@ -166,19 +187,20 @@ export default function SettingsPage() {
                   </div>
                 </div>
                 <div className="flex-1">
-                  <label className="block text-sm font-medium mb-2 text-[var(--color-text)]">头像 URL</label>
-                  <input
-                    type="url"
-                    value={avatar}
-                    onChange={(e) => setAvatar(e.target.value)}
-                    className="w-full px-3 py-2 border rounded-lg text-sm"
-                    style={{
-                      backgroundColor: 'var(--color-background)',
-                      borderColor: 'var(--color-border)',
-                      color: 'var(--color-text)'
-                    }}
-                    placeholder="输入头像图片URL"
-                  />
+                  <label className="block text-sm font-medium mb-2 text-[var(--color-text)]">头像</label>
+                  <label className="w-full px-4 py-3 border border-dashed rounded-xl cursor-pointer text-center hover:bg-[var(--color-background-secondary)] transition-colors">
+                    <input
+                      type="file"
+                      accept="image/*"
+                      onChange={handleAvatarChange}
+                      className="hidden"
+                    />
+                    {avatarFile ? (
+                      <span className="text-[var(--color-primary)]">✓ 已选择图片</span>
+                    ) : (
+                      <span className="text-[var(--color-text-secondary)]">📷 点击上传头像</span>
+                    )}
+                  </label>
                 </div>
               </div>
 

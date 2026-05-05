@@ -21,8 +21,10 @@ export const authApi = {
 
 export const userApi = {
   getProfile: () => api.get('/user/profile'),
-  updateProfile: (data: { nickname?: string; email?: string; avatar?: string }) =>
-    api.put('/user/profile', data),
+  updateProfile: (data: FormData) =>
+    api.put('/user/profile', data, {
+      headers: { 'Content-Type': 'multipart/form-data' },
+    }),
   changePassword: (oldPassword: string, newPassword: string) =>
     api.put('/user/password', { oldPassword, newPassword }),
 };

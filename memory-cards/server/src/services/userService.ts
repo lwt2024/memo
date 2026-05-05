@@ -1,12 +1,24 @@
 import { PrismaClient } from '@prisma/client';
 import bcrypt from 'bcryptjs';
+import fs from 'fs';
+import path from 'path';
 
 const prisma = new PrismaClient();
+
+const __dirname = path.dirname(new URL(import.meta.url).pathname);
+const AVATAR_DIR = path.join(__dirname, '../../uploads/avatars');
+
+// 确保上传目录存在
+if (!fs.existsSync(AVATAR_DIR)) {
+  fs.mkdirSync(AVATAR_DIR, { recursive: true });
+}
 
 export async function updateProfile(userId: string, data: {
   nickname?: string;
   email?: string;
   avatar?: string;
+  avatarFile?: Buffer;
+  avatarFileName?: string;
 }) {
   const updateData: any = {};
   
@@ -24,7 +36,15 @@ export async function updateProfile(userId: string, data: {
     updateData.email = data.email;
   }
   
-  if (data.avatar !== undefined) {
+  if (data.avatarFile && data.avatarFileName) {
+    const ext = path.extname(data.avatarFileName);
+    const fileName = `${userId}${ext}`;
+    const filePath = path.join(AVATAR_DIR, fileName);
+    
+    fs.writeFileSync(filePath, data.avatarFile);
+    
+    updateData.avatar = `/uploads/avatars/${fileName}`;
+  } else if (data.avatar !== undefined) {
     updateData.avatar = data.avatar;
   }
   

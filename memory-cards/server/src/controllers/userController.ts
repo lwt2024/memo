@@ -27,8 +27,18 @@ export async function getProfileHandler(req: AuthRequest, res: Response) {
 
 export async function updateProfileHandler(req: AuthRequest, res: Response) {
   try {
-    const { nickname, email, avatar } = req.body;
-    const user = await updateProfile(req.userId!, { nickname, email, avatar });
+    const data: any = {
+      nickname: req.body.nickname,
+      email: req.body.email,
+    };
+
+    // 处理文件上传
+    if (req.file) {
+      data.avatarFile = req.file.buffer;
+      data.avatarFileName = req.file.originalname;
+    }
+
+    const user = await updateProfile(req.userId!, data);
     res.json({ user, message: '个人信息更新成功' });
   } catch (error: any) {
     res.status(400).json({ error: error.message });
