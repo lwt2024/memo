@@ -18,6 +18,8 @@ model User {
 
   decks         Deck[]
   reviewRecords ReviewRecord[]
+  tags          Tag[]
+  cardTags      CardTag[]
 
   @@map("users")
 }
@@ -47,8 +49,39 @@ model Card {
 
   deck          Deck           @relation(fields: [deckId], references: [id], onDelete: Cascade)
   reviewRecords ReviewRecord[]
+  cardTags      CardTag[]
 
   @@map("cards")
+}
+
+model Tag {
+  id        String   @id @default(uuid())
+  name      String
+  color     String
+  userId    String   @map("user_id")
+  isPreset  Boolean  @default(false) @map("is_preset")
+  createdAt DateTime @default(now()) @map("created_at")
+
+  user     User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  cardTags CardTag[]
+
+  @@map("tags")
+  @@unique([userId, name])
+}
+
+model CardTag {
+  id        String   @id @default(uuid())
+  cardId    String   @map("card_id")
+  tagId     String   @map("tag_id")
+  userId    String   @map("user_id")
+  createdAt DateTime @default(now()) @map("created_at")
+
+  card Card @relation(fields: [cardId], references: [id], onDelete: Cascade)
+  tag  Tag  @relation(fields: [tagId], references: [id], onDelete: Cascade)
+  user User @relation(fields: [userId], references: [id])
+
+  @@map("card_tags")
+  @@unique([cardId, tagId])
 }
 
 model ReviewRecord {

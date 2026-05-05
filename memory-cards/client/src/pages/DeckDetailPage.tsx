@@ -1,8 +1,11 @@
 import { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import api from '../services/api';
-import { Card, Deck } from '../types';
+import api, { tagApi } from '../services/api';
+import { Card, Deck, Tag as TagType } from '../types';
 import Layout from '../components/common/Layout';
+import TagSelector from '../components/common/TagSelector';
+import TagDisplay from '../components/common/TagDisplay';
+import TagFilter from '../components/common/TagFilter';
 
 export default function DeckDetailPage() {
   const { id } = useParams<{ id: string }>();
@@ -18,19 +21,37 @@ export default function DeckDetailPage() {
   const [sortOrder, setSortOrder] = useState<'asc' | 'desc'>('asc');
   const [masteryFilter, setMasteryFilter] = useState<number | ''>('');
   const [searchQuery, setSearchQuery] = useState('');
+  const [selectedTagIds, setSelectedTagIds] = useState<string[]>([]);
+  const [tagFilter, setTagFilter] = useState<string[]>([]);
+  const [deckTags, setDeckTags] = useState<TagType[]>([]);
+  const [tagError, setTagError] = useState('');
 
   useEffect(() => {
-    if (id) fetchDeckData();
+    if (id) {
+      fetchDeckData();
+      fetchDeckTags();
+    }
   }, [id, sortBy, sortOrder, masteryFilter]);
 
   // 过滤卡片
   const filteredCards = deck?.cards?.filter(card => {
-    if (!searchQuery) return true;
-    const query = searchQuery.toLowerCase();
-    return (
-      card.front.toLowerCase().includes(query) ||
-      card.back.toLowerCase().includes(query)
-    );
+    // 搜索过滤
+    if (searchQuery) {
+      const query = searchQuery.toLowerCase();
+      if (!(card.front.toLowerCase().includes(query) ||
+            card.back.toLowerCase().includes(query))) {
+        return false;
+      }
+    }
+    
+    // 标签过滤
+    if (tagFilter.length > 0) {
+      const cardTagIds = card.cardTags?.map(ct => ct.tagId) || [];
+      const hasAllTags = tagFilter.every(tagId => cardTagIds.includes(tagId));
+      if (!hasAllTags) return false;
+    }
+    
+    return true;
   });
 
   const fetchDeckData = async () => {
@@ -49,30 +70,64 @@ export default function DeckDetailPage() {
     }
   };
 
+  const fetchDeckTags = async () => {
+    try {
+      const res = await tagApi.getDeckTags(id!);
+      setDeckTags(res.data.tags);
+    } catch (error) {
+      console.error('获取标签失败', error);
+    }
+  };
+
   const openCreateModal = () => {
     setEditingCard(null);
     setCardFront('');
     setCardBack('');
     setShowModal(true);
+    setSelectedTagIds([]);
   };
 
   const openEditModal = (card: Card) => {
     setEditingCard(card);
     setCardFront(card.front);
     setCardBack(card.back);
+    setSelectedTagIds(card.cardTags?.map(ct => ct.tagId) || []);
     setShowModal(true);
   };
 
   const saveCard = async (e: React.FormEvent) => {
     e.preventDefault();
+    setTagError('');
+    
     try {
+      let cardId: string;
+      
       if (editingCard) {
         await api.put(`/cards/${editingCard.id}`, { front: cardFront, back: cardBack });
+        cardId = editingCard.id;
+        
+        const existingTagIds = editingCard.cardTags?.map(ct => ct.tagId) || [];
+        for (const tagId of existingTagIds) {
+          try {
+            await tagApi.removeTagFromCard(cardId, tagId);
+          } catch {}
+        }
       } else {
-        await api.post('/cards', { deckId: id, front: cardFront, back: cardBack });
+        const res = await api.post('/cards', { deckId: id, front: cardFront, back: cardBack });
+        cardId = res.data.card.id;
       }
+      
+      for (const tagId of selectedTagIds) {
+        try {
+          await tagApi.addTagToCard(cardId, tagId);
+        } catch (error: any) {
+          setTagError(error.response?.data?.error || '添加标签失败');
+        }
+      }
+      
       setShowModal(false);
       fetchDeckData();
+      fetchDeckTags();
     } catch (error) {
       console.error('保存卡片失败', error);
     }
@@ -207,6 +262,13 @@ export default function DeckDetailPage() {
             </div>
           </div>
         </div>
+        <div className="mt-4">
+          <TagFilter
+            tags={deckTags}
+            selectedTagIds={tagFilter}
+            onChange={setTagFilter}
+          />
+        </div>
         {/* 搜索结果计数 */}
         {searchQuery && filteredCards && (
           <div className="mt-3 text-sm" style={{ color: 'var(--color-text-secondary)' }}>
@@ -248,6 +310,12 @@ export default function DeckDetailPage() {
                     </p>
                     {/* 卡片元数据 */}
                     <div className="flex flex-wrap gap-2 mt-2 items-center text-sm">
+                      {card.cardTags && card.cardTags.length > 0 && (
+                        <TagDisplay
+                          tags={card.cardTags.map(ct => ct.tag)}
+                          size="sm"
+                        />
+                      )}
                       <span style={{ color: 'var(--color-text-secondary)' }}>
                         📅 {formatDate(card.createdAt)}
                       </span>
@@ -368,6 +436,19 @@ export default function DeckDetailPage() {
                     }
                   }}
                 />
+              </div>
+              <div className="mb-6">
+                <label className="block mb-3 text-lg font-medium" style={{ color: 'var(--color-text)' }}>
+                  标签
+                </label>
+                <TagSelector
+                  tags={deckTags}
+                  selectedTagIds={selectedTagIds}
+                  onChange={setSelectedTagIds}
+                  deckId={id!}
+                  onTagsUpdated={fetchDeckTags}
+                />
+                {tagError && <p className="text-red-500 mt-2">{tagError}</p>}
               </div>
               <div className="flex justify-end gap-4">
                 <button

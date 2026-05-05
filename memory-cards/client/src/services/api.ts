@@ -31,4 +31,12 @@ export const userApi = {
     api.delete('/user/account', { data: { password } }),
 };
 
+export const tagApi = {
+  getUserTags: () => api.get('/tags'),
+  createTag: (name: string, color: string) => api.post('/tags', { name, color }),
+  getDeckTags: (deckId: string) => api.get(`/tags/deck/${deckId}`),
+  addTagToCard: (cardId: string, tagId: string) => api.post('/tags/card-tags', { cardId, tagId }),
+  removeTagFromCard: (cardId: string, tagId: string) => api.delete(`/tags/card-tags/${cardId}/${tagId}`),
+};
+
 export default api;

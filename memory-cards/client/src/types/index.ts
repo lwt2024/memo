@@ -1,8 +1,9 @@
 export interface User {
   id: string;
-  email: string;
+  username: string;
   nickname: string;
   avatar?: string;
+  email?: string;
 }
 
 export interface AuthResponse {
@@ -22,6 +23,25 @@ export interface Deck {
   cards?: Card[];
 }
 
+export interface Tag {
+  id: string;
+  name: string;
+  color: string;
+  userId: string;
+  isPreset: boolean;
+  createdAt: string;
+  count?: number;
+}
+
+export interface CardTag {
+  id: string;
+  cardId: string;
+  tagId: string;
+  userId: string;
+  createdAt: string;
+  tag: Tag;
+}
+
 export interface Card {
   id: string;
   deckId: string;
@@ -30,6 +50,7 @@ export interface Card {
   cardType: 'text' | 'rich_text' | 'image' | 'audio';
   mediaUrls?: string[];
   createdAt: string;
+  cardTags?: CardTag[];
   reviewRecord?: ReviewRecord;
 }
 

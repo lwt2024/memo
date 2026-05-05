@@ -29,6 +29,9 @@ export async function getDeckById(deckId: string, userId: string, filters?: {
     reviewRecords: {
       where: { userId },
     },
+    cardTags: {
+      include: { tag: true },
+    },
   };
   
   let orderByClause: any = {};
