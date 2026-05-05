@@ -25,6 +25,10 @@ export default function SettingsPage() {
   
   const [profileMessage, setProfileMessage] = useState('');
   const [isLoading, setIsLoading] = useState(false);
+  
+  const [showDeleteModal, setShowDeleteModal] = useState(false);
+  const [deletePassword, setDeletePassword] = useState('');
+  const [deleteError, setDeleteError] = useState('');
 
   useEffect(() => {
     loadProfile();
@@ -119,6 +123,22 @@ export default function SettingsPage() {
       localStorage.removeItem('token');
       setUser({ nickname: '用户', email: '' });
       navigate('/login');
+    }
+  };
+
+  const handleDeleteAccount = async () => {
+    setDeleteError('');
+    setIsLoading(true);
+    
+    try {
+      await userApi.deleteAccount(deletePassword);
+      localStorage.removeItem('token');
+      setUser({ nickname: '用户', email: '' });
+      navigate('/login');
+    } catch (error: any) {
+      setDeleteError(error.response?.data?.error || '注销失败');
+    } finally {
+      setIsLoading(false);
     }
   };
 
@@ -490,7 +510,87 @@ export default function SettingsPage() {
             退出登录
           </button>
         </div>
+
+        <div className="p-6 border-t border-[var(--color-border)]">
+          <div className="flex items-center justify-between mb-4">
+            <h3 className="font-medium text-[var(--color-text)]">危险操作</h3>
+          </div>
+          <button
+            onClick={() => setShowDeleteModal(true)}
+            className="w-full py-3 text-red-600 dark:text-red-400 bg-red-50 dark:bg-red-900/20 rounded-xl hover:bg-red-100 dark:hover:bg-red-800/30 transition-colors font-medium"
+          >
+            🗑️ 注销账号
+          </button>
+          <p className="text-xs text-[var(--color-text-secondary)] mt-2 text-center">
+            注销后所有数据将被永久删除，且可使用原邮箱重新注册
+          </p>
+        </div>
       </div>
+
+      {showDeleteModal && (
+        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
+          <div 
+            className="bg-[var(--color-card)] rounded-2xl p-6 max-w-md w-full shadow-2xl"
+          >
+            <h3 className="text-xl font-bold mb-2" style={{ color: 'var(--color-text)' }}>
+              确认注销账号？
+            </h3>
+            <p className="text-[var(--color-text-secondary)] mb-6">
+              此操作将永久删除您的所有数据，包括卡片组、卡片和学习记录。请输入密码以确认操作。
+            </p>
+            
+            <div className="space-y-4">
+              <div>
+                <label className="block text-sm font-medium mb-2" style={{ color: 'var(--color-text)' }}>
+                  密码
+                </label>
+                <input
+                  type="password"
+                  value={deletePassword}
+                  onChange={(e) => setDeletePassword(e.target.value)}
+                  className="w-full px-4 py-3 border rounded-xl focus:outline-none focus:ring-2 transition-all"
+                  style={{ 
+                    backgroundColor: 'var(--color-background)', 
+                    borderColor: 'var(--color-border)',
+                    color: 'var(--color-text)'
+                  }}
+                  placeholder="输入密码确认注销"
+                />
+              </div>
+
+              {deleteError && (
+                <p className="text-red-500 text-sm">{deleteError}</p>
+              )}
+
+              <div className="flex gap-3">
+                <button
+                  onClick={() => {
+                    setShowDeleteModal(false);
+                    setDeletePassword('');
+                    setDeleteError('');
+                  }}
+                  className="flex-1 py-3 rounded-xl font-medium"
+                  style={{
+                    backgroundColor: 'var(--color-background)',
+                    borderColor: 'var(--color-border)',
+                    color: 'var(--color-text)'
+                  }}
+                >
+                  取消
+                </button>
+                <button
+                  onClick={handleDeleteAccount}
+                  disabled={isLoading}
+                  className="flex-1 py-3 rounded-xl text-white font-medium disabled:opacity-50"
+                  style={{ backgroundColor: '#dc2626' }}
+                >
+                  {isLoading ? '处理中...' : '确认注销'}
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
     </Layout>
   );
 }

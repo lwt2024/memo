@@ -29,6 +29,8 @@ export const userApi = {
     }),
   changePassword: (oldPassword: string, newPassword: string) =>
     api.put('/user/password', { oldPassword, newPassword }),
+  deleteAccount: (password: string) =>
+    api.delete('/user/account', { data: { password } }),
 };
 
 export default api;
