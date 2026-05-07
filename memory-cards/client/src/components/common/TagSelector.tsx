@@ -87,7 +87,7 @@ export default function TagSelector({ selectedTagIds, onChange, error }: TagSele
               key={tag.id}
               type="button"
               onClick={() => canSelect && toggleTag(tag.id)}
-              className={`px-3 py-1 rounded-full text-sm font-medium transition-all ${
+              className={`px-3 py-1 rounded-full text-sm font-medium transition-all relative group ${
                 isSelected ? 'ring-2 ring-offset-1' : ''
               } ${!canSelect && !isSelected ? 'opacity-50 cursor-not-allowed' : 'cursor-pointer'}`}
               style={{
@@ -97,6 +97,18 @@ export default function TagSelector({ selectedTagIds, onChange, error }: TagSele
               }}
             >
               {tag.name}
+              {isSelected && (
+                <span
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    onChange(selectedTagIds.filter(id => id !== tag.id));
+                  }}
+                  className="absolute -top-1 -right-1 w-4 h-4 bg-white rounded-full flex items-center justify-center text-xs font-bold shadow-md hover:bg-gray-100 transition-colors"
+                  style={{ color: tag.color }}
+                >
+                  ×
+                </span>
+              )}
             </button>
           );
         })}
