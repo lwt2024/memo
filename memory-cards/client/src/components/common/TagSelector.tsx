@@ -5,6 +5,7 @@ import { tagApi } from '../../services/api';
 interface TagSelectorProps {
   selectedTagIds: string[];
   onChange: (tagIds: string[]) => void;
+  onTagsUpdated?: () => void;
   error?: string;
 }
 
@@ -13,7 +14,7 @@ const COLOR_OPTIONS = [
   '#06b6d4', '#3b82f6', '#8b5cf6', '#ec4899'
 ];
 
-export default function TagSelector({ selectedTagIds, onChange, error }: TagSelectorProps) {
+export default function TagSelector({ selectedTagIds, onChange, onTagsUpdated, error }: TagSelectorProps) {
   const [tags, setTags] = useState<Tag[]>([]);
   const [loading, setLoading] = useState(true);
   const [showCreateModal, setShowCreateModal] = useState(false);
@@ -43,6 +44,21 @@ export default function TagSelector({ selectedTagIds, onChange, error }: TagSele
       onChange(selectedTagIds.filter(id => id !== tagId));
     } else if (selectedTagIds.length < 3) {
       onChange([...selectedTagIds, tagId]);
+    }
+  };
+
+  const deleteTag = async (tagId: string, e: React.MouseEvent) => {
+    e.stopPropagation();
+    
+    if (!confirm('确定要删除这个标签吗？')) return;
+    
+    try {
+      await tagApi.deleteTag(tagId);
+      setTags(tags.filter(t => t.id !== tagId));
+      onChange(selectedTagIds.filter(id => id !== tagId));
+      onTagsUpdated?.();
+    } catch (error: any) {
+      alert(error.response?.data?.error || '删除标签失败');
     }
   };
 
@@ -81,35 +97,39 @@ export default function TagSelector({ selectedTagIds, onChange, error }: TagSele
         {(tags || []).map(tag => {
           const isSelected = selectedTagIds?.includes(tag.id);
           const canSelect = isSelected || (selectedTagIds?.length || 0) < 3;
+          const canDelete = !tag.isPreset;
           
           return (
-            <button
+            <div
               key={tag.id}
-              type="button"
-              onClick={() => canSelect && toggleTag(tag.id)}
-              className={`px-3 py-1 rounded-full text-sm font-medium transition-all relative group ${
+              className={`relative inline-flex items-center gap-1 px-3 py-1 rounded-full text-sm font-medium transition-all ${
                 isSelected ? 'ring-2 ring-offset-1' : ''
-              } ${!canSelect && !isSelected ? 'opacity-50 cursor-not-allowed' : 'cursor-pointer'}`}
+              } ${!canSelect && !isSelected ? 'opacity-50' : ''}`}
               style={{
                 backgroundColor: isSelected ? tag.color : 'transparent',
                 color: isSelected ? 'white' : tag.color,
                 border: `2px solid ${tag.color}`,
               }}
             >
-              {tag.name}
-              {isSelected && (
-                <span
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    onChange(selectedTagIds.filter(id => id !== tag.id));
-                  }}
-                  className="absolute -top-1 -right-1 w-4 h-4 bg-white rounded-full flex items-center justify-center text-xs font-bold shadow-md hover:bg-gray-100 transition-colors"
-                  style={{ color: tag.color }}
+              <button
+                type="button"
+                onClick={() => canSelect && toggleTag(tag.id)}
+                className={`${!canSelect && !isSelected ? 'cursor-not-allowed' : 'cursor-pointer'}`}
+                disabled={!canSelect}
+              >
+                {tag.name}
+              </button>
+              {canDelete && (
+                <button
+                  type="button"
+                  onClick={(e) => deleteTag(tag.id, e)}
+                  className="w-4 h-4 rounded-full flex items-center justify-center text-xs font-bold hover:bg-white hover:bg-opacity-30 transition-colors"
+                  style={{ backgroundColor: 'rgba(0,0,0,0.1)' }}
                 >
                   ×
-                </span>
+                </button>
               )}
-            </button>
+            </div>
           );
         })}
         

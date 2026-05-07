@@ -49,3 +49,13 @@ export async function removeTagFromCardHandler(req: AuthRequest, res: Response) 
     res.status(400).json({ error: error.message });
   }
 }
+ 
+export async function deleteTagHandler(req: AuthRequest, res: Response) {
+  try {
+    const { tagId } = req.params;
+    await tagService.deleteTag(tagId, req.userId!);
+    res.json({ success: true });
+  } catch (error: any) {
+    res.status(400).json({ error: error.message });
+  }
+}

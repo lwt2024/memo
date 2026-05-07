@@ -37,6 +37,7 @@ export const tagApi = {
   getDeckTags: (deckId: string) => api.get(`/tags/deck/${deckId}`),
   addTagToCard: (cardId: string, tagId: string) => api.post('/tags/card-tags', { cardId, tagId }),
   removeTagFromCard: (cardId: string, tagId: string) => api.delete(`/tags/card-tags/${cardId}/${tagId}`),
+  deleteTag: (tagId: string) => api.delete(`/tags/${tagId}`),
 };
 
 export const deckApi = {

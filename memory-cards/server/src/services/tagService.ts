@@ -156,3 +156,25 @@ export async function removeTagFromCard(cardId: string, tagId: string, userId: s
     },
   });
 }
+
+export async function deleteTag(tagId: string, userId: string) {
+  const tag = await prisma.tag.findUnique({
+    where: { id: tagId },
+  });
+
+  if (!tag) {
+    throw new Error('标签不存在');
+  }
+
+  if (tag.userId !== userId) {
+    throw new Error('无权删除该标签');
+  }
+
+  if (tag.isPreset) {
+    throw new Error('预设标签不能删除');
+  }
+
+  return prisma.tag.delete({
+    where: { id: tagId },
+  });
+}

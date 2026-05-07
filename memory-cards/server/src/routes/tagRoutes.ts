@@ -11,5 +11,6 @@ router.post('/', tagController.createTagHandler);
 router.get('/deck/:deckId', tagController.getDeckTagsHandler);
 router.post('/card-tags', tagController.addTagToCardHandler);
 router.delete('/card-tags/:cardId/:tagId', tagController.removeTagFromCardHandler);
+router.delete('/:tagId', tagController.deleteTagHandler);
 
 export default router;
