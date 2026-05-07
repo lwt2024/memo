@@ -21,6 +21,9 @@ export default function TagSelector({ selectedTagIds, onChange, onTagsUpdated, e
   const [newTagName, setNewTagName] = useState('');
   const [newTagColor, setNewTagColor] = useState(COLOR_OPTIONS[0]);
   const [createError, setCreateError] = useState('');
+  const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
+  const [tagToDelete, setTagToDelete] = useState<Tag | null>(null);
+  const [deleteError, setDeleteError] = useState('');
 
   useEffect(() => {
     loadTags();
@@ -47,19 +50,32 @@ export default function TagSelector({ selectedTagIds, onChange, onTagsUpdated, e
     }
   };
 
-  const deleteTag = async (tagId: string, e: React.MouseEvent) => {
+  const handleDeleteClick = (tag: Tag, e: React.MouseEvent) => {
     e.stopPropagation();
-    
-    if (!confirm('确定要删除这个标签吗？')) return;
+    setTagToDelete(tag);
+    setShowDeleteConfirm(true);
+    setDeleteError('');
+  };
+
+  const confirmDelete = async () => {
+    if (!tagToDelete) return;
     
     try {
-      await tagApi.deleteTag(tagId);
-      setTags(tags.filter(t => t.id !== tagId));
-      onChange(selectedTagIds.filter(id => id !== tagId));
+      await tagApi.deleteTag(tagToDelete.id);
+      setTags(tags.filter(t => t.id !== tagToDelete.id));
+      onChange(selectedTagIds.filter(id => id !== tagToDelete.id));
       onTagsUpdated?.();
+      setShowDeleteConfirm(false);
+      setTagToDelete(null);
     } catch (error: any) {
-      alert(error.response?.data?.error || '删除标签失败');
+      setDeleteError(error.response?.data?.error || '删除标签失败');
     }
+  };
+
+  const cancelDelete = () => {
+    setShowDeleteConfirm(false);
+    setTagToDelete(null);
+    setDeleteError('');
   };
 
   const createTag = async () => {
@@ -122,7 +138,7 @@ export default function TagSelector({ selectedTagIds, onChange, onTagsUpdated, e
               {canDelete && (
                 <button
                   type="button"
-                  onClick={(e) => deleteTag(tag.id, e)}
+                  onClick={(e) => handleDeleteClick(tag, e)}
                   className="w-4 h-4 rounded-full flex items-center justify-center text-xs font-bold hover:bg-white hover:bg-opacity-30 transition-colors"
                   style={{ backgroundColor: 'rgba(0,0,0,0.1)' }}
                 >
@@ -221,6 +237,48 @@ export default function TagSelector({ selectedTagIds, onChange, onTagsUpdated, e
                 style={{ backgroundColor: newTagColor }}
               >
                 创建
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {showDeleteConfirm && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
+          <div className="rounded-lg p-6 w-full max-w-md" style={{ backgroundColor: 'var(--color-card)' }}>
+            <h3 className="text-xl font-bold mb-4" style={{ color: 'var(--color-text)' }}>
+              删除标签
+            </h3>
+            
+            <p style={{ color: 'var(--color-text-secondary)' }} className="mb-4">
+              确定要删除标签 "<span style={{ color: tagToDelete?.color }}>{tagToDelete?.name}</span>" 吗？
+              此操作将同时移除该标签在所有卡片上的关联。
+            </p>
+
+            {deleteError && (
+              <div className="mb-4 text-sm text-red-500">{deleteError}</div>
+            )}
+
+            <div className="flex gap-3 justify-end">
+              <button
+                type="button"
+                onClick={cancelDelete}
+                className="px-4 py-2 rounded-lg"
+                style={{
+                  backgroundColor: 'var(--color-background)',
+                  color: 'var(--color-text)',
+                  border: '1px solid var(--color-border)',
+                }}
+              >
+                取消
+              </button>
+              <button
+                type="button"
+                onClick={confirmDelete}
+                className="px-4 py-2 rounded-lg text-white"
+                style={{ backgroundColor: '#ef4444' }}
+              >
+                删除
               </button>
             </div>
           </div>
