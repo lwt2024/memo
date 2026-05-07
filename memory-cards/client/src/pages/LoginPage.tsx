@@ -9,6 +9,7 @@ function LoginPage() {
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
   const [isLoading, setIsLoading] = useState(false);
+  const [showPassword, setShowPassword] = useState(false);
   const [showUsernameDropdown, setShowUsernameDropdown] = useState(false);
   const [usernameHistory, setUsernameHistory] = useState<string[]>([]);
   const [rememberMe, setRememberMe] = useState(false);
@@ -224,19 +225,30 @@ function LoginPage() {
             <label className="block text-sm font-medium mb-2" style={{ color: 'var(--color-text)' }}>
               密码
             </label>
-            <input
-              type="password"
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-              className="w-full px-4 py-3 border rounded-xl focus:outline-none focus:ring-2 transition-all"
-              style={{ 
-                backgroundColor: 'var(--color-card)', 
-                borderColor: 'var(--color-border)',
-                color: 'var(--color-text)'
-              }}
-              placeholder="输入你的密码"
-              required
-            />
+            <div className="relative">
+              <input
+                type={showPassword ? 'text' : 'password'}
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+                className="w-full px-4 py-3 border rounded-xl focus:outline-none focus:ring-2 transition-all pr-12"
+                style={{ 
+                  backgroundColor: 'var(--color-card)', 
+                  borderColor: 'var(--color-border)',
+                  color: 'var(--color-text)'
+                }}
+                placeholder="输入你的密码"
+                required
+              />
+              <button
+                type="button"
+                onClick={() => setShowPassword(!showPassword)}
+                className="absolute right-3 top-1/2 -translate-y-1/2 p-2 hover:bg-opacity-80 transition-all"
+                style={{ color: 'var(--color-text-secondary)' }}
+                tabIndex={-1}
+              >
+                {showPassword ? '🙈' : '👁️'}
+              </button>
+            </div>
           </div>
 
           <div className="flex items-center justify-between">
