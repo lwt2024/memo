@@ -28,9 +28,11 @@ export default function TagSelector({ selectedTagIds, onChange, error }: TagSele
   const loadTags = async () => {
     try {
       const res = await tagApi.getUserTags();
-      setTags(res.data.tags);
-    } catch (error) {
-      console.error('加载标签失败', error);
+      setTags(res.data.tags || []);
+    } catch (error: any) {
+      console.error('加载标签失败:', error);
+      console.error('错误详情:', error.response?.data);
+      setTags([]);
     } finally {
       setLoading(false);
     }
@@ -71,14 +73,14 @@ export default function TagSelector({ selectedTagIds, onChange, error }: TagSele
           标签
         </label>
         <div className="text-xs" style={{ color: 'var(--color-text-secondary)' }}>
-          已选 {selectedTagIds.length}/3
+          已选 {selectedTagIds?.length || 0}/3
         </div>
       </div>
       
       <div className="flex flex-wrap gap-2 mb-3">
-        {tags.map(tag => {
-          const isSelected = selectedTagIds.includes(tag.id);
-          const canSelect = isSelected || selectedTagIds.length < 3;
+        {(tags || []).map(tag => {
+          const isSelected = selectedTagIds?.includes(tag.id);
+          const canSelect = isSelected || (selectedTagIds?.length || 0) < 3;
           
           return (
             <button

@@ -5,7 +5,7 @@ import * as tagService from '../services/tagService.js';
 export async function getUserTagsHandler(req: AuthRequest, res: Response) {
   try {
     const tags = await tagService.getUserTags(req.userId!);
-    res.json(tags);
+    res.json({ tags });
   } catch (error: any) {
     res.status(400).json({ error: error.message });
   }
@@ -24,7 +24,7 @@ export async function createTagHandler(req: AuthRequest, res: Response) {
 export async function getDeckTagsHandler(req: AuthRequest, res: Response) {
   try {
     const tags = await tagService.getDeckTags(req.params.deckId);
-    res.json(tags);
+    res.json({ tags });
   } catch (error: any) {
     res.status(400).json({ error: error.message });
   }
