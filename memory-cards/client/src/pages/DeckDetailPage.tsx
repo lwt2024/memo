@@ -39,6 +39,7 @@ export default function DeckDetailPage() {
   const [deckTags, setDeckTags] = useState<TagType[]>([]);
   const [tagError, setTagError] = useState('');
   const [stats, setStats] = useState<DeckStats | null>(null);
+  const [pastingImage, setPastingImage] = useState(false);
 
   useEffect(() => {
     if (id) {
@@ -109,6 +110,55 @@ export default function DeckDetailPage() {
     setCardBack('');
     setShowModal(true);
     setSelectedTagIds([]);
+  };
+
+  const handlePaste = async (e: React.ClipboardEvent<HTMLTextAreaElement>, field: 'front' | 'back') => {
+    const items = e.clipboardData.items;
+    
+    for (let i = 0; i < items.length; i++) {
+      if (items[i].type.indexOf('image') !== -1) {
+        e.preventDefault();
+        setPastingImage(true);
+        
+        const file = items[i].getAsFile();
+        if (!file) {
+          setPastingImage(false);
+          return;
+        }
+        
+        try {
+          const reader = new FileReader();
+          reader.onload = (event) => {
+            const base64 = event.target?.result as string;
+            const markdownImage = `\n![image](${base64})\n`;
+            
+            const textarea = e.target as HTMLTextAreaElement;
+            const start = textarea.selectionStart;
+            const end = textarea.selectionEnd;
+            
+            if (field === 'front') {
+              const newValue = cardFront.substring(0, start) + markdownImage + cardFront.substring(end);
+              setCardFront(newValue);
+            } else {
+              const newValue = cardBack.substring(0, start) + markdownImage + cardBack.substring(end);
+              setCardBack(newValue);
+            }
+            
+            setPastingImage(false);
+          };
+          reader.onerror = () => {
+            console.error('读取图片失败');
+            setPastingImage(false);
+          };
+          reader.readAsDataURL(file);
+        } catch (error) {
+          console.error('处理图片失败', error);
+          setPastingImage(false);
+        }
+        
+        return;
+      }
+    }
   };
 
   const openEditModal = (card: Card) => {
@@ -464,6 +514,9 @@ export default function DeckDetailPage() {
               <div className="mb-6">
                 <label className="block mb-3 text-lg font-medium" style={{ color: 'var(--color-text)' }}>
                   正面（问题）
+                  <span className="text-sm font-normal ml-2" style={{ color: 'var(--color-text-secondary)' }}>
+                    (支持粘贴图片)
+                  </span>
                 </label>
                 <textarea
                   value={cardFront}
@@ -477,6 +530,7 @@ export default function DeckDetailPage() {
                     borderColor: 'var(--color-border)',
                     whiteSpace: 'pre-wrap'
                   }}
+                  onPaste={(e) => handlePaste(e, 'front')}
                   onKeyDown={(e) => {
                     if (e.key === 'Enter' && !e.shiftKey) {
                       e.preventDefault();
@@ -491,10 +545,18 @@ export default function DeckDetailPage() {
                     }
                   }}
                 />
+                {pastingImage && (
+                  <p className="text-sm mt-2" style={{ color: 'var(--color-primary)' }}>
+                    正在处理图片...
+                  </p>
+                )}
               </div>
               <div className="mb-6">
                 <label className="block mb-3 text-lg font-medium" style={{ color: 'var(--color-text)' }}>
                   背面（答案）
+                  <span className="text-sm font-normal ml-2" style={{ color: 'var(--color-text-secondary)' }}>
+                    (支持粘贴图片)
+                  </span>
                 </label>
                 <textarea
                   value={cardBack}
@@ -508,6 +570,7 @@ export default function DeckDetailPage() {
                     borderColor: 'var(--color-border)',
                     whiteSpace: 'pre-wrap'
                   }}
+                  onPaste={(e) => handlePaste(e, 'back')}
                   onKeyDown={(e) => {
                     if (e.key === 'Enter' && !e.shiftKey) {
                       e.preventDefault();
