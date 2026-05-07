@@ -7,6 +7,8 @@ interface TagSelectorProps {
   onChange: (tagIds: string[]) => void;
   onTagsUpdated?: () => void;
   error?: string;
+  tags?: Tag[];
+  deckId?: string;
 }
 
 const COLOR_OPTIONS = [
@@ -14,9 +16,9 @@ const COLOR_OPTIONS = [
   '#06b6d4', '#3b82f6', '#8b5cf6', '#ec4899'
 ];
 
-export default function TagSelector({ selectedTagIds, onChange, onTagsUpdated, error }: TagSelectorProps) {
-  const [tags, setTags] = useState<Tag[]>([]);
-  const [loading, setLoading] = useState(true);
+export default function TagSelector({ selectedTagIds, onChange, onTagsUpdated, error, tags: externalTags }: TagSelectorProps) {
+  const [tags, setTags] = useState<Tag[]>(externalTags || []);
+  const [loading, setLoading] = useState(!externalTags);
   const [showCreateModal, setShowCreateModal] = useState(false);
   const [newTagName, setNewTagName] = useState('');
   const [newTagColor, setNewTagColor] = useState(COLOR_OPTIONS[0]);
@@ -26,8 +28,13 @@ export default function TagSelector({ selectedTagIds, onChange, onTagsUpdated, e
   const [deleteError, setDeleteError] = useState('');
 
   useEffect(() => {
-    loadTags();
-  }, []);
+    if (externalTags) {
+      setTags(externalTags);
+      setLoading(false);
+    } else {
+      loadTags();
+    }
+  }, [externalTags]);
 
   const loadTags = async () => {
     try {
