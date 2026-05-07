@@ -16,7 +16,7 @@ export async function createCard(
   }
 
   return prisma.card.create({
-    data: { deckId, front, back, cardType, mediaUrls },
+    data: { deckId, front, back, cardType, mediaUrls: mediaUrls ? JSON.stringify(mediaUrls) : null },
   });
 }
 
@@ -41,9 +41,16 @@ export async function updateCard(cardId: string, userId: string, data: { front?:
     throw new Error('卡片不存在');
   }
 
+  const updateData: { front?: string; back?: string; cardType?: string; mediaUrls?: string | null } = {
+    front: data.front,
+    back: data.back,
+    cardType: data.cardType,
+    mediaUrls: data.mediaUrls ? JSON.stringify(data.mediaUrls) : null,
+  };
+
   return prisma.card.update({
     where: { id: cardId },
-    data,
+    data: updateData,
   });
 }
 

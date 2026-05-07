@@ -69,5 +69,6 @@ export declare function getDailyStats(userId: string): Promise<{
     date: string;
     reviewed: number;
     learned: number;
+    predictedDue?: number;
 }[]>;
 //# sourceMappingURL=reviewService.d.ts.map

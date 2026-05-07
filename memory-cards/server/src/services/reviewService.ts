@@ -196,7 +196,7 @@ export async function getDailyStats(userId: string) {
     },
   });
 
-  const result: { date: string; reviewed: number; learned: number }[] = [];
+  const result: { date: string; reviewed: number; learned: number; predictedDue?: number }[] = [];
   
   for (let i = 6; i >= 0; i--) {
     const date = new Date(now);
@@ -204,6 +204,7 @@ export async function getDailyStats(userId: string) {
     const dateStr = date.toISOString().split('T')[0];
     
     const stat = dailyStats.find(s => {
+      if (!s.lastReviewAt) return false;
       const sDate = new Date(s.lastReviewAt);
       return sDate.toISOString().split('T')[0] === dateStr;
     });

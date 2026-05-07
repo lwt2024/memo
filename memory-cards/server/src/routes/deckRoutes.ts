@@ -9,6 +9,7 @@ router.use(authMiddleware);
 router.post('/', deckController.createDeck);
 router.get('/', deckController.getDecks);
 router.get('/:id', deckController.getDeck);
+router.get('/:id/stats', deckController.getDeckStats);
 router.put('/:id', deckController.updateDeck);
 router.delete('/:id', deckController.deleteDeck);
 

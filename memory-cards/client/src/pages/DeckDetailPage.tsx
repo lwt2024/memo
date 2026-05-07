@@ -1,11 +1,24 @@
 import { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import api, { tagApi } from '../services/api';
+import api, { tagApi, deckApi } from '../services/api';
 import { Card, Deck, Tag as TagType } from '../types';
 import Layout from '../components/common/Layout';
 import TagSelector from '../components/common/TagSelector';
 import TagDisplay from '../components/common/TagDisplay';
 import TagFilter from '../components/common/TagFilter';
+
+interface DeckStats {
+  totalCards: number;
+  learningCount: number;
+  masteredCount: number;
+  notLearnedCount: number;
+  difficultCount: number;
+  dueReviewCount: number;
+  todayNewCount: number;
+  todayReviewedCount: number;
+  masteredPercent: number;
+  estimatedMinutes: number;
+}
 
 export default function DeckDetailPage() {
   const { id } = useParams<{ id: string }>();
@@ -25,13 +38,24 @@ export default function DeckDetailPage() {
   const [tagFilter, setTagFilter] = useState<string[]>([]);
   const [deckTags, setDeckTags] = useState<TagType[]>([]);
   const [tagError, setTagError] = useState('');
+  const [stats, setStats] = useState<DeckStats | null>(null);
 
   useEffect(() => {
     if (id) {
       fetchDeckData();
       fetchDeckTags();
+      fetchStats();
     }
   }, [id, sortBy, sortOrder, masteryFilter]);
+
+  const fetchStats = async () => {
+    try {
+      const res = await deckApi.getDeckStats(id!);
+      setStats(res.data);
+    } catch (error) {
+      console.error('获取统计数据失败', error);
+    }
+  };
 
   // 过滤卡片
   const filteredCards = deck?.cards?.filter(card => {
@@ -194,6 +218,68 @@ export default function DeckDetailPage() {
             </button>
           </div>
         </div>
+
+        {stats && (
+          <div className="mt-6 p-6 rounded-xl" style={{ backgroundColor: 'var(--color-card)', border: '1px solid var(--color-border)' }}>
+            <div className="flex flex-wrap gap-4 mb-4">
+              <div className="flex items-center gap-2">
+                <span style={{ color: '#3b82f6' }}>学习中</span>
+                <span className="font-bold" style={{ color: '#3b82f6' }}>{stats.learningCount}</span>
+              </div>
+              <div className="flex items-center gap-2">
+                <span style={{ color: '#22c55e' }}>已掌握</span>
+                <span className="font-bold" style={{ color: '#22c55e' }}>{stats.masteredCount}</span>
+              </div>
+              <div className="flex items-center gap-2">
+                <span style={{ color: '#9ca3af' }}>未学习</span>
+                <span className="font-bold" style={{ color: '#9ca3af' }}>{stats.notLearnedCount}</span>
+              </div>
+              <div className="flex items-center gap-2">
+                <span style={{ color: '#ef4444' }}>疑难</span>
+                <span className="font-bold" style={{ color: '#ef4444' }}>{stats.difficultCount}</span>
+              </div>
+            </div>
+
+            <div className="mb-6">
+              <div className="flex justify-between text-sm mb-2" style={{ color: 'var(--color-text-secondary)' }}>
+                <span>已掌握 {stats.masteredPercent}%</span>
+                <span>{stats.masteredCount}/{stats.totalCards}</span>
+              </div>
+              <div className="h-3 rounded-full overflow-hidden" style={{ backgroundColor: '#e5e7eb' }}>
+                <div
+                  className="h-full rounded-full transition-all duration-500"
+                  style={{
+                    width: `${stats.masteredPercent}%`,
+                    background: 'linear-gradient(90deg, #22c55e, #16a34a)'
+                  }}
+                />
+              </div>
+            </div>
+
+            <div className="grid grid-cols-3 gap-4 mb-6">
+              <div className="text-center p-4 rounded-lg" style={{ backgroundColor: 'rgba(34, 197, 94, 0.1)' }}>
+                <div className="text-3xl font-bold" style={{ color: '#22c55e' }}>{stats.todayNewCount}</div>
+                <div className="text-sm" style={{ color: 'var(--color-text-secondary)' }}>今日新卡</div>
+              </div>
+              <div className="text-center p-4 rounded-lg" style={{ backgroundColor: 'rgba(59, 130, 246, 0.1)' }}>
+                <div className="text-3xl font-bold" style={{ color: '#3b82f6' }}>{stats.dueReviewCount}</div>
+                <div className="text-sm" style={{ color: 'var(--color-text-secondary)' }}>今日复习</div>
+              </div>
+              <div className="text-center p-4 rounded-lg" style={{ backgroundColor: 'rgba(139, 92, 246, 0.1)' }}>
+                <div className="text-3xl font-bold" style={{ color: '#8b5cf6' }}>{stats.estimatedMinutes}</div>
+                <div className="text-sm" style={{ color: 'var(--color-text-secondary)' }}>预计耗时(分)</div>
+              </div>
+            </div>
+
+            <button
+              onClick={() => navigate(`/decks/${id}/review`)}
+              className="w-full py-4 rounded-xl text-white text-lg font-medium"
+              style={{ background: 'linear-gradient(135deg, #22c55e, #16a34a)' }}
+            >
+              开始学习
+            </button>
+          </div>
+        )}
       </div>
 
       {/* 搜索、筛选和排序 */}

@@ -97,4 +97,16 @@ export declare function updateDeck(deckId: string, userId: string, data: {
     description?: string;
 }): Promise<import(".prisma/client").Prisma.BatchPayload>;
 export declare function deleteDeck(deckId: string, userId: string): Promise<import(".prisma/client").Prisma.BatchPayload>;
+export declare function getDeckStats(deckId: string, userId: string): Promise<{
+    totalCards: number;
+    learningCount: number;
+    masteredCount: number;
+    notLearnedCount: number;
+    difficultCount: number;
+    dueReviewCount: number;
+    todayNewCount: number;
+    todayReviewedCount: number;
+    masteredPercent: number;
+    estimatedMinutes: number;
+}>;
 //# sourceMappingURL=deckService.d.ts.map

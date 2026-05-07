@@ -70,3 +70,12 @@ export async function deleteDeck(req: AuthRequest, res: Response) {
     res.status(400).json({ error: error.message });
   }
 }
+
+export async function getDeckStats(req: AuthRequest, res: Response) {
+  try {
+    const stats = await deckService.getDeckStats(req.params.id, req.userId!);
+    res.json(stats);
+  } catch (error: any) {
+    res.status(400).json({ error: error.message });
+  }
+}

@@ -183,6 +183,8 @@ export async function getDailyStats(userId) {
         date.setDate(date.getDate() - i);
         const dateStr = date.toISOString().split('T')[0];
         const stat = dailyStats.find(s => {
+            if (!s.lastReviewAt)
+                return false;
             const sDate = new Date(s.lastReviewAt);
             return sDate.toISOString().split('T')[0] === dateStr;
         });

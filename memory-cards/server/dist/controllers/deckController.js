@@ -66,4 +66,13 @@ export async function deleteDeck(req, res) {
         res.status(400).json({ error: error.message });
     }
 }
+export async function getDeckStats(req, res) {
+    try {
+        const stats = await deckService.getDeckStats(req.params.id, req.userId);
+        res.json(stats);
+    }
+    catch (error) {
+        res.status(400).json({ error: error.message });
+    }
+}
 //# sourceMappingURL=deckController.js.map

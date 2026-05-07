@@ -39,4 +39,8 @@ export const tagApi = {
   removeTagFromCard: (cardId: string, tagId: string) => api.delete(`/tags/card-tags/${cardId}/${tagId}`),
 };
 
+export const deckApi = {
+  getDeckStats: (deckId: string) => api.get(`/decks/${deckId}/stats`),
+};
+
 export default api;
