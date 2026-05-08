@@ -141,7 +141,11 @@ export default function DeckDetailPage() {
               const img = document.createElement('img');
               img.src = base64;
               img.style.maxWidth = '100%';
-              img.style.height = 'auto';
+              img.style.maxHeight = '150px';
+              img.style.objectFit = 'contain';
+              img.style.display = 'block';
+              img.style.margin = '8px 0';
+              img.className = 'pasted-image';
               range.insertNode(img);
               
               const br = document.createElement('br');
@@ -527,12 +531,12 @@ export default function DeckDetailPage() {
                 <div
                   ref={frontEditorRef}
                   contentEditable
-                  className="w-full px-4 py-3 rounded border min-h-[200px] focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  className="w-full px-4 py-3 rounded border focus:outline-none focus:ring-2 focus:ring-blue-500 overflow-y-auto [&::-webkit-scrollbar]:w-2 [&::-webkit-scrollbar-track]:bg-transparent [&::-webkit-scrollbar-thumb]:bg-gray-300 [&::-webkit-scrollbar-thumb]:rounded-full hover:[&::-webkit-scrollbar-thumb]:bg-gray-400"
                   style={{
                     backgroundColor: 'var(--color-background)',
                     color: 'var(--color-text)',
                     borderColor: 'var(--color-border)',
-                    minHeight: '200px',
+                    height: '200px',
                   }}
                   onPaste={(e) => handlePaste(e, 'front')}
                   onInput={() => updateContent('front')}
@@ -554,12 +558,12 @@ export default function DeckDetailPage() {
                 <div
                   ref={backEditorRef}
                   contentEditable
-                  className="w-full px-4 py-3 rounded border min-h-[300px] focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  className="w-full px-4 py-3 rounded border focus:outline-none focus:ring-2 focus:ring-blue-500 overflow-y-auto [&::-webkit-scrollbar]:w-2 [&::-webkit-scrollbar-track]:bg-transparent [&::-webkit-scrollbar-thumb]:bg-gray-300 [&::-webkit-scrollbar-thumb]:rounded-full hover:[&::-webkit-scrollbar-thumb]:bg-gray-400"
                   style={{
                     backgroundColor: 'var(--color-background)',
                     color: 'var(--color-text)',
                     borderColor: 'var(--color-border)',
-                    minHeight: '300px',
+                    height: '250px',
                   }}
                   onPaste={(e) => handlePaste(e, 'back')}
                   onInput={() => updateContent('back')}
