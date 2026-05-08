@@ -1,6 +1,4 @@
-import { useEffect, useRef } from 'react';
-import { Prism as SyntaxHighlighter } from 'react-syntax-highlighter';
-import { oneLight } from 'react-syntax-highlighter/dist/esm/styles/prism';
+import { useEffect, useRef, useMemo } from 'react';
 
 interface CardContentProps {
   content: string;
@@ -8,6 +6,37 @@ interface CardContentProps {
 
 export default function CardContent({ content }: CardContentProps) {
   const containerRef = useRef<HTMLDivElement>(null);
+
+  const cleanedContent = useMemo(() => {
+    if (!content) return '';
+    
+    const doc = new DOMParser().parseFromString(content, 'text/html');
+    
+    doc.querySelectorAll('[data-lark-record-data], [data-lark-record-format], .lark-record-clipboard, [data-docx-has-block-data]').forEach(el => el.remove());
+    
+    doc.querySelectorAll('pre.ace-line').forEach(pre => {
+      const text = pre.textContent || '';
+      if (text) {
+        const div = document.createElement('div');
+        div.textContent = text;
+        pre.replaceWith(div);
+      } else {
+        pre.remove();
+      }
+    });
+    
+    doc.querySelectorAll('[data-page-id]').forEach(el => {
+      if (el.innerHTML.trim()) {
+        const wrapper = document.createElement('div');
+        wrapper.innerHTML = el.innerHTML;
+        el.replaceWith(wrapper);
+      } else {
+        el.remove();
+      }
+    });
+    
+    return doc.body.innerHTML;
+  }, [content]);
 
   useEffect(() => {
     if (!containerRef.current) return;
@@ -37,7 +66,7 @@ export default function CardContent({ content }: CardContentProps) {
       wrapSpan.textContent = '自动换行';
       
       const copyBtn = document.createElement('button');
-      copyBtn.className = 'text-xs text-gray-500 hover:text-gray-700';
+      copyBtn.className = 'text-xs text-gray-500 hover:text-gray-700 cursor-pointer';
       copyBtn.textContent = '复制';
       copyBtn.onclick = () => {
         navigator.clipboard.writeText(code);
@@ -49,10 +78,7 @@ export default function CardContent({ content }: CardContentProps) {
       header.appendChild(actions);
       
       const codeWrapper = document.createElement('pre');
-      codeWrapper.className = 'language-' + language;
-      codeWrapper.style.margin = '0';
-      codeWrapper.style.padding = '16px';
-      codeWrapper.style.background = '#ffffff';
+      codeWrapper.style.cssText = 'margin: 0; padding: 16px; background: #ffffff; overflow-x: auto;';
       
       const codeEl = document.createElement('code');
       codeEl.textContent = code;
@@ -63,12 +89,13 @@ export default function CardContent({ content }: CardContentProps) {
       
       block.replaceWith(wrapper);
     });
-  }, [content]);
+  }, [cleanedContent]);
 
   return (
     <div 
       ref={containerRef}
-      dangerouslySetInnerHTML={{ __html: content }}
+      className="whitespace-pre-wrap leading-relaxed"
+      dangerouslySetInnerHTML={{ __html: cleanedContent }}
     />
   );
 }

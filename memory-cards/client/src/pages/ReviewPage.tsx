@@ -3,6 +3,7 @@ import { useParams, useNavigate } from 'react-router-dom';
 import api from '../services/api';
 import { Card } from '../types';
 import Layout from '../components/common/Layout';
+import CardContent from '../components/common/CardContent';
 
 interface ReviewCard extends Card {
   deck?: { name: string };
@@ -158,10 +159,10 @@ export default function ReviewPage() {
                 问题
               </p>
               <div
-                className="flex-1 overflow-auto whitespace-pre-wrap leading-relaxed text-xl"
+                className="flex-1 overflow-auto leading-relaxed text-xl"
                 style={{ color: 'var(--color-text)' }}
               >
-                {currentCard.front}
+                <CardContent content={currentCard.front} />
               </div>
               <p className="text-sm mt-6 text-center flex-shrink-0" style={{ color: 'var(--color-text-secondary)' }}>
                 点击翻转查看答案
@@ -174,10 +175,10 @@ export default function ReviewPage() {
                 答案
               </p>
               <div
-                className="flex-1 overflow-auto whitespace-pre-wrap leading-relaxed text-xl"
+                className="flex-1 overflow-auto leading-relaxed text-xl"
                 style={{ color: 'var(--color-primary)' }}
               >
-                {currentCard.back}
+                <CardContent content={currentCard.back} />
               </div>
             </div>
           </div>
