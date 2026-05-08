@@ -7,6 +7,7 @@ import DeckDetailPage from './pages/DeckDetailPage';
 import ReviewPage from './pages/ReviewPage';
 import SettingsPage from './pages/SettingsPage';
 import CommunityPage from './pages/CommunityPage';
+import ImportPage from './pages/ImportPage';
 
 function ProtectedRoute({ children }: { children: React.ReactNode }) {
   const token = localStorage.getItem('token');
@@ -28,6 +29,7 @@ function App() {
         <Route path="/decks/:id/review" element={<ProtectedRoute><ReviewPage /></ProtectedRoute>} />
         <Route path="/review" element={<ProtectedRoute><ReviewPage /></ProtectedRoute>} />
         <Route path="/community" element={<ProtectedRoute><CommunityPage /></ProtectedRoute>} />
+        <Route path="/import/:code" element={<ProtectedRoute><ImportPage /></ProtectedRoute>} />
         <Route path="/settings" element={<ProtectedRoute><SettingsPage /></ProtectedRoute>} />
       </Routes>
     </BrowserRouter>
