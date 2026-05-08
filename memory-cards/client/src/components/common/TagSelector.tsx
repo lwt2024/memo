@@ -94,7 +94,10 @@ export default function TagSelector({ selectedTagIds, onChange, onTagsUpdated, e
     setCreateError('');
     try {
       const res = await tagApi.createTag(newTagName, newTagColor);
-      setTags([...tags, res.data.tag]);
+      const newTag = res.data;
+      if (newTag && newTag.id) {
+        setTags([...tags, newTag]);
+      }
       setShowCreateModal(false);
       setNewTagName('');
       setNewTagColor(COLOR_OPTIONS[0]);
@@ -117,7 +120,8 @@ export default function TagSelector({ selectedTagIds, onChange, onTagsUpdated, e
       </div>
       
       <div className="flex flex-wrap gap-2 mb-3">
-        {(tags || []).map(tag => {
+        {(tags || []).filter(Boolean).map((tag) => {
+          if (!tag || !tag.id) return null;
           const isSelected = selectedTagIds?.includes(tag.id);
           const canSelect = isSelected || (selectedTagIds?.length || 0) < 3;
           const canDelete = !tag.isPreset;
