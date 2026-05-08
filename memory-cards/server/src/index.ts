@@ -7,6 +7,7 @@ import cardRoutes from './routes/cardRoutes.js';
 import reviewRoutes from './routes/reviewRoutes.js';
 import userRoutes from './routes/userRoutes.js';
 import tagRoutes from './routes/tagRoutes.js';
+import shareRoutes from './routes/shareRoutes.js';
 
 const __dirname = path.dirname(new URL(import.meta.url).pathname);
 const app = express();
@@ -22,6 +23,7 @@ app.use('/api/cards', cardRoutes);
 app.use('/api/review', reviewRoutes);
 app.use('/api/user', userRoutes);
 app.use('/api/tags', tagRoutes);
+app.use('/api/share', shareRoutes);
 
 app.get('/api/health', (req, res) => {
   res.json({ status: 'ok' });

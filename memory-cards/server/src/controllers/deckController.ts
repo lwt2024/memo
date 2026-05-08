@@ -79,3 +79,21 @@ export async function getDeckStats(req: AuthRequest, res: Response) {
     res.status(400).json({ error: error.message });
   }
 }
+
+export async function togglePublic(req: AuthRequest, res: Response) {
+  try {
+    const result = await deckService.toggleDeckPublic(req.params.id, req.userId!);
+    res.json(result);
+  } catch (error: any) {
+    res.status(400).json({ error: error.message });
+  }
+}
+
+export async function getShareInfo(req: AuthRequest, res: Response) {
+  try {
+    const shareInfo = await deckService.getDeckShareInfo(req.params.id, req.userId!);
+    res.json(shareInfo);
+  } catch (error: any) {
+    res.status(400).json({ error: error.message });
+  }
+}
