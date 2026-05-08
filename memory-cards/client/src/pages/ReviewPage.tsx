@@ -180,6 +180,25 @@ export default function ReviewPage() {
               >
                 <CardContent content={currentCard.back} />
               </div>
+              {currentCard.cardTags && currentCard.cardTags.length > 0 && (
+                <div className="flex-shrink-0 mt-4 pt-4 border-t" style={{ borderColor: 'var(--color-border)' }}>
+                  <div className="flex flex-wrap gap-2">
+                    {currentCard.cardTags.map((cardTag) => (
+                      <span
+                        key={cardTag.tagId}
+                        className="px-3 py-1 rounded-full text-sm font-medium"
+                        style={{
+                          backgroundColor: 'var(--color-tag-background)',
+                          color: cardTag.tag?.color || 'var(--color-primary)',
+                          border: '1px solid var(--color-tag-border)'
+                        }}
+                      >
+                        {cardTag.tag?.name || cardTag.tagId}
+                      </span>
+                    ))}
+                  </div>
+                </div>
+              )}
             </div>
           </div>
         </div>

@@ -43,6 +43,8 @@ const themeStyles = {
       ratingMedium: 'linear-gradient(135deg, #eab308, #ca8a04)',
       ratingEasy: 'linear-gradient(135deg, #22c55e, #16a34a)',
       ratingVeryEasy: 'linear-gradient(135deg, #3b82f6, #2563eb)',
+      tagBackground: 'rgba(14, 165, 233, 0.15)',
+      tagBorder: 'rgba(14, 165, 233, 0.3)',
     },
     dark: {
       primary: '#38bdf8',
@@ -71,6 +73,8 @@ const themeStyles = {
       ratingMedium: 'linear-gradient(135deg, #facc15, #eab308)',
       ratingEasy: 'linear-gradient(135deg, #4ade80, #22c55e)',
       ratingVeryEasy: 'linear-gradient(135deg, #60a5fa, #3b82f6)',
+      tagBackground: 'rgba(56, 189, 248, 0.15)',
+      tagBorder: 'rgba(56, 189, 248, 0.3)',
     },
   },
   morandi: {
@@ -103,6 +107,8 @@ const themeStyles = {
       ratingMedium: 'linear-gradient(135deg, #d4c7a6, #b8a788)',
       ratingEasy: 'linear-gradient(135deg, #8dc7a0, #66a87f)',
       ratingVeryEasy: 'linear-gradient(135deg, #8d9cc7, #6677a8)',
+      tagBackground: 'rgba(156, 140, 124, 0.15)',
+      tagBorder: 'rgba(156, 140, 124, 0.3)',
     },
     dark: {
       primary: '#a89a8c',
@@ -131,6 +137,8 @@ const themeStyles = {
       ratingMedium: 'linear-gradient(135deg, #a89678, #b8a688)',
       ratingEasy: 'linear-gradient(135deg, #77b88f, #88c89f)',
       ratingVeryEasy: 'linear-gradient(135deg, #7788b8, #8899c8)',
+      tagBackground: 'rgba(168, 154, 140, 0.15)',
+      tagBorder: 'rgba(168, 154, 140, 0.3)',
     },
   },
   vibrant: {
@@ -163,6 +171,8 @@ const themeStyles = {
       ratingMedium: 'linear-gradient(135deg, #eab308, #facc15)',
       ratingEasy: 'linear-gradient(135deg, #16a34a, #22c55e)',
       ratingVeryEasy: 'linear-gradient(135deg, #2563eb, #3b82f6)',
+      tagBackground: 'rgba(249, 115, 22, 0.15)',
+      tagBorder: 'rgba(249, 115, 22, 0.3)',
     },
     dark: {
       primary: '#fb923c',
@@ -191,6 +201,8 @@ const themeStyles = {
       ratingMedium: 'linear-gradient(135deg, #facc15, #fde047)',
       ratingEasy: 'linear-gradient(135deg, #22c55e, #4ade80)',
       ratingVeryEasy: 'linear-gradient(135deg, #3b82f6, #60a5fa)',
+      tagBackground: 'rgba(251, 146, 60, 0.15)',
+      tagBorder: 'rgba(251, 146, 60, 0.3)',
     },
   },
   minimal: {
@@ -223,6 +235,8 @@ const themeStyles = {
       ratingMedium: 'linear-gradient(135deg, #eab308, #ca8a04)',
       ratingEasy: 'linear-gradient(135deg, #22c55e, #16a34a)',
       ratingVeryEasy: 'linear-gradient(135deg, #3b82f6, #2563eb)',
+      tagBackground: 'rgba(24, 24, 27, 0.1)',
+      tagBorder: 'rgba(24, 24, 27, 0.2)',
     },
     dark: {
       primary: '#fafafa',
@@ -245,6 +259,8 @@ const themeStyles = {
       buttonBackground: 'linear-gradient(135deg, #71717a, #a1a1aa)',
       buttonText: '#09090b',
       activeBackground: 'linear-gradient(135deg, #52525b, #71717a)',
+      tagBackground: 'rgba(250, 250, 250, 0.1)',
+      tagBorder: 'rgba(250, 250, 250, 0.2)',
       activeText: '#09090b',
       ratingFailed: 'linear-gradient(135deg, #f87171, #ef4444)',
       ratingHard: 'linear-gradient(135deg, #fb923c, #f97316)',
@@ -275,31 +291,33 @@ export function ThemeProvider({ children }: { children: ReactNode }) {
     const theme = themeStyles[style][mode];
     
     root.style.setProperty('--color-primary', theme.primary);
-      root.style.setProperty('--color-primary-hover', theme.primaryHover);
-      root.style.setProperty('--color-secondary', theme.secondary);
-      root.style.setProperty('--color-background', theme.background);
-      root.style.setProperty('--color-background-secondary', theme.backgroundSecondary);
-      root.style.setProperty('--color-card', theme.card);
-      root.style.setProperty('--color-text', theme.text);
-      root.style.setProperty('--color-text-secondary', theme.textSecondary);
-      root.style.setProperty('--color-border', theme.border);
-      root.style.setProperty('--color-stat-due', theme.statDue);
-      root.style.setProperty('--color-stat-learning', theme.statLearning);
-      root.style.setProperty('--color-stat-mastered', theme.statMastered);
-      root.style.setProperty('--color-stat-new', theme.statNew);
-      root.style.setProperty('--color-completion', theme.completion);
-      root.style.setProperty('--color-stat-text', theme.statText);
-      root.style.setProperty('--color-stat-text-secondary', theme.statTextSecondary);
-      root.style.setProperty('--color-button-background', theme.buttonBackground);
-      root.style.setProperty('--color-button-text', theme.buttonText);
-      root.style.setProperty('--color-active-background', theme.activeBackground);
-      root.style.setProperty('--color-active-text', theme.activeText);
-      root.style.setProperty('--color-rating-failed', theme.ratingFailed);
-      root.style.setProperty('--color-rating-hard', theme.ratingHard);
-      root.style.setProperty('--color-rating-medium', theme.ratingMedium);
-      root.style.setProperty('--color-rating-easy', theme.ratingEasy);
-      root.style.setProperty('--color-rating-very-easy', theme.ratingVeryEasy);
-    
+    root.style.setProperty('--color-primary-hover', theme.primaryHover);
+    root.style.setProperty('--color-secondary', theme.secondary);
+    root.style.setProperty('--color-background', theme.background);
+    root.style.setProperty('--color-background-secondary', theme.backgroundSecondary);
+    root.style.setProperty('--color-card', theme.card);
+    root.style.setProperty('--color-text', theme.text);
+    root.style.setProperty('--color-text-secondary', theme.textSecondary);
+    root.style.setProperty('--color-border', theme.border);
+    root.style.setProperty('--color-stat-due', theme.statDue);
+    root.style.setProperty('--color-stat-learning', theme.statLearning);
+    root.style.setProperty('--color-stat-mastered', theme.statMastered);
+    root.style.setProperty('--color-stat-new', theme.statNew);
+    root.style.setProperty('--color-completion', theme.completion);
+    root.style.setProperty('--color-stat-text', theme.statText);
+    root.style.setProperty('--color-stat-text-secondary', theme.statTextSecondary);
+    root.style.setProperty('--color-button-background', theme.buttonBackground);
+    root.style.setProperty('--color-button-text', theme.buttonText);
+    root.style.setProperty('--color-active-background', theme.activeBackground);
+    root.style.setProperty('--color-active-text', theme.activeText);
+    root.style.setProperty('--color-rating-failed', theme.ratingFailed);
+    root.style.setProperty('--color-rating-hard', theme.ratingHard);
+    root.style.setProperty('--color-rating-medium', theme.ratingMedium);
+    root.style.setProperty('--color-rating-easy', theme.ratingEasy);
+    root.style.setProperty('--color-rating-very-easy', theme.ratingVeryEasy);
+    root.style.setProperty('--color-tag-background', theme.tagBackground);
+    root.style.setProperty('--color-tag-border', theme.tagBorder);
+
     if (mode === 'dark') {
       root.classList.add('dark');
     } else {

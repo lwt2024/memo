@@ -15,8 +15,9 @@ export default function CardContent({ content }: CardContentProps) {
       if (!codeBlocks) return;
       
       codeBlocks.forEach((block) => {
-        if (block.dataset.processed) return;
-        block.dataset.processed = 'true';
+        const el = block as HTMLElement;
+        if (el.dataset.processed) return;
+        el.dataset.processed = 'true';
         
         const language = block.getAttribute('data-language') || 'javascript';
         const code = decodeURIComponent(block.getAttribute('data-code') || '');
@@ -73,33 +74,5 @@ export default function CardContent({ content }: CardContentProps) {
       className="whitespace-pre-wrap leading-relaxed"
       dangerouslySetInnerHTML={{ __html: content || '' }}
     />
-  );
-}
-
-export const CodeBlock = ({ language, code }: { language: string; code: string }) => {
-  return (
-    <div className="my-2 rounded-lg overflow-hidden border" style={{ borderColor: '#e5e7eb' }}>
-      <div className="flex items-center justify-between px-4 py-2 bg-gray-50 border-b" style={{ borderColor: '#e5e7eb' }}>
-        <span className="text-xs font-medium text-gray-600 uppercase">{language}</span>
-        <div className="flex items-center gap-2">
-          <span className="text-xs text-gray-400">自动换行</span>
-          <button
-            onClick={() => navigator.clipboard.writeText(code)}
-            className="text-xs text-gray-500 hover:text-gray-700"
-          >
-            复制
-          </button>
-        </div>
-      </div>
-      <SyntaxHighlighter
-        language={language}
-        style={oneLight}
-        customStyle={{ margin: 0, padding: '16px', background: '#ffffff' }}
-        showLineNumbers={true}
-        wrapLines={true}
-      >
-        {code}
-      </SyntaxHighlighter>
-    </div>
   );
 };
