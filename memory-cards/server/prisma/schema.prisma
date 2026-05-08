@@ -30,6 +30,7 @@ model Deck {
   name        String
   description String?
   isPublic    Boolean  @default(false) @map("is_public")
+  inviteCode  String?  @unique @map("invite_code")
   createdAt   DateTime @default(now()) @map("created_at")
 
   user  User   @relation(fields: [userId], references: [id])
