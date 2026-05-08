@@ -6,6 +6,8 @@ import Layout from '../components/common/Layout';
 import TagSelector from '../components/common/TagSelector';
 import TagDisplay from '../components/common/TagDisplay';
 import TagFilter from '../components/common/TagFilter';
+import CodeEditor from '../components/common/CodeEditor';
+import CardContent from '../components/common/CardContent';
 
 interface DeckStats {
   totalCards: number;
@@ -42,6 +44,8 @@ export default function DeckDetailPage() {
   const [pastingImage, setPastingImage] = useState(false);
   const frontEditorRef = useRef<HTMLDivElement>(null);
   const backEditorRef = useRef<HTMLDivElement>(null);
+  const [showCodeEditor, setShowCodeEditor] = useState(false);
+  const [codeEditorTarget, setCodeEditorTarget] = useState<'front' | 'back'>('front');
 
   useEffect(() => {
     if (id) {
@@ -176,6 +180,19 @@ export default function DeckDetailPage() {
     } else if (field === 'back' && backEditorRef.current) {
       setCardBack(backEditorRef.current.innerHTML);
     }
+  };
+
+  const handleInsertCode = (codeHtml: string) => {
+    if (codeEditorTarget === 'front') {
+      setCardFront(prev => prev + codeHtml);
+    } else {
+      setCardBack(prev => prev + codeHtml);
+    }
+  };
+
+  const openCodeEditor = (target: 'front' | 'back') => {
+    setCodeEditorTarget(target);
+    setShowCodeEditor(true);
   };
 
   const openEditModal = (card: Card) => {
@@ -459,7 +476,7 @@ export default function DeckDetailPage() {
                     {index + 1}
                   </span>
                   <div className="flex-1 min-w-0">
-                    <div className="font-medium" style={{ color: 'var(--color-text)' }} dangerouslySetInnerHTML={{ __html: card.front }} />
+                    <CardContent content={card.front} />
                     {/* 卡片元数据 */}
                     <div className="flex flex-wrap gap-2 mt-2 items-center text-sm">
                       {card.cardTags && card.cardTags.length > 0 && (
@@ -487,7 +504,7 @@ export default function DeckDetailPage() {
                     {/* 展开的背面 */}
                     {expandedCardId === card.id && (
                       <div className="mt-3 pt-3 border-t" style={{ borderColor: 'var(--color-border)' }}>
-                        <div className="font-mono text-sm" style={{ color: 'var(--color-primary)' }} dangerouslySetInnerHTML={{ __html: card.back }} />
+                        <CardContent content={card.back} />
                       </div>
                     )}
                   </div>
@@ -528,6 +545,20 @@ export default function DeckDetailPage() {
                   <span className="text-sm font-normal ml-2" style={{ color: 'var(--color-text-secondary)' }}>
                     (支持粘贴图片)
                   </span>
+                  <button
+                    type="button"
+                    onClick={() => openCodeEditor('front')}
+                    className="ml-3 px-3 py-1 text-sm rounded-full border transition-colors hover:bg-gray-100"
+                    style={{ borderColor: 'var(--color-border)' }}
+                  >
+                    <>
+                      <svg xmlns="http://www.w3.org/2000/svg" className="inline-block h-4 w-4 mr-1" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                        <polyline points="16 18 22 12 16 6"></polyline>
+                        <polyline points="8 6 2 12 8 18"></polyline>
+                      </svg>
+                      插入代码
+                    </>
+                  </button>
                 </label>
                 <div
                   ref={frontEditorRef}
@@ -555,6 +586,20 @@ export default function DeckDetailPage() {
                   <span className="text-sm font-normal ml-2" style={{ color: 'var(--color-text-secondary)' }}>
                     (支持粘贴图片)
                   </span>
+                  <button
+                    type="button"
+                    onClick={() => openCodeEditor('back')}
+                    className="ml-3 px-3 py-1 text-sm rounded-full border transition-colors hover:bg-gray-100"
+                    style={{ borderColor: 'var(--color-border)' }}
+                  >
+                    <>
+                      <svg xmlns="http://www.w3.org/2000/svg" className="inline-block h-4 w-4 mr-1" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                        <polyline points="16 18 22 12 16 6"></polyline>
+                        <polyline points="8 6 2 12 8 18"></polyline>
+                      </svg>
+                      插入代码
+                    </>
+                  </button>
                 </label>
                 <div
                   ref={backEditorRef}
@@ -609,6 +654,13 @@ export default function DeckDetailPage() {
             </form>
           </div>
         </div>
+      )}
+
+      {showCodeEditor && (
+        <CodeEditor
+          onInsert={handleInsertCode}
+          onClose={() => setShowCodeEditor(false)}
+        />
       )}
     </Layout>
   );
