@@ -44,4 +44,24 @@ export const deckApi = {
   getDeckStats: (deckId: string) => api.get(`/decks/${deckId}/stats`),
 };
 
+export const shareApi = {
+  getPublicDecks: (params?: { sortBy?: string; search?: string }) =>
+    api.get('/share/public', { params }),
+
+  importByCode: (inviteCode: string) =>
+    api.post('/share/import', { inviteCode }),
+
+  setPublic: (deckId: string, isPublic: boolean) =>
+    api.post(`/share/${deckId}/public`, { isPublic }),
+
+  generateInvite: (deckId: string) =>
+    api.post(`/share/${deckId}/invite`),
+
+  togglePublic: (deckId: string) =>
+    api.put(`/decks/${deckId}/public`),
+
+  getShareInfo: (deckId: string) =>
+    api.get(`/decks/${deckId}/share`),
+};
+
 export default api;
