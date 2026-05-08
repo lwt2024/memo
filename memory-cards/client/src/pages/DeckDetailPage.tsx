@@ -205,7 +205,8 @@ export default function DeckDetailPage() {
         }
       } else {
         const res = await api.post('/cards', { deckId: id, front: cardFront, back: cardBack });
-        cardId = res.data.card.id;
+        const newCard = res.data;
+        cardId = newCard.id || newCard.card?.id;
       }
       
       for (const tagId of selectedTagIds) {
@@ -575,7 +576,6 @@ export default function DeckDetailPage() {
                   标签
                 </label>
                 <TagSelector
-                  tags={deckTags}
                   selectedTagIds={selectedTagIds}
                   onChange={setSelectedTagIds}
                   deckId={id!}
