@@ -17,6 +17,7 @@ export interface Deck {
   name: string;
   description?: string;
   isPublic: boolean;
+  inviteCode?: string | null;
   createdAt: string;
   cardCount?: number;
   _count?: { cards: number };

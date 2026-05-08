@@ -8,6 +8,7 @@ import TagDisplay from '../components/common/TagDisplay';
 import TagFilter from '../components/common/TagFilter';
 import CodeEditor from '../components/common/CodeEditor';
 import CardContent from '../components/common/CardContent';
+import ShareModal from '../components/common/ShareModal';
 
 interface DeckStats {
   totalCards: number;
@@ -46,6 +47,7 @@ export default function DeckDetailPage() {
   const backEditorRef = useRef<HTMLDivElement>(null);
   const [showCodeEditor, setShowCodeEditor] = useState(false);
   const [codeEditorTarget, setCodeEditorTarget] = useState<'front' | 'back'>('front');
+  const [showShareModal, setShowShareModal] = useState(false);
 
   useEffect(() => {
     if (id) {
@@ -300,6 +302,13 @@ export default function DeckDetailPage() {
               style={{ background: 'linear-gradient(135deg, #0ea5e9, #06b6d4)' }}
             >
               + 添加卡片
+            </button>
+            <button
+              onClick={() => setShowShareModal(true)}
+              className="px-4 py-2 rounded-lg"
+              style={{ backgroundColor: 'var(--color-background-secondary)', color: 'var(--color-text)' }}
+            >
+              分享
             </button>
           </div>
         </div>
@@ -660,6 +669,19 @@ export default function DeckDetailPage() {
         <CodeEditor
           onInsert={handleInsertCode}
           onClose={() => setShowCodeEditor(false)}
+        />
+      )}
+
+      {showShareModal && deck && (
+        <ShareModal
+          deckId={deck.id}
+          deckName={deck.name}
+          isPublic={(deck as any).isPublic || false}
+          inviteCode={(deck as any).inviteCode}
+          onClose={() => setShowShareModal(false)}
+          onShareChange={(isPublic) => {
+            setDeck((prev: any) => ({ ...prev, isPublic }));
+          }}
         />
       )}
     </Layout>
