@@ -22,7 +22,6 @@ export default function CommunityPage() {
   const [loading, setLoading] = useState(true);
   const [sortBy, setSortBy] = useState<'latest' | 'popular'>('latest');
   const [searchQuery, setSearchQuery] = useState('');
-  const [importingId, setImportingId] = useState<string | null>(null);
   const [importMessage, setImportMessage] = useState<{ type: 'success' | 'error'; text: string } | null>(null);
 
   useEffect(() => {
@@ -58,7 +57,6 @@ export default function CommunityPage() {
   };
 
   const handleImport = async (deckId: string) => {
-    setImportingId(deckId);
     setImportMessage(null);
     try {
       const res = await shareApi.importByCode(deckId);
@@ -67,8 +65,6 @@ export default function CommunityPage() {
     } catch (err: any) {
       setImportMessage({ type: 'error', text: err.response?.data?.error || '导入失败' });
       setTimeout(() => setImportMessage(null), 3000);
-    } finally {
-      setImportingId(null);
     }
   };
 
