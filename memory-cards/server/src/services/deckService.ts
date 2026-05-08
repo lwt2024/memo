@@ -170,3 +170,39 @@ export async function getDeckStats(deckId: string, userId: string) {
     estimatedMinutes,
   };
 }
+
+export async function toggleDeckPublic(deckId: string, userId: string) {
+  const deck = await prisma.deck.findFirst({
+    where: { id: deckId, userId },
+  });
+
+  if (!deck) {
+    throw new Error('卡片组不存在');
+  }
+
+  return prisma.deck.update({
+    where: { id: deckId },
+    data: { isPublic: !deck.isPublic },
+  });
+}
+
+export async function getDeckShareInfo(deckId: string, userId: string) {
+  const deck = await prisma.deck.findFirst({
+    where: { id: deckId, userId },
+    select: {
+      id: true,
+      name: true,
+      isPublic: true,
+      inviteCode: true,
+    },
+  });
+
+  if (!deck) {
+    throw new Error('卡片组不存在');
+  }
+
+  return {
+    ...deck,
+    shareUrl: deck.inviteCode ? `/import/${deck.inviteCode}` : null,
+  };
+}
