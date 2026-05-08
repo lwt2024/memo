@@ -54,6 +54,7 @@ export async function getDueCards(userId: string) {
     include: {
       deck: true,
       reviewRecords: { where: { userId } },
+      cardTags: { include: { tag: true } },
     },
   });
 }
@@ -79,6 +80,7 @@ export async function getDeckReviewCards(deckId: string, userId: string) {
     },
     include: {
       reviewRecords: { where: { userId } },
+      cardTags: { include: { tag: true } },
     },
   });
 }
