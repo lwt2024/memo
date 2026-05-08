@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import api, { tagApi, deckApi } from '../services/api';
 import { Card, Deck, Tag as TagType } from '../types';
@@ -40,6 +40,8 @@ export default function DeckDetailPage() {
   const [tagError, setTagError] = useState('');
   const [stats, setStats] = useState<DeckStats | null>(null);
   const [pastingImage, setPastingImage] = useState(false);
+  const frontEditorRef = useRef<HTMLDivElement>(null);
+  const backEditorRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     if (id) {
@@ -112,7 +114,7 @@ export default function DeckDetailPage() {
     setSelectedTagIds([]);
   };
 
-  const handlePaste = async (e: React.ClipboardEvent<HTMLTextAreaElement>, field: 'front' | 'back') => {
+  const handlePaste = async (e: React.ClipboardEvent<HTMLDivElement>, field: 'front' | 'back') => {
     const items = e.clipboardData.items;
     
     for (let i = 0; i < items.length; i++) {
@@ -130,20 +132,23 @@ export default function DeckDetailPage() {
           const reader = new FileReader();
           reader.onload = (event) => {
             const base64 = event.target?.result as string;
-            const markdownImage = `\n![image](${base64})\n`;
             
-            const textarea = e.target as HTMLTextAreaElement;
-            const start = textarea.selectionStart;
-            const end = textarea.selectionEnd;
-            
-            if (field === 'front') {
-              const newValue = cardFront.substring(0, start) + markdownImage + cardFront.substring(end);
-              setCardFront(newValue);
-            } else {
-              const newValue = cardBack.substring(0, start) + markdownImage + cardBack.substring(end);
-              setCardBack(newValue);
+            const selection = window.getSelection();
+            if (selection && selection.rangeCount > 0) {
+              const range = selection.getRangeAt(0);
+              range.deleteContents();
+              
+              const img = document.createElement('img');
+              img.src = base64;
+              img.style.maxWidth = '100%';
+              img.style.height = 'auto';
+              range.insertNode(img);
+              
+              const br = document.createElement('br');
+              range.insertNode(br);
             }
             
+            updateContent(field);
             setPastingImage(false);
           };
           reader.onerror = () => {
@@ -158,6 +163,14 @@ export default function DeckDetailPage() {
         
         return;
       }
+    }
+  };
+
+  const updateContent = (field: 'front' | 'back') => {
+    if (field === 'front' && frontEditorRef.current) {
+      setCardFront(frontEditorRef.current.innerHTML);
+    } else if (field === 'back' && backEditorRef.current) {
+      setCardBack(backEditorRef.current.innerHTML);
     }
   };
 
@@ -441,9 +454,7 @@ export default function DeckDetailPage() {
                     {index + 1}
                   </span>
                   <div className="flex-1 min-w-0">
-                    <p className="font-medium whitespace-pre-wrap" style={{ color: 'var(--color-text)' }}>
-                      {card.front}
-                    </p>
+                    <div className="font-medium" style={{ color: 'var(--color-text)' }} dangerouslySetInnerHTML={{ __html: card.front }} />
                     {/* 卡片元数据 */}
                     <div className="flex flex-wrap gap-2 mt-2 items-center text-sm">
                       {card.cardTags && card.cardTags.length > 0 && (
@@ -471,12 +482,7 @@ export default function DeckDetailPage() {
                     {/* 展开的背面 */}
                     {expandedCardId === card.id && (
                       <div className="mt-3 pt-3 border-t" style={{ borderColor: 'var(--color-border)' }}>
-                        <p
-                          className="whitespace-pre-wrap font-mono text-sm"
-                          style={{ color: 'var(--color-primary)' }}
-                        >
-                          {card.back}
-                        </p>
+                        <div className="font-mono text-sm" style={{ color: 'var(--color-primary)' }} dangerouslySetInnerHTML={{ __html: card.back }} />
                       </div>
                     )}
                   </div>
@@ -518,32 +524,19 @@ export default function DeckDetailPage() {
                     (支持粘贴图片)
                   </span>
                 </label>
-                <textarea
-                  value={cardFront}
-                  onChange={(e) => setCardFront(e.target.value)}
-                  className="w-full px-4 py-3 rounded border font-mono"
-                  rows={8}
-                  required
+                <div
+                  ref={frontEditorRef}
+                  contentEditable
+                  className="w-full px-4 py-3 rounded border min-h-[200px] focus:outline-none focus:ring-2 focus:ring-blue-500"
                   style={{
                     backgroundColor: 'var(--color-background)',
                     color: 'var(--color-text)',
                     borderColor: 'var(--color-border)',
-                    whiteSpace: 'pre-wrap'
+                    minHeight: '200px',
                   }}
                   onPaste={(e) => handlePaste(e, 'front')}
-                  onKeyDown={(e) => {
-                    if (e.key === 'Enter' && !e.shiftKey) {
-                      e.preventDefault();
-                      const target = e.target as HTMLTextAreaElement;
-                      const start = target.selectionStart;
-                      const end = target.selectionEnd;
-                      const newValue = cardFront.substring(0, start) + '\n' + cardFront.substring(end);
-                      setCardFront(newValue);
-                      setTimeout(() => {
-                        target.selectionStart = target.selectionEnd = start + 1;
-                      }, 0);
-                    }
-                  }}
+                  onInput={() => updateContent('front')}
+                  dangerouslySetInnerHTML={{ __html: cardFront || '<br>' }}
                 />
                 {pastingImage && (
                   <p className="text-sm mt-2" style={{ color: 'var(--color-primary)' }}>
@@ -558,32 +551,19 @@ export default function DeckDetailPage() {
                     (支持粘贴图片)
                   </span>
                 </label>
-                <textarea
-                  value={cardBack}
-                  onChange={(e) => setCardBack(e.target.value)}
-                  className="w-full px-4 py-3 rounded border font-mono"
-                  rows={12}
-                  required
+                <div
+                  ref={backEditorRef}
+                  contentEditable
+                  className="w-full px-4 py-3 rounded border min-h-[300px] focus:outline-none focus:ring-2 focus:ring-blue-500"
                   style={{
                     backgroundColor: 'var(--color-background)',
                     color: 'var(--color-text)',
                     borderColor: 'var(--color-border)',
-                    whiteSpace: 'pre-wrap'
+                    minHeight: '300px',
                   }}
                   onPaste={(e) => handlePaste(e, 'back')}
-                  onKeyDown={(e) => {
-                    if (e.key === 'Enter' && !e.shiftKey) {
-                      e.preventDefault();
-                      const target = e.target as HTMLTextAreaElement;
-                      const start = target.selectionStart;
-                      const end = target.selectionEnd;
-                      const newValue = cardBack.substring(0, start) + '\n' + cardBack.substring(end);
-                      setCardBack(newValue);
-                      setTimeout(() => {
-                        target.selectionStart = target.selectionEnd = start + 1;
-                      }, 0);
-                    }
-                  }}
+                  onInput={() => updateContent('back')}
+                  dangerouslySetInnerHTML={{ __html: cardBack || '<br>' }}
                 />
               </div>
               <div className="mb-6">
