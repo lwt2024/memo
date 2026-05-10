@@ -31,22 +31,58 @@
 
 ## 📷 界面展示
 
-### 卡片复习页
-复习模式下显示问题，点击翻转卡片查看答案，然后根据记忆程度选择评级。支持进度条显示当前复习进度。
+📚 核心功能
+首页-展示卡片数据、学习数据、签到
 
-![卡片复习-问题模式](https://raw.githubusercontent.com/lwt2024/memo/main/screenshots/review-question.png)
-![卡片复习-答案模式](https://raw.githubusercontent.com/lwt2024/memo/main/screenshots/review-answer.png)
+![首页|690x360](upload://gD8PxKgP86ppSzvbXKiTTXBv1hK.png)
 
-### 个人中心
-包含用户信息、签到统计（连续签到天数、累计积分）、GitHub 风格学习活动热力图（近12个月）、外观设置等功能。
+卡片组管理 - 创建、编辑、删除卡片组，支持导入分享的卡片组
 
-![个人中心](https://raw.githubusercontent.com/lwt2024/memo/main/screenshots/profile.png)
+![莫兰迪|690x356](upload://hEREJ6WP4XEwvYEiIQSl51SERrv.png)
 
-### 卡片组管理
-展示用户创建和导入的所有卡片组，支持新建卡片组、通过邀请码导入、删除卡片组等操作。
+![卡片组列表|690x360](upload://3E7VbGGev3Zt0my2o41avonK9Mr.png)
 
-![卡片组管理-海洋蓝主题](https://raw.githubusercontent.com/lwt2024/memo/main/screenshots/decks-ocean.png)
-![卡片组管理-活力橙主题](https://raw.githubusercontent.com/lwt2024/memo/main/screenshots/decks-vibrant.png)
+![添加卡片|690x358](upload://xSljqhkS6xH4s6xydS7KL0B8Haa.png)
+
+卡片学习 - 基于艾宾浩斯遗忘曲线的智能复习系统，点击翻转查看答案，模拟真实记忆卡片体验
+
+![复习模式（问题）|689x358](upload://z0fFHZJFpf0TqZISzjP8YRR2REi.png)
+
+记忆评级 - 根据记忆程度选择：忘记了、模糊、记对啦
+
+![复习模式（答案）|690x356](upload://nxrvDFt9zPGuScl2OaiT7JhXQQ8.png)
+
+
+🌐 社区功能
+公共卡片组 - 浏览和搜索社区分享的卡片组
+
+![社区广场|690x356](upload://7pGJEPcsRXyFHxh6ta0EH2P4brr.png)
+
+卡片组分享与导入 - 将自己的卡片组设为公开或生成邀请码分享，通过邀请码或公开ID导入卡片组
+
+![分享|690x359](upload://fazsQIuGvrGdtGSYHNmUpe4MZoC.png)
+
+📊 学习数据
+签到系统 - 每日签到获得积分
+学习日历 - GitHub 风格的学习活动热力图（近12个月）
+
+![个人中心|690x360](upload://qIFLKTlD00RosPAdlWu50qzCv37.png)
+
+🎨 外观设置
+深色/浅色模式 - 支持日间和夜间学习
+
+![深色模式|690x358](upload://5FplaVosV67LZHCELS41FG9WObj.png)
+
+四种主题风格 - 海洋蓝、莫兰迪、活力橙、极简白，每种主题均有深色和浅色模式
+
+![海洋蓝|690x355](upload://4y7ia7WdJi6nwNiY3MXaqmEMVpS.png)
+
+![莫兰迪|690x356](upload://hEREJ6WP4XEwvYEiIQSl51SERrv.png)
+
+![活力橙|689x358](upload://Ih6pCkLWNQZ4rFTR1EITIBBovG.png)
+
+![极简白|690x357](upload://pPq9qeY59eypxdcRlAIAKqRzLC1.png)
+
 
 ## 🛠️ 技术栈
 
