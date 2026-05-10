@@ -79,7 +79,7 @@ export default function SettingsPage() {
 
   const loadCheckInCalendar = async () => {
     try {
-      const res = await checkInApi.getCalendar(3);
+      const res = await checkInApi.getCalendar(12);
       setCheckInCalendar(res.data);
     } catch (error) {
       console.error('加载签到日历失败', error);
@@ -360,7 +360,7 @@ export default function SettingsPage() {
                   {checkInCalendar.length > 0 && (
                     <div className="mt-4 pt-4" style={{ borderTop: '1px solid var(--color-border)' }}>
                       <div className="flex items-center justify-between mb-3">
-                        <p className="text-sm" style={{ color: 'var(--color-text-secondary)' }}>学习活动（近3个月）</p>
+                        <p className="text-sm font-medium" style={{ color: 'var(--color-text)' }}>学习活动（近12个月）</p>
                         <p className="text-xs" style={{ color: 'var(--color-text-secondary)' }}>
                           累计签到 {checkInCalendar.filter(d => d.points > 0).length} 天
                         </p>
@@ -400,16 +400,20 @@ export default function SettingsPage() {
                           weeks.push(currentWeek);
                         }
                         
-                        const monthPositions: { month: number; weekIndex: number }[] = [];
+                        const monthLabels: { month: number; weekIndex: number }[] = [];
                         let lastMonth = -1;
+                        let lastYear = -1;
                         
                         weeks.forEach((week, weekIndex) => {
                           const firstDay = week.find(d => d.date);
                           if (firstDay) {
-                            const month = new Date(firstDay.date).getMonth();
-                            if (month !== lastMonth) {
-                              monthPositions.push({ month, weekIndex });
+                            const date = new Date(firstDay.date);
+                            const month = date.getMonth();
+                            const year = date.getFullYear();
+                            if (month !== lastMonth || year !== lastYear) {
+                              monthLabels.push({ month, weekIndex });
                               lastMonth = month;
+                              lastYear = year;
                             }
                           }
                         });
@@ -417,11 +421,11 @@ export default function SettingsPage() {
                         const months = ['1月', '2月', '3月', '4月', '5月', '6月', '7月', '8月', '9月', '10月', '11月', '12月'];
                         
                         return (
-                          <div className="overflow-x-auto pb-2">
-                            <div className="flex gap-1 mx-auto" style={{ minWidth: 'fit-content', width: '90%' }}>
-                              <div className="flex flex-col gap-[3px] mr-2 pt-5">
+                          <div>
+                            <div className="flex" style={{ width: '100%' }}>
+                              <div className="flex flex-col gap-[3px] mr-2 pt-4 flex-shrink-0">
                                 {['日', '一', '二', '三', '四', '五', '六'].map((day, idx) => (
-                                  <div key={day} className="h-3 w-3 flex items-center justify-center">
+                                  <div key={day} className="h-[14px] w-[14px] flex items-center justify-center">
                                     {idx % 2 === 1 && (
                                       <span className="text-[10px]" style={{ color: 'var(--color-text-secondary)' }}>{day}</span>
                                     )}
@@ -429,31 +433,17 @@ export default function SettingsPage() {
                                 ))}
                               </div>
                               
-                              <div className="flex flex-col">
-                                <div className="flex mb-1 relative" style={{ height: '16px' }}>
-                                  {monthPositions.map((pos) => (
-                                    <div
-                                      key={pos.month}
-                                      className="text-xs absolute"
-                                      style={{ 
-                                        color: 'var(--color-text-secondary)',
-                                        left: `${pos.weekIndex * 15}px`,
-                                      }}
-                                    >
-                                      {months[pos.month]}
-                                    </div>
-                                  ))}
-                                </div>
-                                
+                              <div className="flex flex-col flex-1 min-w-0">
                                 <div className="flex gap-[3px]">
                                   {weeks.map((week, weekIndex) => (
-                                    <div key={weekIndex} className="flex flex-col gap-[3px]">
+                                    <div key={weekIndex} className="flex flex-col gap-[3px] flex-1 min-w-0">
                                       {week.map((day, dayIndex) => {
                                         if (!day.date) {
                                           return (
                                             <div
                                               key={`empty-${weekIndex}-${dayIndex}`}
-                                              className="w-3 h-3"
+                                              className="aspect-square rounded-[2px]"
+                                              style={{ backgroundColor: mode === 'dark' ? 'rgba(255,255,255,0.06)' : 'rgba(0,0,0,0.06)' }}
                                             />
                                           );
                                         }
@@ -466,18 +456,17 @@ export default function SettingsPage() {
                                         return (
                                           <div
                                             key={day.date}
-                                            className={`w-3 h-3 rounded-sm relative group cursor-default ${
+                                            className={`aspect-square rounded-[2px] relative group cursor-default ${
                                               isToday ? 'ring-1 ring-offset-1 ring-[var(--color-primary)]' : ''
                                             }`}
                                             style={{
                                               backgroundColor: intensity === 0 
-                                                ? 'transparent' 
+                                                ? (mode === 'dark' ? 'rgba(255,255,255,0.06)' : 'rgba(0,0,0,0.06)')
                                                 : intensity === 1 
                                                   ? 'var(--color-checkin-calendar-bg)' 
                                                   : intensity === 2 
                                                     ? 'rgba(34, 197, 94, 0.4)' 
                                                     : 'rgba(34, 197, 94, 0.7)',
-                                              border: '1px solid var(--color-border)',
                                             }}
                                           >
                                             <div className="absolute bottom-full left-1/2 -translate-x-1/2 mb-2 px-2 py-1.5 rounded-md text-xs whitespace-nowrap opacity-0 group-hover:opacity-100 transition-opacity z-10 pointer-events-none"
@@ -513,6 +502,27 @@ export default function SettingsPage() {
                                     </div>
                                   ))}
                                 </div>
+                                
+                                <div className="flex gap-[3px] mt-2">
+                                  {monthLabels.map((pos, idx) => {
+                                    const prevPos = idx > 0 ? monthLabels[idx - 1] : null;
+                                    const span = prevPos ? pos.weekIndex - prevPos.weekIndex : pos.weekIndex;
+                                    return (
+                                      <div
+                                        key={pos.month}
+                                        className="text-[11px]"
+                                        style={{ 
+                                          color: 'var(--color-text-secondary)',
+                                          width: `${span * (100 / weeks.length)}%`,
+                                          minWidth: '0',
+                                          textAlign: 'left',
+                                        }}
+                                      >
+                                        {months[pos.month]}
+                                      </div>
+                                    );
+                                  })}
+                                </div>
                               </div>
                             </div>
                           </div>
@@ -521,10 +531,10 @@ export default function SettingsPage() {
                       
                       <div className="flex items-center gap-2 mt-3 text-xs" style={{ color: 'var(--color-text-secondary)' }}>
                         <span>少</span>
-                        <div className="w-3 h-3 rounded-sm border border-[var(--color-border)]"></div>
-                        <div className="w-3 h-3 rounded-sm" style={{ backgroundColor: 'var(--color-checkin-calendar-bg)', border: '1px solid var(--color-checkin-calendar-border)' }}></div>
-                        <div className="w-3 h-3 rounded-sm" style={{ backgroundColor: 'rgba(34, 197, 94, 0.4)' }}></div>
-                        <div className="w-3 h-3 rounded-sm" style={{ backgroundColor: 'rgba(34, 197, 94, 0.7)' }}></div>
+                        <div className="w-3 h-3 rounded-[2px]" style={{ backgroundColor: mode === 'dark' ? 'rgba(255,255,255,0.06)' : 'rgba(0,0,0,0.06)' }}></div>
+                        <div className="w-3 h-3 rounded-[2px]" style={{ backgroundColor: 'var(--color-checkin-calendar-bg)' }}></div>
+                        <div className="w-3 h-3 rounded-[2px]" style={{ backgroundColor: 'rgba(34, 197, 94, 0.4)' }}></div>
+                        <div className="w-3 h-3 rounded-[2px]" style={{ backgroundColor: 'rgba(34, 197, 94, 0.7)' }}></div>
                         <span>多</span>
                       </div>
                     </div>
