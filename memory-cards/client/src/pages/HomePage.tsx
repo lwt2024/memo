@@ -362,7 +362,7 @@ export default function HomePage() {
                 </div>
                 <div className="flex flex-col gap-1">
                   <div className="flex items-center gap-2">
-                    <span className="w-2 h-2 rounded-full" style={{ backgroundColor: 'var(--color-primary)' }}></span>
+                    <span className="w-2 h-2 rounded-full" style={{ backgroundColor: '#3b82f6' }}></span>
                     <span style={{ color: 'var(--color-text-secondary)' }}>已复习: {dailyStats[hoveredDay].reviewed}</span>
                   </div>
                   <div className="flex items-center gap-2">
