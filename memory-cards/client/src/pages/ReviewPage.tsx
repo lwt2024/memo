@@ -17,6 +17,8 @@ export default function ReviewPage() {
   const [isFlipped, setIsFlipped] = useState(false);
   const [loading, setLoading] = useState(true);
   const [isAnimating, setIsAnimating] = useState(false);
+  const [confirmingRating, setConfirmingRating] = useState<number | null>(null);
+  const [confirmCountdown, setConfirmCountdown] = useState(0);
 
   useEffect(() => {
     fetchDueCards();
@@ -41,8 +43,34 @@ export default function ReviewPage() {
   };
 
   const handleRating = async (easeLevel: number) => {
+    if (confirmingRating !== null) {
+      if (confirmingRating === easeLevel) {
+        submitRating(easeLevel);
+      } else {
+        cancelConfirm();
+      }
+      return;
+    }
+
+    setConfirmingRating(easeLevel);
+    setConfirmCountdown(2);
+    
+    const timer = setInterval(() => {
+      setConfirmCountdown(prev => {
+        if (prev <= 1) {
+          clearInterval(timer);
+          submitRating(easeLevel);
+          return 0;
+        }
+        return prev - 1;
+      });
+    }, 1000);
+  };
+
+  const submitRating = async (easeLevel: number) => {
     const card = cards[currentIndex];
     setIsAnimating(true);
+    setConfirmingRating(null);
     try {
       await api.post('/review/submit', { cardId: card.id, easeLevel });
       setTimeout(() => {
@@ -53,6 +81,11 @@ export default function ReviewPage() {
       console.error('提交复习结果失败', err);
       setIsAnimating(false);
     }
+  };
+
+  const cancelConfirm = () => {
+    setConfirmingRating(null);
+    setConfirmCountdown(0);
   };
 
   const nextCard = () => {
@@ -204,20 +237,31 @@ export default function ReviewPage() {
         {isFlipped && (
           <div className="mt-12 animate-fade-in">
             <p className="text-center mb-6 font-medium text-lg" style={{ color: 'var(--color-text)' }}>
-              你记得怎么样？
+              {confirmingRating !== null ? `确定选择「${ratingButtons.find(b => b.level === confirmingRating)?.label}」吗？点击其他选项可取消` : '你记得怎么样？'}
             </p>
-            <div className="grid grid-cols-5 gap-3">
-              {ratingButtons.map((btn) => (
-                <button
-                  key={btn.level}
-                  onClick={() => handleRating(btn.level)}
-                  className="text-white py-5 rounded-xl hover:scale-105 hover:shadow-lg transition-all flex flex-col items-center gap-2"
-                  style={{ background: `var(${btn.colorVar})` }}
-                >
-                  <span className="text-3xl">{btn.emoji}</span>
-                  <span className="text-sm font-medium">{btn.label}</span>
-                </button>
-              ))}
+            <div className="grid grid-cols-3 gap-4">
+              {ratingButtons.map((btn) => {
+                const isConfirming = confirmingRating === btn.level;
+                return (
+                  <button
+                    key={btn.level}
+                    onClick={() => handleRating(btn.level)}
+                    className={`text-white py-6 rounded-xl hover:scale-105 hover:shadow-lg transition-all flex flex-col items-center gap-2 ${
+                      isConfirming ? 'ring-4 ring-white ring-opacity-50 scale-105' : ''
+                    }`}
+                    style={{ 
+                      background: `var(${btn.colorVar})`,
+                      opacity: confirmingRating !== null && !isConfirming ? 0.6 : 1
+                    }}
+                  >
+                    <span className="text-4xl">{btn.emoji}</span>
+                    <span className="text-sm font-medium">{btn.label}</span>
+                    {isConfirming && (
+                      <span className="text-xs opacity-80">{confirmCountdown > 0 ? `${confirmCountdown}秒后提交` : '点击确认'}</span>
+                    )}
+                  </button>
+                );
+              })}
             </div>
           </div>
         )}
