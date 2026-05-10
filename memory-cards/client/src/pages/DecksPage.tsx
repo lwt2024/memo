@@ -204,7 +204,7 @@ export default function DecksPage() {
                       </button>
                       {menuDeckId === deck.id && (
                         <div 
-                          className="absolute right-0 top-full mt-1 w-36 rounded-xl shadow-lg z-10 animate-fade-in"
+                          className="absolute right-0 top-full mt-1 w-24 rounded-xl shadow-lg z-10 animate-fade-in"
                           style={{ backgroundColor: 'var(--color-card)', border: '1px solid var(--color-border)' }}
                         >
                           <button
@@ -214,10 +214,10 @@ export default function DecksPage() {
                               handleShareClick(deck.id);
                               setMenuDeckId(null);
                             }}
-                            className="w-full px-4 py-2 text-left text-sm hover:bg-gray-100 transition-colors flex items-center gap-2"
+                            className="w-full px-3 py-2 text-center text-sm hover:bg-gray-100 transition-colors"
                             style={{ color: 'var(--color-text)' }}
                           >
-                            🔗 分享
+                            分享
                           </button>
                           <button
                             onClick={(e) => {
@@ -226,10 +226,10 @@ export default function DecksPage() {
                               handleDeleteClick(deck.id);
                               setMenuDeckId(null);
                             }}
-                            className="w-full px-4 py-2 text-left text-sm hover:bg-gray-100 transition-colors flex items-center gap-2"
+                            className="w-full px-3 py-2 text-center text-sm hover:bg-gray-100 transition-colors"
                             style={{ color: '#ef4444' }}
                           >
-                            🗑️ 删除
+                            删除
                           </button>
                         </div>
                       )}
