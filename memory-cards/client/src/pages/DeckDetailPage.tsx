@@ -536,7 +536,7 @@ export default function DeckDetailPage() {
       {/* 添加/编辑模态框 */}
       {showModal && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50 overflow-y-auto">
-          <div className="rounded-lg w-full sm:max-w-[70%] my-4 mx-auto shadow-2xl" style={{ 
+          <div className="rounded-lg w-full lg:max-w-[70%] my-4 mx-auto shadow-2xl" style={{ 
             backgroundColor: 'var(--color-card)',
             maxHeight: '90vh',
             overflowY: 'auto',
