@@ -291,8 +291,8 @@ export default function DeckDetailPage() {
           <div className="flex flex-wrap gap-3">
             <button
               onClick={openCreateModal}
-              className="px-4 py-2 rounded-lg text-white"
-              style={{ background: 'linear-gradient(135deg, #0ea5e9, #06b6d4)' }}
+              className="px-4 py-2 rounded-lg text-white font-medium"
+              style={{ backgroundColor: 'var(--color-primary)' }}
             >
               + 添加卡片
             </button>

@@ -2,7 +2,6 @@ import { useState, useEffect } from 'react';
 import { shareApi } from '../services/api';
 import Layout from '../components/common/Layout';
 import PublicDeckCard from '../components/common/PublicDeckCard';
-import AlertModal from '../components/common/AlertModal';
 import { useUser } from '../context/UserContext';
 
 interface PublicDeck {
@@ -26,7 +25,7 @@ export default function CommunityPage() {
   const [loading, setLoading] = useState(true);
   const [sortBy, setSortBy] = useState<'latest' | 'popular'>('latest');
   const [searchQuery, setSearchQuery] = useState('');
-  const [alertModal, setAlertModal] = useState<{ type: 'success' | 'error'; message: string } | null>(null);
+  const [toast, setToast] = useState<{ type: 'success' | 'error'; message: string } | null>(null);
 
   useEffect(() => {
     fetchPublicDecks();
@@ -63,9 +62,11 @@ export default function CommunityPage() {
   const handleImport = async (deckId: string) => {
     try {
       const res = await shareApi.importPublicDeck(deckId);
-      setAlertModal({ type: 'success', message: `导入成功！卡片组 "${res.data.name}" 已添加到您的账户` });
+      setToast({ type: 'success', message: `导入成功！卡片组 "${res.data.name}" 已添加到您的账户` });
+      setTimeout(() => setToast(null), 2000);
     } catch (err: any) {
-      setAlertModal({ type: 'error', message: err.response?.data?.error || '导入失败' });
+      setToast({ type: 'error', message: err.response?.data?.error || '导入失败' });
+      setTimeout(() => setToast(null), 2000);
     }
   };
 
@@ -75,6 +76,20 @@ export default function CommunityPage() {
         <h2 className="text-2xl font-bold mb-6" style={{ color: 'var(--color-text)' }}>
           社区广场
         </h2>
+
+        {toast && (
+          <div 
+            className={`mb-4 p-4 rounded-xl text-center transition-all duration-300 ${
+              toast.type === 'success' ? 'bg-green-500/20 text-green-700' : 'bg-red-500/20 text-red-700'
+            }`}
+            style={{ 
+              backdropFilter: 'blur(8px)',
+              border: `1px solid ${toast.type === 'success' ? 'rgba(34, 197, 94, 0.3)' : 'rgba(239, 68, 68, 0.3)'}`
+            }}
+          >
+            {toast.message}
+          </div>
+        )}
 
         <div className="flex flex-col sm:flex-row gap-4 mb-6">
           <div className="flex-1 relative">
@@ -149,14 +164,6 @@ export default function CommunityPage() {
           </div>
         )}
       </div>
-
-      {alertModal && (
-        <AlertModal
-          message={alertModal.message}
-          type={alertModal.type}
-          onClose={() => setAlertModal(null)}
-        />
-      )}
     </Layout>
   );
 }
