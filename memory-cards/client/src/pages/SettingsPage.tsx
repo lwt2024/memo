@@ -358,51 +358,48 @@ export default function SettingsPage() {
                   {checkInCalendar.length > 0 && (
                     <div className="mt-4 pt-4" style={{ borderTop: '1px solid var(--color-border)' }}>
                       <p className="text-sm mb-3" style={{ color: 'var(--color-text-secondary)' }}>签到记录（近3个月）</p>
-                      <div className="grid grid-cols-7 gap-1">
-                        {['日', '一', '二', '三', '四', '五', '六'].map((day) => (
-                          <div key={day} className="text-center text-xs" style={{ color: 'var(--color-text-secondary)' }}>
-                            {day}
-                          </div>
-                        ))}
-                        {checkInCalendar.slice(-35).map((day, index) => {
-                          const date = new Date(day.date);
-                          const dayOfWeek = date.getDay();
-                          const isFirstWeek = index < 7;
+                      <div className="flex flex-col gap-1">
+                        {(() => {
+                          const today = new Date();
+                          today.setHours(0, 0, 0, 0);
+                          const startDate = new Date(today);
+                          startDate.setDate(startDate.getDate() - 34);
                           
-                          if (isFirstWeek && index === 0 && dayOfWeek !== 0) {
-                            const emptyCells = [];
-                            for (let i = 0; i < dayOfWeek; i++) {
-                              emptyCells.push(<div key={`empty-${i}`} className="w-4 h-4"></div>);
+                          const rows = [];
+                          let currentDate = new Date(startDate);
+                          
+                          while (currentDate <= today) {
+                            const weekCells = [];
+                            for (let i = 0; i < 7; i++) {
+                              const dateStr = currentDate.toISOString().split('T')[0];
+                              const dayData = checkInCalendar.find(d => d.date === dateStr);
+                              const isFuture = currentDate > today;
+                              
+                              if (currentDate >= startDate && !isFuture) {
+                                weekCells.push(
+                                  <div
+                                    key={dateStr}
+                                    className="w-4 h-4 rounded-sm flex items-center justify-center"
+                                    style={{
+                                      backgroundColor: dayData?.points && dayData.points > 0 ? 'var(--color-checkin-calendar-bg)' : 'transparent',
+                                      border: dayData?.points && dayData.points > 0 ? '1px solid var(--color-checkin-calendar-border)' : '1px solid transparent',
+                                    }}
+                                    title={`${dateStr}: ${dayData?.points || 0}积分`}
+                                  />
+                                );
+                              } else {
+                                weekCells.push(<div key={`empty-${dateStr}`} className="w-4 h-4"></div>);
+                              }
+                              currentDate.setDate(currentDate.getDate() + 1);
                             }
-                            return [...emptyCells, (
-                              <div
-                                key={day.date}
-                                className="w-4 h-4 rounded-sm text-xs flex items-center justify-center cursor-default"
-                                style={{
-                                  backgroundColor: day.points > 0 ? 'var(--color-checkin-calendar-bg)' : 'transparent',
-                                  border: day.points > 0 ? '1px solid var(--color-checkin-calendar-border)' : '1px solid transparent',
-                                  color: 'var(--color-text)',
-                                }}
-                                title={`${day.date}: ${day.points}积分`}
-                              >
+                            rows.push(
+                              <div key={rows.length} className="flex gap-1">
+                                {weekCells}
                               </div>
-                            )];
+                            );
                           }
-                          
-                          return (
-                            <div
-                              key={day.date}
-                              className="w-4 h-4 rounded-sm text-xs flex items-center justify-center cursor-default"
-                              style={{
-                                backgroundColor: day.points > 0 ? 'var(--color-checkin-calendar-bg)' : 'transparent',
-                                border: day.points > 0 ? '1px solid var(--color-checkin-calendar-border)' : '1px solid transparent',
-                                color: 'var(--color-text)',
-                              }}
-                              title={`${day.date}: ${day.points}积分`}
-                            >
-                            </div>
-                          );
-                        })}
+                          return rows;
+                        })()}
                       </div>
                       <div className="flex items-center gap-4 mt-3 text-xs" style={{ color: 'var(--color-text-secondary)' }}>
                         <div className="flex items-center gap-1">
