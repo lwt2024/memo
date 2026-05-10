@@ -11,12 +11,11 @@ export default function ToastModal({ message, type, onClose }: ToastModalProps) 
       onClick={onClose}
     >
       <div 
-        className={`px-6 py-3 rounded-xl shadow-lg transition-all duration-300 ${
-          type === 'success' ? 'bg-green-500/90 text-white' : 'bg-red-500/90 text-white'
-        }`}
+        className="px-6 py-3 rounded-xl shadow-lg transition-all duration-300"
         style={{
-          backdropFilter: 'blur(8px)',
-          border: `1px solid ${type === 'success' ? 'rgba(34, 197, 94, 0.5)' : 'rgba(239, 68, 68, 0.5)'}`
+          backgroundColor: 'transparent',
+          border: `2px solid ${type === 'success' ? '#22c55e' : '#ef4444'}`,
+          color: type === 'success' ? '#22c55e' : '#ef4444',
         }}
       >
         <span className="flex items-center gap-2">
