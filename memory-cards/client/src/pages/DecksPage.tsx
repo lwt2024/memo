@@ -187,6 +187,14 @@ export default function DecksPage() {
                 <p className="text-sm line-clamp-2" style={{ color: 'var(--color-text-secondary)' }}>
                   {deck.description || '暂无描述'}
                 </p>
+                <div className="flex items-center gap-2 mt-3">
+                  <div className="w-5 h-5 rounded-full bg-gray-200 flex items-center justify-center text-xs">
+                    {(deck.user?.nickname || 'U')[0].toUpperCase()}
+                  </div>
+                  <span className="text-xs" style={{ color: 'var(--color-text-secondary)' }}>
+                    {deck.user?.nickname || '匿名用户'}
+                  </span>
+                </div>
               </Link>
               <div className="px-6 pb-4 flex justify-end">
                 <button

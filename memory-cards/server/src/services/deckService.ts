@@ -13,6 +13,9 @@ export async function getUserDecks(userId: string) {
     where: { userId },
     include: {
       _count: { select: { cards: true } },
+      user: {
+        select: { id: true, nickname: true, avatar: true },
+      },
     },
     orderBy: { createdAt: 'desc' },
   });
