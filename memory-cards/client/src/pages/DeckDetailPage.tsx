@@ -9,6 +9,7 @@ import TagFilter from '../components/common/TagFilter';
 import CodeEditor from '../components/common/CodeEditor';
 import CardContent from '../components/common/CardContent';
 import ShareModal from '../components/common/ShareModal';
+import ConfirmModal from '../components/common/ConfirmModal';
 
 interface DeckStats {
   totalCards: number;
@@ -48,6 +49,8 @@ export default function DeckDetailPage() {
   const [showCodeEditor, setShowCodeEditor] = useState(false);
   const [codeEditorTarget, setCodeEditorTarget] = useState<'front' | 'back'>('front');
   const [showShareModal, setShowShareModal] = useState(false);
+  const [showCardConfirmModal, setShowCardConfirmModal] = useState(false);
+  const [cardToDelete, setCardToDelete] = useState<string | null>(null);
 
   useEffect(() => {
     if (id) {
@@ -244,14 +247,27 @@ export default function DeckDetailPage() {
     }
   };
 
-  const deleteCard = async (cardId: string) => {
-    if (!confirm('确定要删除这张卡片吗？')) return;
+  const handleDeleteCardClick = (cardId: string) => {
+    setCardToDelete(cardId);
+    setShowCardConfirmModal(true);
+  };
+
+  const confirmDeleteCard = async () => {
+    if (!cardToDelete) return;
     try {
-      await api.delete(`/cards/${cardId}`);
+      await api.delete(`/cards/${cardToDelete}`);
       fetchDeckData();
     } catch (error) {
       console.error('删除卡片失败', error);
+    } finally {
+      setShowCardConfirmModal(false);
+      setCardToDelete(null);
     }
+  };
+
+  const cancelDeleteCard = () => {
+    setShowCardConfirmModal(false);
+    setCardToDelete(null);
   };
 
   const toggleCard = (cardId: string) => {
@@ -519,7 +535,7 @@ export default function DeckDetailPage() {
                       编辑
                     </button>
                     <button
-                      onClick={() => deleteCard(card.id)}
+                      onClick={() => handleDeleteCardClick(card.id)}
                       className="hover:underline"
                       style={{ color: '#ef4444' }}
                     >
@@ -681,6 +697,17 @@ export default function DeckDetailPage() {
           onShareChange={(isPublic) => {
             setDeck((prev: any) => ({ ...prev, isPublic }));
           }}
+        />
+      )}
+
+      {showCardConfirmModal && (
+        <ConfirmModal
+          title="确认删除"
+          message="确定要删除这张卡片吗？"
+          confirmText="删除"
+          cancelText="取消"
+          onConfirm={confirmDeleteCard}
+          onCancel={cancelDeleteCard}
         />
       )}
     </Layout>
