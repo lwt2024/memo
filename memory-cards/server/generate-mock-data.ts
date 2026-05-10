@@ -119,8 +119,8 @@ async function generateMockData() {
       const card = await prisma.card.create({
         data: {
           deckId: deck.id,
-          front: `问题 ${i + 1}：${getRandomQuestion(deckInfo.name)}`,
-          back: `答案 ${i + 1}：${getRandomAnswer(deckInfo.name)}`,
+          front: getRandomQuestion(deckInfo.name),
+          back: getRandomAnswer(deckInfo.name),
           cardType: 'text',
           createdAt: randomDate(20 + Math.floor(Math.random() * 15)),
         },
