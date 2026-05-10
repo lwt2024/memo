@@ -543,7 +543,13 @@ export default function DeckDetailPage() {
       {/* 添加/编辑模态框 */}
       {showModal && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50 overflow-y-auto">
-          <div className="rounded-lg p-8 w-full max-w-4xl my-8" style={{ backgroundColor: 'var(--color-card)' }}>
+          <div className="rounded-lg w-full my-4 mx-auto shadow-2xl" style={{ 
+            backgroundColor: 'var(--color-card)',
+            maxWidth: '95vw',
+            maxHeight: '90vh',
+            overflowY: 'auto'
+          }}>
+            <div className="p-6 sm:p-8">
             <h3 className="text-2xl font-bold mb-6" style={{ color: 'var(--color-text)' }}>
               {editingCard ? '编辑卡片' : '添加卡片'}
             </h3>
@@ -661,6 +667,7 @@ export default function DeckDetailPage() {
                 </button>
               </div>
             </form>
+            </div>
           </div>
         </div>
       )}
