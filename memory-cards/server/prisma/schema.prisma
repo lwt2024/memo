@@ -17,42 +17,48 @@ model User {
   totalPoints  Int      @default(0) @map("total_points")
   createdAt    DateTime @default(now()) @map("created_at")
 
-  decks         Deck[]
-  reviewRecords ReviewRecord[]
-  tags          Tag[]
-  cardTags      CardTag[]
-  checkIns      CheckIn[]
+  decks           Deck[]
+  reviewRecords   ReviewRecord[]
+  tags            Tag[]
+  cardTags        CardTag[]
+  checkIns        CheckIn[]
+  importedDecks   Deck[]       @relation("OriginalCreator")
+  importedCards   Card[]       @relation("CardOriginalCreator")
 
   @@map("users")
 }
 
 model Deck {
-  id          String   @id @default(uuid())
-  userId      String   @map("user_id")
-  name        String
-  description String?
-  isPublic    Boolean  @default(false) @map("is_public")
-  inviteCode  String?  @unique @map("invite_code")
-  createdAt   DateTime @default(now()) @map("created_at")
+  id                   String   @id @default(uuid())
+  userId               String   @map("user_id")
+  name                 String
+  description          String?
+  isPublic             Boolean  @default(false) @map("is_public")
+  inviteCode           String?  @unique @map("invite_code")
+  originalCreatorId    String?  @map("original_creator_id")
+  createdAt            DateTime @default(now()) @map("created_at")
 
-  user  User   @relation(fields: [userId], references: [id])
-  cards Card[]
+  user             User   @relation(fields: [userId], references: [id])
+  originalCreator  User?  @relation("OriginalCreator", fields: [originalCreatorId], references: [id])
+  cards            Card[]
 
   @@map("decks")
 }
 
 model Card {
-  id        String   @id @default(uuid())
-  deckId    String   @map("deck_id")
-  front     String
-  back      String
-  cardType  String   @default("text") @map("card_type")
-  mediaUrls String?  @map("media_urls")
-  createdAt DateTime @default(now()) @map("created_at")
+  id                 String   @id @default(uuid())
+  deckId             String   @map("deck_id")
+  front              String
+  back               String
+  cardType           String   @default("text") @map("card_type")
+  mediaUrls          String?  @map("media_urls")
+  originalCreatorId  String?  @map("original_creator_id")
+  createdAt          DateTime @default(now()) @map("created_at")
 
-  deck          Deck           @relation(fields: [deckId], references: [id], onDelete: Cascade)
-  reviewRecords ReviewRecord[]
-  cardTags      CardTag[]
+  deck              Deck           @relation(fields: [deckId], references: [id], onDelete: Cascade)
+  originalCreator   User?          @relation("CardOriginalCreator", fields: [originalCreatorId], references: [id])
+  reviewRecords     ReviewRecord[]
+  cardTags           CardTag[]
 
   @@map("cards")
 }

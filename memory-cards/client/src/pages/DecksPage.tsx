@@ -206,10 +206,11 @@ export default function DecksPage() {
                 </p>
                 <div className="flex items-center gap-2 mt-3">
                   <div className="w-5 h-5 rounded-full bg-gray-200 flex items-center justify-center text-xs">
-                    {(deck.user?.nickname || 'U')[0].toUpperCase()}
+                    {(deck.originalCreator?.nickname || deck.user?.nickname || 'U')[0].toUpperCase()}
                   </div>
                   <span className="text-xs" style={{ color: 'var(--color-text-secondary)' }}>
-                    {deck.user?.nickname || '匿名用户'}
+                    {deck.originalCreator?.nickname || deck.user?.nickname || '匿名用户'}
+                    {deck.originalCreator && ' (导入)'}
                   </span>
                 </div>
               </Link>

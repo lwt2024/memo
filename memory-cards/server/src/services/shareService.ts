@@ -73,6 +73,7 @@ export async function importPublicDeck(deckId: string, userId: string) {
       userId,
       name: sourceDeck.name,
       description: sourceDeck.description,
+      originalCreatorId: sourceDeck.userId,
     },
   });
 
@@ -84,6 +85,7 @@ export async function importPublicDeck(deckId: string, userId: string) {
         back: card.back,
         cardType: card.cardType,
         mediaUrls: card.mediaUrls,
+        originalCreatorId: card.deck.userId,
       },
     });
 
@@ -159,6 +161,7 @@ export async function importDeckByCode(inviteCode: string, userId: string) {
         back: card.back,
         cardType: card.cardType,
         mediaUrls: card.mediaUrls,
+        originalCreatorId: sourceDeck.userId,
       },
     });
 

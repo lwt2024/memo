@@ -16,6 +16,9 @@ export async function getUserDecks(userId: string) {
       user: {
         select: { id: true, nickname: true, avatar: true },
       },
+      originalCreator: {
+        select: { id: true, nickname: true, avatar: true },
+      },
     },
     orderBy: { createdAt: 'desc' },
   });

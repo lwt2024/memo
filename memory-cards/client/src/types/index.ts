@@ -23,6 +23,7 @@ export interface Deck {
   _count?: { cards: number };
   cards?: Card[];
   user?: User;
+  originalCreator?: User;
 }
 
 export interface Tag {

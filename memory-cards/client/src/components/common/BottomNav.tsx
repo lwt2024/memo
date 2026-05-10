@@ -4,10 +4,10 @@ export default function BottomNav() {
   const location = useLocation();
 
   const navItems = [
-    { path: '/', label: '首页', icon: '🏠' },
-    { path: '/decks', label: '卡片组', icon: '📚' },
-    { path: '/community', label: '社区', icon: '🌐' },
-    { path: '/settings', label: '设置', icon: '⚙️' },
+    { path: '/', label: '首页' },
+    { path: '/decks', label: '卡片组' },
+    { path: '/community', label: '社区' },
+    { path: '/settings', label: '设置' },
   ];
 
   return (
@@ -23,7 +23,6 @@ export default function BottomNav() {
                 isActive ? 'text-blue-600' : 'text-gray-400'
               }`}
             >
-              <span className="text-2xl mb-1">{item.icon}</span>
               <span className="text-xs font-medium">{item.label}</span>
             </Link>
           );
