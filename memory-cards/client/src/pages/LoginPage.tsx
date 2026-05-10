@@ -31,9 +31,8 @@ function LoginPage() {
         console.error('Failed to parse username history:', e);
       }
     } else {
-      const demoUsernames = ['demo', 'test', 'user'];
-      localStorage.setItem('usernameHistory', JSON.stringify(demoUsernames));
-      setUsernameHistory(demoUsernames);
+      // 不设置默认用户名，让用户首次登录后自动记录
+      setUsernameHistory([]);
     }
 
     const remembered = localStorage.getItem('rememberedUser');
