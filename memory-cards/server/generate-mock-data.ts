@@ -1,4 +1,5 @@
 import { PrismaClient } from '@prisma/client';
+import bcrypt from 'bcryptjs';
 import crypto from 'crypto';
 
 const prisma = new PrismaClient();
@@ -26,13 +27,14 @@ async function generateMockData() {
   // 1. 创建用户（30天前注册）
   const userId = crypto.randomUUID();
   const createdAt = randomDate(30);
+  const passwordHash = await bcrypt.hash('demo123', 10);
 
   await prisma.user.create({
     data: {
       id: userId,
       username: 'demo_user',
       email: 'demo@example.com',
-      passwordHash: crypto.createHash('sha256').update('demo123').digest('hex'),
+      passwordHash: passwordHash,
       nickname: '记忆达人',
       avatar: null,
       createdAt: createdAt,
