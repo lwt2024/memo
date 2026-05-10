@@ -46,6 +46,11 @@ const themeStyles = {
       tagBackground: 'rgba(14, 165, 233, 0.15)',
       tagBorder: 'rgba(14, 165, 233, 0.3)',
       statCardShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06)',
+      checkInStreak: '#f59e0b',
+      checkInPoints: '#22c55e',
+      checkInBadge: '#22c55e',
+      checkInCalendarBg: 'rgba(34, 197, 94, 0.15)',
+      checkInCalendarBorder: 'rgba(34, 197, 94, 0.3)',
     },
     dark: {
       primary: '#38bdf8',
@@ -77,6 +82,11 @@ const themeStyles = {
       tagBackground: 'rgba(56, 189, 248, 0.15)',
       tagBorder: 'rgba(56, 189, 248, 0.3)',
       statCardShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.3), 0 2px 4px -1px rgba(0, 0, 0, 0.2)',
+      checkInStreak: '#fbbf24',
+      checkInPoints: '#4ade80',
+      checkInBadge: '#4ade80',
+      checkInCalendarBg: 'rgba(74, 222, 128, 0.15)',
+      checkInCalendarBorder: 'rgba(74, 222, 128, 0.3)',
     },
   },
   morandi: {
@@ -112,6 +122,11 @@ const themeStyles = {
       tagBackground: 'rgba(156, 140, 124, 0.15)',
       tagBorder: 'rgba(156, 140, 124, 0.3)',
       statCardShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06)',
+      checkInStreak: '#c7a066',
+      checkInPoints: '#8dc7a0',
+      checkInBadge: '#8dc7a0',
+      checkInCalendarBg: 'rgba(141, 199, 160, 0.15)',
+      checkInCalendarBorder: 'rgba(141, 199, 160, 0.3)',
     },
     dark: {
       primary: '#a89a8c',
@@ -143,6 +158,11 @@ const themeStyles = {
       tagBackground: 'rgba(168, 154, 140, 0.15)',
       tagBorder: 'rgba(168, 154, 140, 0.3)',
       statCardShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.3), 0 2px 4px -1px rgba(0, 0, 0, 0.2)',
+      checkInStreak: '#d4b896',
+      checkInPoints: '#77b88f',
+      checkInBadge: '#77b88f',
+      checkInCalendarBg: 'rgba(119, 184, 143, 0.15)',
+      checkInCalendarBorder: 'rgba(119, 184, 143, 0.3)',
     },
   },
   vibrant: {
@@ -178,6 +198,11 @@ const themeStyles = {
       tagBackground: 'rgba(249, 115, 22, 0.15)',
       tagBorder: 'rgba(249, 115, 22, 0.3)',
       statCardShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06)',
+      checkInStreak: '#f97316',
+      checkInPoints: '#22c55e',
+      checkInBadge: '#22c55e',
+      checkInCalendarBg: 'rgba(34, 197, 94, 0.15)',
+      checkInCalendarBorder: 'rgba(34, 197, 94, 0.3)',
     },
     dark: {
       primary: '#fb923c',
@@ -209,6 +234,11 @@ const themeStyles = {
       tagBackground: 'rgba(251, 146, 60, 0.15)',
       tagBorder: 'rgba(251, 146, 60, 0.3)',
       statCardShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.3), 0 2px 4px -1px rgba(0, 0, 0, 0.2)',
+      checkInStreak: '#fb923c',
+      checkInPoints: '#4ade80',
+      checkInBadge: '#4ade80',
+      checkInCalendarBg: 'rgba(74, 222, 128, 0.15)',
+      checkInCalendarBorder: 'rgba(74, 222, 128, 0.3)',
     },
   },
   minimal: {
@@ -244,7 +274,11 @@ const themeStyles = {
       ratingVeryEasy: 'linear-gradient(135deg, #3b82f6, #2563eb)',
       tagBackground: 'rgba(24, 24, 27, 0.1)',
       tagBorder: 'rgba(24, 24, 27, 0.2)',
-      statCardShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06)',
+      checkInStreak: '#52525b',
+      checkInPoints: '#3f3f46',
+      checkInBadge: '#3f3f46',
+      checkInCalendarBg: 'rgba(63, 63, 70, 0.15)',
+      checkInCalendarBorder: 'rgba(63, 63, 70, 0.3)',
     },
     dark: {
       primary: '#fafafa',
@@ -276,6 +310,11 @@ const themeStyles = {
       ratingMedium: 'linear-gradient(135deg, #facc15, #eab308)',
       ratingEasy: 'linear-gradient(135deg, #4ade80, #22c55e)',
       ratingVeryEasy: 'linear-gradient(135deg, #60a5fa, #3b82f6)',
+      checkInStreak: '#a1a1aa',
+      checkInPoints: '#71717a',
+      checkInBadge: '#71717a',
+      checkInCalendarBg: 'rgba(113, 113, 122, 0.15)',
+      checkInCalendarBorder: 'rgba(113, 113, 122, 0.3)',
     },
   },
 };
@@ -327,6 +366,11 @@ export function ThemeProvider({ children }: { children: ReactNode }) {
     root.style.setProperty('--color-tag-background', theme.tagBackground);
     root.style.setProperty('--color-tag-border', theme.tagBorder);
     root.style.setProperty('--color-card-shadow', theme.statCardShadow || '0 4px 6px -1px rgba(0, 0, 0, 0.1)');
+    root.style.setProperty('--color-checkin-streak', theme.checkInStreak);
+    root.style.setProperty('--color-checkin-points', theme.checkInPoints);
+    root.style.setProperty('--color-checkin-badge', theme.checkInBadge);
+    root.style.setProperty('--color-checkin-calendar-bg', theme.checkInCalendarBg);
+    root.style.setProperty('--color-checkin-calendar-border', theme.checkInCalendarBorder);
 
     if (mode === 'dark') {
       root.classList.add('dark');

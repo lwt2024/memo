@@ -19,3 +19,13 @@ export async function getUserStats(req: AuthRequest, res: Response) {
     res.status(400).json({ error: error.message });
   }
 }
+
+export async function getCheckInCalendar(req: AuthRequest, res: Response) {
+  try {
+    const months = parseInt(req.query.months as string) || 3;
+    const calendar = await checkInService.getCheckInCalendar(req.userId!, months);
+    res.json(calendar);
+  } catch (error: any) {
+    res.status(400).json({ error: error.message });
+  }
+}

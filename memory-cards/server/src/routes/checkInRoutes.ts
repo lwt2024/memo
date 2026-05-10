@@ -8,5 +8,6 @@ router.use(authMiddleware);
 
 router.post('/checkin', checkInController.handleCheckIn);
 router.get('/checkin/stats', checkInController.getUserStats);
+router.get('/checkin/calendar', checkInController.getCheckInCalendar);
 
 export default router;

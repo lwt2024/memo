@@ -11,6 +11,11 @@ interface CheckInStats {
   checkedInToday: boolean;
 }
 
+interface CheckInDay {
+  date: string;
+  points: number;
+}
+
 export default function SettingsPage() {
   const navigate = useNavigate();
   const { mode, style, toggleMode, setStyle } = useTheme();
@@ -22,6 +27,7 @@ export default function SettingsPage() {
   const [avatar, setAvatar] = useState(user?.avatar || '');
   const [avatarFile, setAvatarFile] = useState<File | null>(null);
   const [checkInStats, setCheckInStats] = useState<CheckInStats | null>(null);
+  const [checkInCalendar, setCheckInCalendar] = useState<CheckInDay[]>([]);
   
   const [showPasswordForm, setShowPasswordForm] = useState(false);
   const [oldPassword, setOldPassword] = useState('');
@@ -42,6 +48,7 @@ export default function SettingsPage() {
   useEffect(() => {
     loadProfile();
     loadCheckInStats();
+    loadCheckInCalendar();
   }, []);
 
   const loadProfile = async () => {
@@ -65,6 +72,15 @@ export default function SettingsPage() {
       setCheckInStats(res.data);
     } catch (error) {
       console.error('加载签到信息失败', error);
+    }
+  };
+
+  const loadCheckInCalendar = async () => {
+    try {
+      const res = await checkInApi.getCalendar(3);
+      setCheckInCalendar(res.data);
+    } catch (error) {
+      console.error('加载签到日历失败', error);
     }
   };
 
@@ -324,21 +340,82 @@ export default function SettingsPage() {
                   <div className="flex items-center justify-between">
                     <div className="flex items-center gap-4">
                       <div className="text-center">
-                        <p className="text-2xl font-bold" style={{ color: '#f59e0b' }}>{checkInStats.streakDays}</p>
+                        <p className="text-2xl font-bold" style={{ color: 'var(--color-checkin-streak)' }}>{checkInStats.streakDays}</p>
                         <p className="text-xs" style={{ color: 'var(--color-text-secondary)' }}>连续签到</p>
                       </div>
                       <div className="w-px h-10" style={{ backgroundColor: 'var(--color-border)' }}></div>
                       <div className="text-center">
-                        <p className="text-2xl font-bold" style={{ color: '#22c55e' }}>{checkInStats.totalPoints}</p>
+                        <p className="text-2xl font-bold" style={{ color: 'var(--color-checkin-points)' }}>{checkInStats.totalPoints}</p>
                         <p className="text-xs" style={{ color: 'var(--color-text-secondary)' }}>累计积分</p>
                       </div>
                     </div>
                     {checkInStats.checkedInToday && (
-                      <span className="px-3 py-1 rounded-full text-sm" style={{ backgroundColor: '#22c55e', color: 'white' }}>
+                      <span className="px-3 py-1 rounded-full text-sm text-white" style={{ backgroundColor: 'var(--color-checkin-badge)' }}>
                         今日已签到
                       </span>
                     )}
                   </div>
+                  {checkInCalendar.length > 0 && (
+                    <div className="mt-4 pt-4" style={{ borderTop: '1px solid var(--color-border)' }}>
+                      <p className="text-sm mb-3" style={{ color: 'var(--color-text-secondary)' }}>签到记录（近3个月）</p>
+                      <div className="grid grid-cols-7 gap-1">
+                        {['日', '一', '二', '三', '四', '五', '六'].map((day) => (
+                          <div key={day} className="text-center text-xs" style={{ color: 'var(--color-text-secondary)' }}>
+                            {day}
+                          </div>
+                        ))}
+                        {checkInCalendar.slice(-35).map((day, index) => {
+                          const date = new Date(day.date);
+                          const dayOfWeek = date.getDay();
+                          const isFirstWeek = index < 7;
+                          
+                          if (isFirstWeek && index === 0 && dayOfWeek !== 0) {
+                            const emptyCells = [];
+                            for (let i = 0; i < dayOfWeek; i++) {
+                              emptyCells.push(<div key={`empty-${i}`} className="w-4 h-4"></div>);
+                            }
+                            return [...emptyCells, (
+                              <div
+                                key={day.date}
+                                className="w-4 h-4 rounded-sm text-xs flex items-center justify-center cursor-default"
+                                style={{
+                                  backgroundColor: day.points > 0 ? 'var(--color-checkin-calendar-bg)' : 'transparent',
+                                  border: day.points > 0 ? '1px solid var(--color-checkin-calendar-border)' : '1px solid transparent',
+                                  color: 'var(--color-text)',
+                                }}
+                                title={`${day.date}: ${day.points}积分`}
+                              >
+                              </div>
+                            )];
+                          }
+                          
+                          return (
+                            <div
+                              key={day.date}
+                              className="w-4 h-4 rounded-sm text-xs flex items-center justify-center cursor-default"
+                              style={{
+                                backgroundColor: day.points > 0 ? 'var(--color-checkin-calendar-bg)' : 'transparent',
+                                border: day.points > 0 ? '1px solid var(--color-checkin-calendar-border)' : '1px solid transparent',
+                                color: 'var(--color-text)',
+                              }}
+                              title={`${day.date}: ${day.points}积分`}
+                            >
+                            </div>
+                          );
+                        })}
+                      </div>
+                      <div className="flex items-center gap-4 mt-3 text-xs" style={{ color: 'var(--color-text-secondary)' }}>
+                        <div className="flex items-center gap-1">
+                          <div className="w-3 h-3 rounded-sm" style={{ backgroundColor: 'var(--color-checkin-calendar-bg)', border: '1px solid var(--color-checkin-calendar-border)' }}></div>
+                          <span>已签到</span>
+                        </div>
+                        <div className="flex items-center gap-1">
+                          <div className="w-3 h-3 rounded-sm" style={{ border: '1px solid var(--color-border)' }}></div>
+                          <span>未签到</span>
+                        </div>
+                      </div>
+                    </div>
+                  )}
                 </div>
               )}
             </>

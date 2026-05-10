@@ -47,6 +47,7 @@ export const deckApi = {
 export const checkInApi = {
   checkIn: () => api.post('/checkin'),
   getStats: () => api.get('/checkin/stats'),
+  getCalendar: (months?: number) => api.get(`/checkin/calendar${months ? `?months=${months}` : ''}`),
 };
 
 export const shareApi = {

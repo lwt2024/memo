@@ -124,3 +124,48 @@ export async function getUserStats(userId: string) {
     checkedInToday: !!todayCheckIn,
   };
 }
+
+export async function getCheckInCalendar(userId: string, months: number = 3) {
+  const today = new Date();
+  today.setHours(0, 0, 0, 0);
+  
+  const startDate = new Date(today);
+  startDate.setMonth(startDate.getMonth() - months);
+  startDate.setHours(0, 0, 0, 0);
+  
+  const checkIns = await prisma.checkIn.findMany({
+    where: {
+      userId,
+      checkInAt: {
+        gte: startDate,
+      },
+    },
+    orderBy: {
+      checkInAt: 'asc',
+    },
+  });
+  
+  const calendar: { date: string; points: number }[] = [];
+  const checkInMap = new Map<string, number>();
+  
+  checkIns.forEach((checkIn) => {
+    const date = new Date(checkIn.checkInAt);
+    date.setHours(0, 0, 0, 0);
+    const dateStr = date.toISOString().split('T')[0];
+    checkInMap.set(dateStr, checkIn.points);
+  });
+  
+  for (let i = 0; i <= months * 30; i++) {
+    const date = new Date(startDate);
+    date.setDate(date.getDate() + i);
+    if (date > today) break;
+    
+    const dateStr = date.toISOString().split('T')[0];
+    calendar.push({
+      date: dateStr,
+      points: checkInMap.get(dateStr) || 0,
+    });
+  }
+  
+  return calendar;
+}
