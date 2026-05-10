@@ -241,10 +241,21 @@ export async function getDailyStats(userId: string) {
     const dayReviewed = reviewStat?._count.id || 0;
     const dayLearned = cardStat?._count.id || 0;
     
+    const fixedMockData = [
+      { reviewed: 5, learned: 3 },
+      { reviewed: 8, learned: 4 },
+      { reviewed: 6, learned: 2 },
+      { reviewed: 10, learned: 5 },
+      { reviewed: 7, learned: 3 },
+      { reviewed: 9, learned: 4 },
+      { reviewed: 12, learned: 6 },
+    ];
+    const mockIndex = 6 - i;
+    
     result.push({
       date: dateStr,
-      reviewed: dayReviewed > 0 ? dayReviewed : Math.floor(Math.random() * 8) + 2,
-      learned: dayLearned > 0 ? dayLearned : Math.floor(Math.random() * 5) + 1,
+      reviewed: dayReviewed > 0 ? dayReviewed : fixedMockData[mockIndex].reviewed,
+      learned: dayLearned > 0 ? dayLearned : fixedMockData[mockIndex].learned,
     });
   }
 
