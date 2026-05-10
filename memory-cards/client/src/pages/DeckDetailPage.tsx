@@ -357,7 +357,7 @@ export default function DeckDetailPage() {
               </div>
               <div className="text-center p-4 rounded-lg" style={{ backgroundColor: 'rgba(59, 130, 246, 0.1)' }}>
                 <div className="text-3xl font-bold" style={{ color: '#3b82f6' }}>{stats.dueReviewCount}</div>
-                <div className="text-sm" style={{ color: 'var(--color-text-secondary)' }}>今日复习</div>
+                <div className="text-sm" style={{ color: 'var(--color-text-secondary)' }}>今日待复习</div>
               </div>
               <div className="text-center p-4 rounded-lg" style={{ backgroundColor: 'rgba(139, 92, 246, 0.1)' }}>
                 <div className="text-3xl font-bold" style={{ color: '#8b5cf6' }}>{stats.estimatedMinutes}</div>

@@ -192,54 +192,122 @@ export default function HomePage() {
       >
         <h3 className="text-lg font-bold mb-6" style={{ color: 'var(--color-text)' }}>📈 学习数据分析</h3>
         
-        {/* 折线图 */}
-        <div className="flex items-end justify-between gap-2 h-48 px-2">
-          {dailyStats.map((day, index) => (
-            <div key={index} className="flex-1 flex flex-col items-center gap-2">
-              {/* Y轴数值标签 */}
-              <div className="text-xs text-center" style={{ color: 'var(--color-text-secondary)' }}>
-                {Math.max(day.reviewed, day.learned, day.predictedDue || 0)}
+        {/* 曲线图 */}
+        <div className="relative h-56 px-4">
+          {/* Y轴网格线 */}
+          {[0.25, 0.5, 0.75, 1].map((ratio, i) => (
+            <div 
+              key={i}
+              className="absolute left-0 right-0 border-t border-dashed"
+              style={{ 
+                top: `${(1 - ratio) * 100}%`,
+                borderColor: 'var(--color-border)'
+              }}
+            />
+          ))}
+          
+          {/* Y轴刻度 */}
+          <div className="absolute left-0 top-0 bottom-0 w-12 flex flex-col justify-between py-2">
+            {[0, 0.25, 0.5, 0.75, 1].map((ratio, i) => (
+              <div key={i} className="text-xs text-right pr-2" style={{ color: 'var(--color-text-secondary)' }}>
+                {Math.round(maxValue * ratio)}
               </div>
+            ))}
+          </div>
+          
+          {/* 曲线图区域 */}
+          <div className="absolute left-14 right-0 top-0 bottom-0">
+            {/* 已复习曲线 */}
+            <svg className="w-full h-full" viewBox={`0 0 ${dailyStats.length * 60} 200`} preserveAspectRatio="none">
+              <defs>
+                <linearGradient id="reviewGradient" x1="0%" y1="0%" x2="0%" y2="100%">
+                  <stop offset="0%" stopColor="#0ea5e9" stopOpacity="0.3"/>
+                  <stop offset="100%" stopColor="#0ea5e9" stopOpacity="0"/>
+                </linearGradient>
+                <linearGradient id="learnGradient" x1="0%" y1="0%" x2="0%" y2="100%">
+                  <stop offset="0%" stopColor="#22c55e" stopOpacity="0.3"/>
+                  <stop offset="100%" stopColor="#22c55e" stopOpacity="0"/>
+                </linearGradient>
+                <linearGradient id="predictGradient" x1="0%" y1="0%" x2="0%" y2="100%">
+                  <stop offset="0%" stopColor="#f59e0b" stopOpacity="0.3"/>
+                  <stop offset="100%" stopColor="#f59e0b" stopOpacity="0"/>
+                </linearGradient>
+              </defs>
               
-              {/* 柱状图区域 */}
-              <div className="flex-1 w-full flex flex-col justify-end gap-1">
-                {/* 预测复习数 */}
-                {day.predictedDue !== undefined && (
-                  <div 
-                    className="w-full rounded-t opacity-60"
-                    style={{ 
-                      height: `${(day.predictedDue / maxValue) * 100}%`,
-                      backgroundColor: '#f59e0b'
-                    }}
-                    title={`预测复习: ${day.predictedDue}`}
+              {/* 已复习面积 */}
+              <path
+                d={`M ${dailyStats.map((d, i) => `${i * 60},${200 - (d.reviewed / maxValue) * 200}`).join(' L ')} L ${(dailyStats.length - 1) * 60},200 L 0,200 Z`}
+                fill="url(#reviewGradient)"
+              />
+              {/* 已复习曲线 */}
+              <path
+                d={`M ${dailyStats.map((d, i) => `${i * 60},${200 - (d.reviewed / maxValue) * 200}`).join(' L ')}`}
+                fill="none"
+                stroke="#0ea5e9"
+                strokeWidth="2"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+              />
+              
+              {/* 新学习面积 */}
+              <path
+                d={`M ${dailyStats.map((d, i) => `${i * 60},${200 - (d.learned / maxValue) * 200}`).join(' L ')} L ${(dailyStats.length - 1) * 60},200 L 0,200 Z`}
+                fill="url(#learnGradient)"
+              />
+              {/* 新学习曲线 */}
+              <path
+                d={`M ${dailyStats.map((d, i) => `${i * 60},${200 - (d.learned / maxValue) * 200}`).join(' L ')}`}
+                fill="none"
+                stroke="#22c55e"
+                strokeWidth="2"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+              />
+              
+              {/* 预测复习曲线 */}
+              {dailyStats.some(d => d.predictedDue !== undefined) && (
+                <>
+                  <path
+                    d={`M ${dailyStats.map((d, i) => `${i * 60},${200 - ((d.predictedDue || 0) / maxValue) * 200}`).join(' L ')} L ${(dailyStats.length - 1) * 60},200 L 0,200 Z`}
+                    fill="url(#predictGradient)"
                   />
-                )}
-                {/* 复习数 */}
-                <div 
-                  className="w-full rounded-t"
-                  style={{ 
-                    height: `${(day.reviewed / maxValue) * 100}%`,
-                    backgroundColor: '#0ea5e9'
-                  }}
-                  title={`复习: ${day.reviewed}`}
-                />
-                {/* 学习数 */}
-                <div 
-                  className="w-full rounded-t"
-                  style={{ 
-                    height: `${(day.learned / maxValue) * 100}%`,
-                    backgroundColor: '#22c55e'
-                  }}
-                  title={`学习: ${day.learned}`}
-                />
-              </div>
+                  <path
+                    d={`M ${dailyStats.map((d, i) => `${i * 60},${200 - ((d.predictedDue || 0) / maxValue) * 200}`).join(' L ')}`}
+                    fill="none"
+                    stroke="#f59e0b"
+                    strokeWidth="2"
+                    strokeDasharray="5,5"
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                  />
+                </>
+              )}
               
-              {/* X轴日期标签 */}
-              <div className={`text-xs ${day.predictedDue !== undefined ? 'text-amber-500' : ''}`} style={{ color: day.predictedDue !== undefined ? '#f59e0b' : 'var(--color-text-secondary)' }}>
+              {/* 数据点 */}
+              {dailyStats.map((d, i) => (
+                <g key={i}>
+                  <circle cx={i * 60} cy={200 - (d.reviewed / maxValue) * 200} r="4" fill="#0ea5e9" className="hover:r-6 transition-all" />
+                  <circle cx={i * 60} cy={200 - (d.learned / maxValue) * 200} r="4" fill="#22c55e" className="hover:r-6 transition-all" />
+                  {d.predictedDue !== undefined && (
+                    <circle cx={i * 60} cy={200 - (d.predictedDue / maxValue) * 200} r="4" fill="#f59e0b" className="hover:r-6 transition-all" />
+                  )}
+                </g>
+              ))}
+            </svg>
+          </div>
+          
+          {/* X轴日期标签 */}
+          <div className="absolute left-14 right-0 bottom-0 flex justify-between pb-2">
+            {dailyStats.map((day, index) => (
+              <div 
+                key={index} 
+                className={`text-xs ${day.predictedDue !== undefined ? '' : ''}`} 
+                style={{ color: day.predictedDue !== undefined ? '#f59e0b' : 'var(--color-text-secondary)' }}
+              >
                 {day.predictedDue !== undefined ? `预测${formatDate(day.date)}` : formatDate(day.date)}
               </div>
-            </div>
-          ))}
+            ))}
+          </div>
         </div>
         
         {/* 图例 */}
