@@ -45,6 +45,7 @@ const themeStyles = {
       ratingVeryEasy: 'linear-gradient(135deg, #3b82f6, #2563eb)',
       tagBackground: 'rgba(14, 165, 233, 0.15)',
       tagBorder: 'rgba(14, 165, 233, 0.3)',
+      statCardShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06)',
     },
     dark: {
       primary: '#38bdf8',
@@ -75,6 +76,7 @@ const themeStyles = {
       ratingVeryEasy: 'linear-gradient(135deg, #60a5fa, #3b82f6)',
       tagBackground: 'rgba(56, 189, 248, 0.15)',
       tagBorder: 'rgba(56, 189, 248, 0.3)',
+      statCardShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.3), 0 2px 4px -1px rgba(0, 0, 0, 0.2)',
     },
   },
   morandi: {
@@ -109,6 +111,7 @@ const themeStyles = {
       ratingVeryEasy: 'linear-gradient(135deg, #8d9cc7, #6677a8)',
       tagBackground: 'rgba(156, 140, 124, 0.15)',
       tagBorder: 'rgba(156, 140, 124, 0.3)',
+      statCardShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06)',
     },
     dark: {
       primary: '#a89a8c',
@@ -139,6 +142,7 @@ const themeStyles = {
       ratingVeryEasy: 'linear-gradient(135deg, #7788b8, #8899c8)',
       tagBackground: 'rgba(168, 154, 140, 0.15)',
       tagBorder: 'rgba(168, 154, 140, 0.3)',
+      statCardShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.3), 0 2px 4px -1px rgba(0, 0, 0, 0.2)',
     },
   },
   vibrant: {
@@ -173,6 +177,7 @@ const themeStyles = {
       ratingVeryEasy: 'linear-gradient(135deg, #2563eb, #3b82f6)',
       tagBackground: 'rgba(249, 115, 22, 0.15)',
       tagBorder: 'rgba(249, 115, 22, 0.3)',
+      statCardShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06)',
     },
     dark: {
       primary: '#fb923c',
@@ -203,6 +208,7 @@ const themeStyles = {
       ratingVeryEasy: 'linear-gradient(135deg, #3b82f6, #60a5fa)',
       tagBackground: 'rgba(251, 146, 60, 0.15)',
       tagBorder: 'rgba(251, 146, 60, 0.3)',
+      statCardShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.3), 0 2px 4px -1px rgba(0, 0, 0, 0.2)',
     },
   },
   minimal: {
@@ -238,6 +244,7 @@ const themeStyles = {
       ratingVeryEasy: 'linear-gradient(135deg, #3b82f6, #2563eb)',
       tagBackground: 'rgba(24, 24, 27, 0.1)',
       tagBorder: 'rgba(24, 24, 27, 0.2)',
+      statCardShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06)',
     },
     dark: {
       primary: '#fafafa',
@@ -262,6 +269,7 @@ const themeStyles = {
       activeBackground: 'linear-gradient(135deg, #52525b, #71717a)',
       tagBackground: 'rgba(250, 250, 250, 0.1)',
       tagBorder: 'rgba(250, 250, 250, 0.2)',
+      statCardShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.4), 0 2px 4px -1px rgba(0, 0, 0, 0.3)',
       activeText: '#09090b',
       ratingFailed: 'linear-gradient(135deg, #f87171, #ef4444)',
       ratingHard: 'linear-gradient(135deg, #fb923c, #f97316)',
@@ -318,6 +326,7 @@ export function ThemeProvider({ children }: { children: ReactNode }) {
     root.style.setProperty('--color-rating-very-easy', theme.ratingVeryEasy);
     root.style.setProperty('--color-tag-background', theme.tagBackground);
     root.style.setProperty('--color-tag-border', theme.tagBorder);
+    root.style.setProperty('--color-card-shadow', theme.statCardShadow || '0 4px 6px -1px rgba(0, 0, 0, 0.1)');
 
     if (mode === 'dark') {
       root.classList.add('dark');

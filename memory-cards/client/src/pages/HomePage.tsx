@@ -251,8 +251,8 @@ export default function HomePage() {
             <svg className="w-full h-full" viewBox={`0 0 ${dailyStats.length * 60} 200`} preserveAspectRatio="none">
               <defs>
                 <linearGradient id="reviewGradient" x1="0%" y1="0%" x2="0%" y2="100%">
-                  <stop offset="0%" stopColor="#0ea5e9" stopOpacity="0.3"/>
-                  <stop offset="100%" stopColor="#0ea5e9" stopOpacity="0"/>
+                  <stop offset="0%" stopColor="#3b82f6" stopOpacity="0.4"/>
+                  <stop offset="100%" stopColor="#3b82f6" stopOpacity="0"/>
                 </linearGradient>
                 <linearGradient id="learnGradient" x1="0%" y1="0%" x2="0%" y2="100%">
                   <stop offset="0%" stopColor="#22c55e" stopOpacity="0.3"/>
@@ -273,7 +273,7 @@ export default function HomePage() {
               <path
                 d={`M ${dailyStats.map((d, i) => `${i * 60},${200 - (d.reviewed / maxValue) * 200}`).join(' L ')}`}
                 fill="none"
-                stroke="#0ea5e9"
+                stroke="#3b82f6"
                 strokeWidth="2"
                 strokeLinecap="round"
                 strokeLinejoin="round"
@@ -320,7 +320,7 @@ export default function HomePage() {
                     cx={i * 60} 
                     cy={200 - (d.reviewed / maxValue) * 200} 
                     r={hoveredDay === i ? 6 : 4} 
-                    fill="#0ea5e9" 
+                    fill="#3b82f6" 
                     className="transition-all cursor-pointer"
                   />
                   <circle 
@@ -333,7 +333,7 @@ export default function HomePage() {
                   {d.predictedDue !== undefined && (
                     <circle 
                       cx={i * 60} 
-                      cy={200 - (d.predictedDue / maxValue) * 200} 
+                      cy={200 - ((d.predictedDue || 0) / maxValue) * 200} 
                       r={hoveredDay === i ? 6 : 4} 
                       fill="#f59e0b" 
                       className="transition-all cursor-pointer"
