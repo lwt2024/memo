@@ -354,7 +354,7 @@ export default function DeckDetailPage() {
               </div>
               <div className="text-center p-4 rounded-lg" style={{ backgroundColor: 'rgba(139, 92, 246, 0.1)' }}>
                 <div className="text-3xl font-bold" style={{ color: '#8b5cf6' }}>{stats.estimatedMinutes}</div>
-                <div className="text-sm" style={{ color: 'var(--color-text-secondary)' }}>预计耗时(分)</div>
+                <div className="text-sm" style={{ color: 'var(--color-text-secondary)' }}>累计学习(分)</div>
               </div>
             </div>
 

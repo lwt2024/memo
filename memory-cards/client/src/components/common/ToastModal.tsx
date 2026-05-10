@@ -13,7 +13,7 @@ export default function ToastModal({ message, type, onClose }: ToastModalProps) 
       <div 
         className="px-6 py-3 rounded-xl shadow-lg transition-all duration-300"
         style={{
-          backgroundColor: 'transparent',
+          backgroundColor: 'rgba(255, 255, 255, 0.9)',
           border: `2px solid ${type === 'success' ? '#22c55e' : '#ef4444'}`,
           color: type === 'success' ? '#22c55e' : '#ef4444',
         }}
