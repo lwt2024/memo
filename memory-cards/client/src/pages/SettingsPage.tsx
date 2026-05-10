@@ -357,7 +357,14 @@ export default function SettingsPage() {
                   </div>
                   {checkInCalendar.length > 0 && (
                     <div className="mt-4 pt-4" style={{ borderTop: '1px solid var(--color-border)' }}>
-                      <p className="text-sm mb-3" style={{ color: 'var(--color-text-secondary)' }}>签到记录（近3个月）</p>
+                      <p className="text-sm mb-3" style={{ color: 'var(--color-text-secondary)' }}>签到记录（近5周）</p>
+                      <div className="flex justify-between mb-2 text-xs" style={{ color: 'var(--color-text-secondary)' }}>
+                        {['日', '一', '二', '三', '四', '五', '六'].map((day) => (
+                          <div key={day} className="w-8 text-center">
+                            {day}
+                          </div>
+                        ))}
+                      </div>
                       <div className="flex flex-col gap-1">
                         {(() => {
                           const today = new Date();
@@ -373,23 +380,24 @@ export default function SettingsPage() {
                             for (let i = 0; i < 7; i++) {
                               const dateStr = currentDate.toISOString().split('T')[0];
                               const dayData = checkInCalendar.find(d => d.date === dateStr);
-                              const isFuture = currentDate > today;
+                              const isToday = currentDate.toDateString() === today.toDateString();
+                              const hasCheckIn = dayData?.points && dayData.points > 0;
                               
-                              if (currentDate >= startDate && !isFuture) {
-                                weekCells.push(
-                                  <div
-                                    key={dateStr}
-                                    className="w-4 h-4 rounded-sm flex items-center justify-center"
-                                    style={{
-                                      backgroundColor: dayData?.points && dayData.points > 0 ? 'var(--color-checkin-calendar-bg)' : 'transparent',
-                                      border: dayData?.points && dayData.points > 0 ? '1px solid var(--color-checkin-calendar-border)' : '1px solid transparent',
-                                    }}
-                                    title={`${dateStr}: ${dayData?.points || 0}积分`}
-                                  />
-                                );
-                              } else {
-                                weekCells.push(<div key={`empty-${dateStr}`} className="w-4 h-4"></div>);
-                              }
+                              weekCells.push(
+                                <div
+                                  key={dateStr}
+                                  className="w-8 h-8 rounded-sm flex items-center justify-center text-xs font-medium"
+                                  style={{
+                                    backgroundColor: hasCheckIn ? 'var(--color-checkin-calendar-bg)' : 'transparent',
+                                    border: '1px solid var(--color-border)',
+                                    color: isToday ? 'var(--color-primary)' : 'var(--color-text)',
+                                    fontWeight: isToday ? 'bold' : 'normal',
+                                  }}
+                                  title={`${dateStr}: ${dayData?.points || 0}积分`}
+                                >
+                                  {currentDate.getDate()}
+                                </div>
+                              );
                               currentDate.setDate(currentDate.getDate() + 1);
                             }
                             rows.push(
