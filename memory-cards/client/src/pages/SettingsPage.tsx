@@ -481,11 +481,7 @@ export default function SettingsPage() {
                                               <div className="font-medium">{day.date}</div>
                                               <div className="mt-1">
                                                 {totalCards > 0 ? (
-                                                  <div className="flex items-center gap-2">
-                                                    <span style={{ color: '#f59e0b' }}>学习 {totalCards} 张</span>
-                                                    {day.newCards > 0 && <span style={{ color: '#3b82f6' }}>（新学 {day.newCards}）</span>}
-                                                    {day.reviewedCards > 0 && <span style={{ color: '#22c55e' }}>（复习 {day.reviewedCards}）</span>}
-                                                  </div>
+                                                  <span style={{ color: '#f59e0b' }}>学习 {totalCards} 张</span>
                                                 ) : (
                                                   <span style={{ color: 'var(--color-text-secondary)' }}>今日无学习记录</span>
                                                 )}
