@@ -39,7 +39,7 @@ export async function importByCode(req: AuthRequest, res: Response) {
 export async function getPublicDecks(req: AuthRequest, res: Response) {
   try {
     const { sortBy, search } = req.query;
-    const decks = await shareService.getPublicDecks({
+    const decks = await shareService.getPublicDecks(req.userId!, {
       sortBy: sortBy as 'latest' | 'popular',
       search: search as string,
     });
