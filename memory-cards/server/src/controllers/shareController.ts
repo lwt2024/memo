@@ -1,4 +1,4 @@
-import { Response } from 'express';
+import { Request, Response } from 'express';
 import { AuthRequest } from '../middlewares/auth.js';
 import * as shareService from '../services/shareService.js';
 
@@ -36,7 +36,7 @@ export async function importByCode(req: AuthRequest, res: Response) {
   }
 }
 
-export async function getPublicDecks(req: AuthRequest, res: Response) {
+export async function getPublicDecks(req: Request, res: Response) {
   try {
     const { sortBy, search } = req.query;
     const decks = await shareService.getPublicDecks({

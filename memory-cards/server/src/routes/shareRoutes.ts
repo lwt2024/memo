@@ -4,9 +4,10 @@ import * as shareController from '../controllers/shareController.js';
 
 const router = Router();
 
+router.get('/public', shareController.getPublicDecks);
+
 router.use(authMiddleware);
 
-router.get('/public', shareController.getPublicDecks);
 router.post('/import', shareController.importByCode);
 router.post('/:deckId/public', shareController.setPublic);
 router.post('/:deckId/invite', shareController.generateInvite);
