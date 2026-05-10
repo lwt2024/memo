@@ -1,0 +1,123 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = "file:./dev.db"
+}
+
+model User {
+  id           String   @id @default(uuid())
+  username     String   @unique
+  email        String?
+  passwordHash String   @map("password_hash")
+  nickname     String?
+  avatar       String?
+  totalPoints  Int      @default(0) @map("total_points")
+  createdAt    DateTime @default(now()) @map("created_at")
+
+  decks           Deck[]
+  reviewRecords   ReviewRecord[]
+  tags            Tag[]
+  cardTags        CardTag[]
+  checkIns        CheckIn[]
+  importedDecks   Deck[]       @relation("OriginalCreator")
+  importedCards   Card[]       @relation("CardOriginalCreator")
+
+  @@map("users")
+}
+
+model Deck {
+  id                   String   @id @default(uuid())
+  userId               String   @map("user_id")
+  name                 String
+  description          String?
+  isPublic             Boolean  @default(false) @map("is_public")
+  inviteCode           String?  @unique @map("invite_code")
+  originalCreatorId    String?  @map("original_creator_id")
+  createdAt            DateTime @default(now()) @map("created_at")
+
+  user             User   @relation(fields: [userId], references: [id])
+  originalCreator  User?  @relation("OriginalCreator", fields: [originalCreatorId], references: [id])
+  cards            Card[]
+
+  @@map("decks")
+}
+
+model Card {
+  id                 String   @id @default(uuid())
+  deckId             String   @map("deck_id")
+  front              String
+  back               String
+  cardType           String   @default("text") @map("card_type")
+  mediaUrls          String?  @map("media_urls")
+  originalCreatorId  String?  @map("original_creator_id")
+  createdAt          DateTime @default(now()) @map("created_at")
+
+  deck              Deck           @relation(fields: [deckId], references: [id], onDelete: Cascade)
+  originalCreator   User?          @relation("CardOriginalCreator", fields: [originalCreatorId], references: [id])
+  reviewRecords     ReviewRecord[]
+  cardTags           CardTag[]
+
+  @@map("cards")
+}
+
+model Tag {
+  id        String   @id @default(uuid())
+  name      String
+  color     String
+  userId    String   @map("user_id")
+  isPreset  Boolean  @default(false) @map("is_preset")
+  createdAt DateTime @default(now()) @map("created_at")
+
+  user     User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  cardTags CardTag[]
+
+  @@map("tags")
+  @@unique([userId, name])
+}
+
+model CardTag {
+  id        String   @id @default(uuid())
+  cardId    String   @map("card_id")
+  tagId     String   @map("tag_id")
+  userId    String   @map("user_id")
+  createdAt DateTime @default(now()) @map("created_at")
+
+  card Card @relation(fields: [cardId], references: [id], onDelete: Cascade)
+  tag  Tag  @relation(fields: [tagId], references: [id], onDelete: Cascade)
+  user User @relation(fields: [userId], references: [id])
+
+  @@map("card_tags")
+  @@unique([cardId, tagId])
+}
+
+model ReviewRecord {
+  id            String    @id @default(uuid())
+  cardId        String    @map("card_id")
+  userId        String    @map("user_id")
+  easeLevel     Int       @default(3) @map("ease_level")
+  nextReviewAt  DateTime? @map("next_review_at")
+  lastReviewAt  DateTime? @map("last_review_at")
+  reviewCount   Int       @default(0) @map("review_count")
+  masteryLevel  Int       @default(0) @map("mastery_level") // 0-5，越高越熟悉
+  createdAt     DateTime  @default(now()) @map("created_at")
+
+  card Card @relation(fields: [cardId], references: [id], onDelete: Cascade)
+  user User @relation(fields: [userId], references: [id])
+
+  @@unique([cardId, userId])
+  @@map("review_records")
+}
+
+model CheckIn {
+  id        String   @id @default(cuid())
+  userId    String   @map("user_id")
+  checkInAt DateTime @default(now()) @map("check_in_at")
+  points    Int      @default(10)
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@map("check_ins")
+}

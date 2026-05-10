@@ -1,0 +1,29 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+body {
+  @apply transition-colors duration-300;
+}
+
+* {
+  cursor: default;
+}
+
+input,
+textarea {
+  cursor: text;
+}
+
+button,
+a,
+[role="button"],
+[role="link"],
+.clickable {
+  cursor: pointer;
+}
+
+img,
+svg {
+  cursor: default;
+}
