@@ -166,6 +166,14 @@ async function generateMockData() {
       const nextReviewAt = new Date(lastReviewAt);
       nextReviewAt.setDate(nextReviewAt.getDate() + baseInterval);
 
+      // 30% 的卡片设置为已到期待复习状态
+      const isDueForReview = Math.random() < 0.3;
+      if (isDueForReview) {
+        // 设置为1-7天前到期
+        const daysOverdue = Math.floor(Math.random() * 7) + 1;
+        nextReviewAt.setDate(nextReviewAt.getDate() - baseInterval - daysOverdue);
+      }
+
       await prisma.reviewRecord.create({
         data: {
           cardId: card.id,
