@@ -152,15 +152,15 @@ export async function getCheckInCalendar(userId: string, months: number = 6) {
     },
   });
   
-  const reviews = await prisma.reviewHistory.findMany({
+  const reviews = await prisma.reviewRecord.findMany({
     where: {
       userId,
-      reviewedAt: {
+      lastReviewAt: {
         gte: startDate,
       },
     },
     orderBy: {
-      reviewedAt: 'asc',
+      lastReviewAt: 'asc',
     },
   });
   
@@ -189,7 +189,7 @@ export async function getCheckInCalendar(userId: string, months: number = 6) {
   });
   
   reviews.forEach((review) => {
-    const date = new Date(review.reviewedAt);
+    const date = new Date(review.lastReviewAt || review.createdAt);
     date.setHours(0, 0, 0, 0);
     const dateStr = date.toISOString().split('T')[0];
     reviewMap.set(dateStr, (reviewMap.get(dateStr) || 0) + 1);

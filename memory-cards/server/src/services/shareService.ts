@@ -85,7 +85,7 @@ export async function importPublicDeck(deckId: string, userId: string) {
         back: card.back,
         cardType: card.cardType,
         mediaUrls: card.mediaUrls,
-        originalCreatorId: card.deck.userId,
+        originalCreatorId: sourceDeck.userId,
       },
     });
 
