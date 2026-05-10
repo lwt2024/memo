@@ -99,11 +99,17 @@ export default function DecksPage() {
   const handleShareClick = async (deckId: string) => {
     try {
       const res = await shareApi.generateInvite(deckId);
-      const shareUrl = `${window.location.origin}/import/${res.data.inviteCode}`;
-      await navigator.clipboard.writeText(shareUrl);
-      alert('分享链接已复制到剪贴板！');
-    } catch (err) {
+      if (res.data && res.data.inviteCode) {
+        const shareUrl = `${window.location.origin}/import/${res.data.inviteCode}`;
+        await navigator.clipboard.writeText(shareUrl);
+        alert('分享链接已复制到剪贴板！');
+      } else {
+        console.error('生成分享链接失败：邀请码为空');
+        alert('生成分享链接失败，请稍后重试');
+      }
+    } catch (err: any) {
       console.error('生成分享链接失败', err);
+      alert(err.response?.data?.error || '生成分享链接失败，请稍后重试');
     }
   };
 
