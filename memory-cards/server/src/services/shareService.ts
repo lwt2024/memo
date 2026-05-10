@@ -61,7 +61,7 @@ export async function importPublicDeck(deckId: string, userId: string) {
   }
 
   const existingDeck = await prisma.deck.findFirst({
-    where: { userId, name: `${sourceDeck.name} (导入)` },
+    where: { userId, name: sourceDeck.name },
   });
 
   if (existingDeck) {
@@ -71,7 +71,7 @@ export async function importPublicDeck(deckId: string, userId: string) {
   const newDeck = await prisma.deck.create({
     data: {
       userId,
-      name: `${sourceDeck.name} (导入)`,
+      name: sourceDeck.name,
       description: sourceDeck.description,
     },
   });
@@ -131,10 +131,22 @@ export async function importDeckByCode(inviteCode: string, userId: string) {
     throw new Error('邀请码无效或卡片组已取消分享');
   }
 
+  if (sourceDeck.userId === userId) {
+    throw new Error('不能导入自己的卡片组');
+  }
+
+  const existingDeck = await prisma.deck.findFirst({
+    where: { userId, name: sourceDeck.name },
+  });
+
+  if (existingDeck) {
+    throw new Error('您已经导入过这个卡片组');
+  }
+
   const newDeck = await prisma.deck.create({
     data: {
       userId,
-      name: `${sourceDeck.name} (导入)`,
+      name: sourceDeck.name,
       description: sourceDeck.description,
     },
   });
