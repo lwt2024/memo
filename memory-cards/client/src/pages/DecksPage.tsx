@@ -1,15 +1,20 @@
 import { useState, useEffect } from 'react';
-import { Link } from 'react-router-dom';
-import api from '../services/api';
+import { Link, useNavigate } from 'react-router-dom';
+import api, { shareApi } from '../services/api';
 import { Deck } from '../types';
 import Layout from '../components/common/Layout';
 
 export default function DecksPage() {
+  const navigate = useNavigate();
   const [decks, setDecks] = useState<Deck[]>([]);
   const [loading, setLoading] = useState(true);
   const [showModal, setShowModal] = useState(false);
+  const [showImportModal, setShowImportModal] = useState(false);
   const [newDeckName, setNewDeckName] = useState('');
   const [newDeckDesc, setNewDeckDesc] = useState('');
+  const [inviteCode, setInviteCode] = useState('');
+  const [importing, setImporting] = useState(false);
+  const [importError, setImportError] = useState('');
 
   useEffect(() => {
     fetchDecks();
@@ -36,6 +41,31 @@ export default function DecksPage() {
       fetchDecks();
     } catch (err) {
       console.error('创建卡片组失败', err);
+    }
+  };
+
+  const importDeck = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!inviteCode.trim()) {
+      setImportError('请输入邀请码');
+      return;
+    }
+
+    setImporting(true);
+    setImportError('');
+
+    try {
+      const res = await shareApi.importByCode(inviteCode.trim());
+      setShowImportModal(false);
+      setInviteCode('');
+      fetchDecks();
+      setTimeout(() => {
+        navigate(`/decks/${res.data.id}`);
+      }, 500);
+    } catch (err: any) {
+      setImportError(err.response?.data?.error || '导入失败');
+    } finally {
+      setImporting(false);
     }
   };
 
@@ -71,13 +101,26 @@ export default function DecksPage() {
           </h2>
           <p style={{ color: 'var(--color-text-secondary)' }}>共 {decks.length} 个卡片组</p>
         </div>
-        <button
-          onClick={() => setShowModal(true)}
-          className="text-white px-6 py-3 rounded-xl font-semibold hover:shadow-lg hover:scale-[1.02] transition-all flex items-center gap-2"
-          style={{ background: 'linear-gradient(135deg, var(--color-primary), var(--color-secondary))' }}
-        >
-          <span className="text-xl">+</span> 新建卡片组
-        </button>
+        <div className="flex gap-3">
+          <button
+            onClick={() => setShowModal(true)}
+            className="text-white px-6 py-3 rounded-xl font-semibold hover:shadow-lg hover:scale-[1.02] transition-all flex items-center gap-2"
+            style={{ background: 'linear-gradient(135deg, var(--color-primary), var(--color-secondary))' }}
+          >
+            <span className="text-xl">+</span> 新建卡片组
+          </button>
+          <button
+            onClick={() => setShowImportModal(true)}
+            className="px-6 py-3 rounded-xl font-semibold hover:shadow-lg hover:scale-[1.02] transition-all flex items-center gap-2"
+            style={{ 
+              backgroundColor: 'var(--color-background-secondary)',
+              color: 'var(--color-text)',
+              border: '1px solid var(--color-border)'
+            }}
+          >
+            <span className="text-xl">📥</span> 输入邀请码
+          </button>
+        </div>
       </div>
 
       {decks.length === 0 ? (
@@ -205,6 +248,66 @@ export default function DecksPage() {
                   style={{ background: 'linear-gradient(135deg, var(--color-primary), var(--color-secondary))' }}
                 >
                   创建
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
+
+      {showImportModal && (
+        <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center p-4 z-50" onClick={() => setShowImportModal(false)}>
+          <div 
+            className="rounded-2xl p-8 w-full max-w-md shadow-2xl transition-colors" 
+            onClick={(e) => e.stopPropagation()}
+            style={{ backgroundColor: 'var(--color-card)' }}
+          >
+            <h3 className="text-2xl font-bold mb-2" style={{ color: 'var(--color-text)' }}>
+              📥 输入邀请码
+            </h3>
+            <p className="text-sm mb-6" style={{ color: 'var(--color-text-secondary)' }}>
+              输入好友分享的卡片组邀请码，即可导入到你的卡片组中
+            </p>
+            <form onSubmit={importDeck}>
+              <div className="mb-4">
+                <input
+                  type="text"
+                  value={inviteCode}
+                  onChange={(e) => {
+                    setInviteCode(e.target.value);
+                    setImportError('');
+                  }}
+                  className="w-full px-4 py-3 border rounded-xl focus:outline-none focus:ring-2 transition-all"
+                  style={{ 
+                    backgroundColor: 'var(--color-background-secondary)', 
+                    borderColor: importError ? '#ef4444' : 'var(--color-border)',
+                    color: 'var(--color-text)'
+                  }}
+                  placeholder="请输入邀请码"
+                />
+              </div>
+              {importError && (
+                <p className="text-sm text-red-500 mb-4">{importError}</p>
+              )}
+              <div className="flex gap-3">
+                <button
+                  type="button"
+                  onClick={() => setShowImportModal(false)}
+                  className="flex-1 py-3 rounded-xl transition-colors font-medium"
+                  style={{ 
+                    backgroundColor: 'var(--color-background-secondary)', 
+                    color: 'var(--color-text)' 
+                  }}
+                >
+                  取消
+                </button>
+                <button
+                  type="submit"
+                  disabled={importing}
+                  className="flex-1 py-3 text-white rounded-xl hover:shadow-lg transition-all font-medium disabled:opacity-50"
+                  style={{ background: 'linear-gradient(135deg, var(--color-primary), var(--color-secondary))' }}
+                >
+                  {importing ? '导入中...' : '导入'}
                 </button>
               </div>
             </form>
