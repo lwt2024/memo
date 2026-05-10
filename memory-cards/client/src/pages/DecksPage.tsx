@@ -118,7 +118,7 @@ export default function DecksPage() {
               border: '1px solid var(--color-border)'
             }}
           >
-            <span className="text-xl">📥</span> 输入邀请码
+            <span className="text-xl">🔗</span> 输入邀请码
           </button>
         </div>
       </div>
