@@ -352,9 +352,9 @@ export default function HomePage() {
                   top: '10%',
                   transform: 'translateX(-50%)',
                   whiteSpace: 'nowrap',
-                  backgroundColor: 'rgba(0, 0, 0, 0.7)',
-                  color: 'var(--color-text)',
-                  border: '1px solid var(--color-border)'
+                  backgroundColor: 'var(--color-card)',
+                  border: '1px solid var(--color-border)',
+                  boxShadow: 'var(--color-card-shadow, 0 4px 6px -1px rgba(0, 0, 0, 0.1))'
                 }}
               >
                 <div className="font-medium mb-1" style={{ color: 'var(--color-text)' }}>
