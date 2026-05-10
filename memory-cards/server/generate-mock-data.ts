@@ -159,7 +159,10 @@ async function generateMockData() {
       // 模拟复习历史：随机复习5-25次
       const reviewCount = Math.floor(Math.random() * 21) + 5;
       const masteryLevel = Math.min(Math.floor(reviewCount / 5), 5);
-      const lastReviewAt = randomDate(Math.floor(Math.random() * 28) + 1);
+      
+      // 生成过去30天内的随机复习日期，用于图表展示
+      const daysAgo = Math.floor(Math.random() * 7); // 最近一周内复习过
+      const lastReviewAt = randomDate(daysAgo);
       
       // 根据复习次数计算下次复习时间
       const baseInterval = Math.pow(2, Math.min(reviewCount, 6));

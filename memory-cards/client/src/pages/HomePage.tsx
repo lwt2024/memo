@@ -159,21 +159,13 @@ export default function HomePage() {
 
       {stats && stats.dueCount > 0 && (
         <div 
-          className="rounded-2xl p-6 mb-8 shadow-lg hover:shadow-xl transition-all"
+          className="rounded-2xl p-6 mb-8 shadow-lg cursor-pointer hover:shadow-xl transition-all"
           style={{ background: 'linear-gradient(135deg, var(--color-primary), var(--color-secondary))' }}
+          onClick={() => navigate('/review')}
         >
-          <div className="flex items-center justify-between">
-            <div>
-              <h3 className="text-xl font-bold mb-1" style={{ color: 'var(--color-stat-text)' }}>📚 今日待复习</h3>
-              <p style={{ color: 'var(--color-stat-text-secondary)' }}>你有 <span className="font-bold" style={{ color: 'var(--color-stat-text)' }}>{stats.dueCount}</span> 张卡片需要复习</p>
-            </div>
-            <button
-              onClick={() => navigate('/review')}
-              className="bg-white text-gray-800 px-6 py-3 rounded-xl font-semibold hover:bg-gray-100 transition-colors flex items-center gap-2"
-            >
-              开始复习
-              <span>→</span>
-            </button>
+          <div>
+            <h3 className="text-xl font-bold mb-1" style={{ color: 'var(--color-stat-text)' }}>📚 今日待复习</h3>
+            <p style={{ color: 'var(--color-stat-text-secondary)' }}>你有 <span className="font-bold" style={{ color: 'var(--color-stat-text)' }}>{stats.dueCount}</span> 张卡片需要复习，点击进入复习</p>
           </div>
         </div>
       )}

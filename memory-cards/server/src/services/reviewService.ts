@@ -144,37 +144,39 @@ export async function submitReview(cardId: string, userId: string, easeLevel: nu
 export async function getReviewStats(userId: string) {
   const now = new Date();
 
-  const [dueCount, learningCount, masteredCount, totalCards] = await Promise.all([
-    prisma.card.count({
-      where: {
-        deck: { userId },
-        reviewRecords: {
-          some: { userId, nextReviewAt: { lte: now } },
-        },
-      },
-    }),
-    prisma.card.count({
-      where: {
-        deck: { userId },
-        reviewRecords: { some: { userId } },
-      },
-    }),
-    prisma.card.count({
-      where: {
-        deck: { userId },
-        reviewRecords: {
-          some: { userId, reviewCount: { gte: 5 } },
-        },
-      },
-    }),
-    prisma.card.count({
-      where: {
-        deck: { userId },
-      },
-    }),
-  ]);
+  const cards = await prisma.card.findMany({
+    where: { deck: { userId } },
+    include: { reviewRecords: { where: { userId } } },
+  });
 
-  return { dueCount, learningCount, masteredCount, totalCards };
+  let dueCount = 0;
+  let learningCount = 0;
+  let masteredCount = 0;
+
+  cards.forEach(card => {
+    const record = card.reviewRecords[0];
+    if (!record) {
+      learningCount++;
+      return;
+    }
+
+    if (record.nextReviewAt && record.nextReviewAt <= now) {
+      dueCount++;
+    }
+
+    if (record.masteryLevel >= 3) {
+      masteredCount++;
+    } else {
+      learningCount++;
+    }
+  });
+
+  return {
+    dueCount,
+    learningCount,
+    masteredCount,
+    totalCards: cards.length,
+  };
 }
 
 export async function getDailyStats(userId: string) {
