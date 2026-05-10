@@ -538,10 +538,11 @@ export default function DeckDetailPage() {
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50 overflow-y-auto">
           <div className="rounded-lg w-full my-4 mx-auto shadow-2xl" style={{ 
             backgroundColor: 'var(--color-card)',
-            maxWidth: '600px',
+            maxWidth: '90%',
             maxHeight: '90vh',
             overflowY: 'auto',
-            margin: '1rem'
+            scrollbarWidth: 'thin',
+            scrollbarColor: 'var(--color-border) transparent'
           }}>
             <div className="p-6 sm:p-8">
             <h3 className="text-2xl font-bold mb-6" style={{ color: 'var(--color-text)' }}>
@@ -572,12 +573,14 @@ export default function DeckDetailPage() {
                 <div
                   ref={frontEditorRef}
                   contentEditable
-                  className="w-full px-4 py-3 rounded border focus:outline-none focus:ring-2 focus:ring-blue-500 overflow-y-auto [&::-webkit-scrollbar]:w-2 [&::-webkit-scrollbar-track]:bg-transparent [&::-webkit-scrollbar-thumb]:bg-gray-300 [&::-webkit-scrollbar-thumb]:rounded-full hover:[&::-webkit-scrollbar-thumb]:bg-gray-400"
+                  className="w-full px-4 py-3 rounded border focus:outline-none focus:ring-2 focus:ring-blue-500 overflow-y-auto [&::-webkit-scrollbar]:w-1.5 [&::-webkit-scrollbar-track]:bg-transparent [&::-webkit-scrollbar-thumb]:bg-gray-200 [&::-webkit-scrollbar-thumb]:rounded-full hover:[&::-webkit-scrollbar-thumb]:bg-gray-300 [&::-webkit-scrollbar-thumb]:hover:bg-gray-400"
                   style={{
                     backgroundColor: 'var(--color-background)',
                     color: 'var(--color-text)',
                     borderColor: 'var(--color-border)',
                     height: '200px',
+                    scrollbarWidth: 'thin',
+                    scrollbarColor: '#e5e7eb transparent'
                   }}
                   onPaste={(e) => handlePaste(e, 'front')}
                   onInput={() => updateContent('front')}
@@ -613,12 +616,14 @@ export default function DeckDetailPage() {
                 <div
                   ref={backEditorRef}
                   contentEditable
-                  className="w-full px-4 py-3 rounded border focus:outline-none focus:ring-2 focus:ring-blue-500 overflow-y-auto [&::-webkit-scrollbar]:w-2 [&::-webkit-scrollbar-track]:bg-transparent [&::-webkit-scrollbar-thumb]:bg-gray-300 [&::-webkit-scrollbar-thumb]:rounded-full hover:[&::-webkit-scrollbar-thumb]:bg-gray-400"
+                  className="w-full px-4 py-3 rounded border focus:outline-none focus:ring-2 focus:ring-blue-500 overflow-y-auto [&::-webkit-scrollbar]:w-1.5 [&::-webkit-scrollbar-track]:bg-transparent [&::-webkit-scrollbar-thumb]:bg-gray-200 [&::-webkit-scrollbar-thumb]:rounded-full hover:[&::-webkit-scrollbar-thumb]:bg-gray-300 [&::-webkit-scrollbar-thumb]:hover:bg-gray-400"
                   style={{
                     backgroundColor: 'var(--color-background)',
                     color: 'var(--color-text)',
                     borderColor: 'var(--color-border)',
                     height: '250px',
+                    scrollbarWidth: 'thin',
+                    scrollbarColor: '#e5e7eb transparent'
                   }}
                   onPaste={(e) => handlePaste(e, 'back')}
                   onInput={() => updateContent('back')}
