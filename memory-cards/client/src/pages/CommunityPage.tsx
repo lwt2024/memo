@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import { shareApi } from '../services/api';
 import Layout from '../components/common/Layout';
 import PublicDeckCard from '../components/common/PublicDeckCard';
+import ToastModal from '../components/common/ToastModal';
 import { useUser } from '../context/UserContext';
 
 interface PublicDeck {
@@ -77,20 +78,6 @@ export default function CommunityPage() {
           社区广场
         </h2>
 
-        {toast && (
-          <div 
-            className={`mb-4 p-4 rounded-xl text-center transition-all duration-300 ${
-              toast.type === 'success' ? 'bg-green-500/20 text-green-700' : 'bg-red-500/20 text-red-700'
-            }`}
-            style={{ 
-              backdropFilter: 'blur(8px)',
-              border: `1px solid ${toast.type === 'success' ? 'rgba(34, 197, 94, 0.3)' : 'rgba(239, 68, 68, 0.3)'}`
-            }}
-          >
-            {toast.message}
-          </div>
-        )}
-
         <div className="flex flex-col sm:flex-row gap-4 mb-6">
           <div className="flex-1 relative">
             <input
@@ -164,6 +151,14 @@ export default function CommunityPage() {
           </div>
         )}
       </div>
+
+      {toast && (
+        <ToastModal
+          message={toast.message}
+          type={toast.type}
+          onClose={() => setToast(null)}
+        />
+      )}
     </Layout>
   );
 }
