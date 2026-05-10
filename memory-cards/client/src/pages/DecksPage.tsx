@@ -18,6 +18,7 @@ export default function DecksPage() {
   const [inviteCode, setInviteCode] = useState('');
   const [importing, setImporting] = useState(false);
   const [importError, setImportError] = useState('');
+  const [menuDeckId, setMenuDeckId] = useState<string | null>(null);
 
   useEffect(() => {
     fetchDecks();
@@ -95,6 +96,17 @@ export default function DecksPage() {
     setDeckToDelete(null);
   };
 
+  const handleShareClick = async (deckId: string) => {
+    try {
+      const res = await shareApi.generateInvite(deckId);
+      const shareUrl = `${window.location.origin}/import/${res.data.inviteCode}`;
+      await navigator.clipboard.writeText(shareUrl);
+      alert('分享链接已复制到剪贴板！');
+    } catch (err) {
+      console.error('生成分享链接失败', err);
+    }
+  };
+
   if (loading) {
     return (
       <Layout>
@@ -160,7 +172,7 @@ export default function DecksPage() {
           {decks.map((deck, index) => (
             <div
               key={deck.id}
-              className="rounded-2xl shadow-lg hover:shadow-xl transition-all group overflow-hidden"
+              className="rounded-2xl shadow-lg hover:shadow-xl transition-all group overflow-hidden relative"
               style={{ backgroundColor: 'var(--color-card)', animationDelay: `${index * 100}ms` }}
             >
               <Link to={`/decks/${deck.id}`} className="block p-6">
@@ -171,12 +183,58 @@ export default function DecksPage() {
                   >
                     📚
                   </div>
-                  <span 
-                    className="text-sm px-3 py-1 rounded-full"
-                    style={{ backgroundColor: 'var(--color-background-secondary)', color: 'var(--color-primary)' }}
-                  >
-                    {deck._count?.cards || 0} 张
-                  </span>
+                  <div className="flex items-center gap-2">
+                    <span 
+                      className="text-sm px-3 py-1 rounded-full"
+                      style={{ backgroundColor: 'var(--color-background-secondary)', color: 'var(--color-primary)' }}
+                    >
+                      {deck._count?.cards || 0} 张
+                    </span>
+                    <div className="relative">
+                      <button
+                        onClick={(e) => {
+                          e.preventDefault();
+                          e.stopPropagation();
+                          setMenuDeckId(menuDeckId === deck.id ? null : deck.id);
+                        }}
+                        className="p-1 rounded-lg hover:bg-gray-100 transition-colors"
+                        style={{ color: 'var(--color-text-secondary)' }}
+                      >
+                        ⋮⋮⋮
+                      </button>
+                      {menuDeckId === deck.id && (
+                        <div 
+                          className="absolute right-0 top-full mt-1 w-36 rounded-xl shadow-lg z-10 animate-fade-in"
+                          style={{ backgroundColor: 'var(--color-card)', border: '1px solid var(--color-border)' }}
+                        >
+                          <button
+                            onClick={(e) => {
+                              e.preventDefault();
+                              e.stopPropagation();
+                              handleShareClick(deck.id);
+                              setMenuDeckId(null);
+                            }}
+                            className="w-full px-4 py-2 text-left text-sm hover:bg-gray-100 transition-colors flex items-center gap-2"
+                            style={{ color: 'var(--color-text)' }}
+                          >
+                            🔗 分享
+                          </button>
+                          <button
+                            onClick={(e) => {
+                              e.preventDefault();
+                              e.stopPropagation();
+                              handleDeleteClick(deck.id);
+                              setMenuDeckId(null);
+                            }}
+                            className="w-full px-4 py-2 text-left text-sm hover:bg-gray-100 transition-colors flex items-center gap-2"
+                            style={{ color: '#ef4444' }}
+                          >
+                            🗑️ 删除
+                          </button>
+                        </div>
+                      )}
+                    </div>
+                  </div>
                 </div>
                 <h3 
                   className="font-bold text-lg mb-2 transition-colors"
@@ -196,17 +254,6 @@ export default function DecksPage() {
                   </span>
                 </div>
               </Link>
-              <div className="px-6 pb-4 flex justify-end">
-                <button
-                  onClick={(e) => {
-                    e.preventDefault();
-                    handleDeleteClick(deck.id);
-                  }}
-                  className="px-4 py-2 text-red-500 hover:bg-red-50 dark:hover:bg-red-900/30 rounded-lg text-sm transition-colors"
-                >
-                  删除
-                </button>
-              </div>
             </div>
           ))}
         </div>
