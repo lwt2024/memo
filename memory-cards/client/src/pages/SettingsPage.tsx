@@ -11,9 +11,9 @@ export default function SettingsPage() {
   const { user, updateUser, setUser } = useUser();
   
   const [editMode, setEditMode] = useState(false);
-  const [nickname, setNickname] = useState(user.nickname || '');
-  const [username, setUsername] = useState(user.username || '');
-  const [avatar, setAvatar] = useState(user.avatar || '');
+  const [nickname, setNickname] = useState(user?.nickname || '');
+  const [username, setUsername] = useState(user?.username || '');
+  const [avatar, setAvatar] = useState(user?.avatar || '');
   const [avatarFile, setAvatarFile] = useState<File | null>(null);
   
   const [showPasswordForm, setShowPasswordForm] = useState(false);
@@ -39,10 +39,13 @@ export default function SettingsPage() {
   const loadProfile = async () => {
     try {
       const res = await userApi.getProfile();
-      setUser(res.data.user);
-      setNickname(res.data.user.nickname || '');
-      setUsername(res.data.user.username || '');
-      setAvatar(res.data.user.avatar || '');
+      const profile = res.data.user;
+      if (profile) {
+        setUser(profile);
+        setNickname(profile.nickname || '');
+        setUsername(profile.username || '');
+        setAvatar(profile.avatar || '');
+      }
     } catch (error) {
       console.error('加载用户信息失败', error);
     }
