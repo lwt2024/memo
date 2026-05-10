@@ -551,9 +551,6 @@ export default function DeckDetailPage() {
               <div className="mb-6">
                 <label className="block mb-3 text-lg font-medium" style={{ color: 'var(--color-text)' }}>
                   正面（问题）
-                  <span className="text-sm font-normal ml-2" style={{ color: 'var(--color-text-secondary)' }}>
-                    (支持粘贴图片)
-                  </span>
                   <button
                     type="button"
                     onClick={() => openCodeEditor('front')}
@@ -594,9 +591,6 @@ export default function DeckDetailPage() {
               <div className="mb-6">
                 <label className="block mb-3 text-lg font-medium" style={{ color: 'var(--color-text)' }}>
                   背面（答案）
-                  <span className="text-sm font-normal ml-2" style={{ color: 'var(--color-text-secondary)' }}>
-                    (支持粘贴图片)
-                  </span>
                   <button
                     type="button"
                     onClick={() => openCodeEditor('back')}
