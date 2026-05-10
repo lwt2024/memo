@@ -40,6 +40,81 @@ async function generateMockData() {
   });
   console.log('✅ 用户创建成功: demo_user / demo123\n');
 
+  const otherUsersData = [
+    {
+      username: 'wang_user',
+      email: 'wang@example.com',
+      nickname: '英语达人小王',
+      decks: [
+        { name: '雅思核心词汇精选', description: '雅思考试高频词汇 2000 词', cardCount: 30 },
+        { name: '托福学术词汇', description: '托福阅读必备学术词汇表', cardCount: 25 },
+      ]
+    },
+    {
+      username: 'coder_user',
+      email: 'coder@example.com',
+      nickname: '代码狂人',
+      decks: [
+        { name: 'Python 数据分析入门', description: 'NumPy、Pandas 基础概念速记', cardCount: 20 },
+        { name: 'JavaScript 高级技巧', description: 'ES6+ 核心概念与应用', cardCount: 25 },
+      ]
+    },
+    {
+      username: 'med_user',
+      email: 'med@example.com',
+      nickname: '医学生小林',
+      decks: [
+        { name: '解剖学重点速记', description: '人体主要骨骼与肌肉系统', cardCount: 30 },
+        { name: '药理学核心知识点', description: '常用药物分类与作用机制', cardCount: 20 },
+      ]
+    }
+  ];
+
+  for (const userData of otherUsersData) {
+    const otherUserId = crypto.randomUUID();
+    const otherUserHash = await bcrypt.hash('pass123', 10);
+    await prisma.user.create({
+      data: {
+        id: otherUserId,
+        username: userData.username,
+        email: userData.email,
+        passwordHash: otherUserHash,
+        nickname: userData.nickname,
+        avatar: null,
+        createdAt: randomDate(60),
+      },
+    });
+    console.log(`✅ 其他用户创建: ${userData.nickname}`);
+
+    for (const deckInfo of userData.decks) {
+      const deck = await prisma.deck.create({
+        data: {
+          userId: otherUserId,
+          name: deckInfo.name,
+          description: deckInfo.description,
+          isPublic: true,
+          createdAt: randomDate(40 + Math.floor(Math.random() * 20)),
+        },
+      });
+
+      for (let i = 0; i < deckInfo.cardCount; i++) {
+        const qa = getQAForOtherDeck(deckInfo.name);
+        await prisma.card.create({
+          data: {
+            deckId: deck.id,
+            front: qa.front,
+            back: qa.back,
+            cardType: 'text',
+            createdAt: randomDate(30 + Math.floor(Math.random() * 20)),
+          },
+        });
+      }
+      console.log(`   ✅ 卡片组 "${deckInfo.name}" 已创建 ${deckInfo.cardCount} 张卡片`);
+    }
+  }
+
+  console.log('');
+
   const tagData = [
     { name: '重要', color: '#ef4444' },
     { name: '考研', color: '#3b82f6' },
@@ -187,14 +262,13 @@ async function generateMockData() {
   console.log('========================================');
   console.log('🎉 模拟数据生成完成！');
   console.log('========================================');
-  console.log(`👤 用户: demo_user`);
-  console.log(`🔐 密码: demo123`);
-  console.log(`📚 卡片组: ${decksData.length} 个`);
-  console.log(`📝 卡片总数: ${totalCards} 张`);
-  console.log(`🏷️  标签: ${tags.length} 个`);
+  console.log(`👤 主用户: demo_user / demo123`);
+  console.log(`👤 其他用户: wang_user / pass123 (英语达人小王)`);
+  console.log(`👤 其他用户: coder_user / pass123 (代码狂人)`);
+  console.log(`👤 其他用户: med_user / pass123 (医学生小林)`);
+  console.log(`📚 卡片组总数: ${decksData.length + otherUsersData.reduce((sum, u) => sum + u.decks.length, 0)} 个`);
+  console.log(`📝 卡片总数: ${totalCards + otherUsersData.reduce((sum, u) => sum + u.decks.reduce((s, d) => s + d.cardCount, 0), 0)} 张`);
   console.log('========================================');
-  console.log('\n💡 提示：登录后可以在 Dashboard 查看统计数据');
-  console.log('   部分卡片已到期复习，部分卡片已掌握');
 }
 
 function getQAForDeck(deckName) {
@@ -270,6 +344,94 @@ function getQAForDeck(deckName) {
   return {
     front: '这是一个重要的知识点',
     back: '这是该知识点的详细解释和答案，需要认真学习掌握'
+  };
+}
+
+function getQAForOtherDeck(deckName) {
+  const qaPairs = {
+    '雅思': [
+      { q: '雅思听力 Section 1 通常是什么内容？', a: 'Section 1 通常是对话形式，涉及日常生活场景如租房、办理银行业务、预约服务等。重点考察捕捉具体信息的能力，如日期、时间、人名、地点等。' },
+      { q: '雅思阅读的 True/False/Not Given 判断题有什么技巧？', a: 'TRUE：文中明确支持的说法；FALSE：与原文信息直接矛盾；Not Given：文中未提及或无法推断。注意区分"未提及"和"与原文矛盾"的情况。' },
+      { q: '雅思口语 Part 2 如何组织答案？', a: '建议使用"4步法"：1.开场（直接回答话题）2.细节描述（加入时间、地点、人物）3.感受或原因 4.结尾总结。善用连接词，保持流畅度。' },
+      { q: '雅思写作 Task 2 的大作文结构？', a: '经典四段式：1.开头（改写题目+表明观点）2.主体段1（论点1+支持细节）3.主体段2（论点2+支持细节）4.结尾（总结观点+升华）' },
+      { q: '雅思核心词汇 "ubiquitous" 的用法？', a: 'ubiquitous 意为"无处不在的"，例句：Smartphones have become ubiquitous in modern society.（智能手机在现代社会已无处不在。）同义词：omnipresent, pervasive。' },
+      { q: '雅思写作中 "furthermore" 和 "moreover" 的区别？', a: '两者都用于递进，但 moreover 更正式，furthermore 更通用。位置：通常放在句首，后接主谓。例：The environment is deteriorating. Furthermore, public health is being threatened.' },
+      { q: '雅思口语如何避免重复使用 "very"？', a: '可以用更精确的形容词替代：very good → excellent/terrific；very bad → terrible/awful；very important → crucial/vital/essential；very big → massive/huge/enormous。' },
+      { q: '雅思听力同义替换的常见形式？', a: '1.同义词替换（change → alter）2.词性替换（develop → development）3.解释性替换（doctor → medical practitioner）4.否定词替换（not remember → forget）' },
+      { q: '雅思阅读定位词的使用技巧？', a: '优先选择特殊词汇（大写、数字、连字符词）、专业术语、罕见词汇作为定位词。避免选择常见词汇、抽象概念词。注意定位词的变形形式。' },
+      { q: '雅思口语评分标准中 "lexical resource" 指的是什么？', a: '词汇多样性，考察：1.词汇的广度（使用不同话题的词汇）2.词汇的准确性和恰当性 3.对习语和固定搭配的掌握 4.避免词汇重复的能力。' },
+    ],
+    '托福': [
+      { q: '托福阅读学术文章的常见结构？', a: '常见三种结构：1.问题-解决方案（提出问题及解决方法）2.新老对比（旧理论vs新发现）3.时间顺序（历史发展脉络）。了解结构有助于快速定位信息。' },
+      { q: '托福听力学术演讲的常见信号词？', a: '因果：therefore, thus, so, consequently；对比：however, but, in contrast；举例：for example, for instance, such as；强调：importantly, notably, especially。' },
+      { q: '托福独立口语 Task 1 的答题框架？', a: '使用"PREP"框架：P（Point）- 明确观点；R（Reason）- 给出原因；E（Example）- 具体例子；P（Point）- 重申观点。每个部分控制在一两句话内。' },
+      { q: '托福综合写作的评分标准？', a: '考查：1.准确总结阅读和听力要点 2.清晰呈现两者关系（支持/反对）3.语言准确性和多样性 4.字数建议 150-225 词。听力反驳阅读的细节很重要。' },
+      { q: '托福词汇题 "ubiquitous" 的同义词？', a: 'ubiquitous 意为"普遍存在的"，同义词包括：omnipresent、pervasive、widespread、universal。注意区分语境：ubiquitous 更强调"随处可见"。' },
+      { q: '托福口语如何提高发音分数？', a: '1.重音准确（尤其是多音节词）2.语调自然（避免平板无起伏）3.连读和弱读（如 gonna, wanna）4.语速适中（太快显得不自然）5.元音饱满。' },
+      { q: '托福阅读推断题的做法？', a: '不能直接选择原文原句，需要推断。技巧：1.排除与原文矛盾的选项 2.排除未提及的选项 3.选择基于原文合理推断的选项。注意"最合理"的推断。' },
+      { q: '托福听力conversation和lecture的区别？', a: 'Conversation：学生与员工对话，话题日常，问题解决型。Lecture：教授讲课，学术性强，可能涉及专业术语。Lecture 需要更专注，注意教授的逻辑框架。' },
+      { q: '托福写作如何避免中式英语？', a: '1.避免逐字翻译 2.使用英文同义词词典 3.学习固定搭配（collocation）4.多读英文原文培养语感 5.写完后检查语法结构是否地道。' },
+      { q: '托福成绩单上的 "my best score" 是什么？', a: '托福会综合多次考试各部分的最高分生成 "MyBest Scores"，但前提是考生在两年有效期内参加过多次考试。 ETS 会自动选取听说读写各最高分组合。' },
+    ],
+    'Python': [
+      { q: 'NumPy 中 array 和 list 的区别？', a: 'array 是同质数据（相同类型），支持向量化操作，速度快，内存效率高。list 是异质数据（不同类型），灵活但速度慢。NumPy 使用连续内存块存储，底层 C 实现。' },
+      { q: 'Pandas 中 loc 和 iloc 的区别？', a: 'loc 基于标签索引（行名、列名），包括结束位置。iloc 基于整数位置（0起始），不包括结束位置。例：df.loc["A":"C"] vs df.iloc[0:2]' },
+      { q: '什么是 Pandas 的 DataFrame？', a: 'DataFrame 是二维标记数据结构，类似电子表格或 SQL 表。有行索引和列名，支持不同类型数据。优势：灵活筛选、快速计算、丰富的数据操作。' },
+      { q: 'NumPy 的广播机制是什么？', a: '广播允许不同形状的数组进行运算。小数组会"广播"以匹配大数组的形状。规则：从后向前比较维度，维度为1或相等即可兼容。例：(3,1)+(1,4)→(3,4)' },
+      { q: 'Pandas 如何处理缺失值？', a: '常用方法：1.isnull()检测缺失值 2.dropna()删除含缺失值的行/列 3.fillna()填充缺失值（可用均值、中位数、指定值）4.interpolate()插值填充。' },
+      { q: 'NumPy 中 np.mean() 和 np.average() 的区别？', a: 'mean() 计算简单算术平均。average() 可加权重参数 weights。例：np.average([1,2,3], weights=[1,2,1]) = (1*1+2*2+3*1)/(1+2+1)=2.25' },
+      { q: '什么是 NumPy 的向量化和标量操作？', a: '向量化：用数组表达式替代显式循环，如 a*2 对数组每个元素乘2。标量操作：数组与单个数值运算。向量化代码更简洁、高效，利用 SIMD 指令。' },
+      { q: 'Pandas 的 groupby 如何使用？', a: 'split-apply-combine 模式：1.split：按列分组 2.apply：对每组应用函数（sum, mean, count等）3.combine：合并结果。例：df.groupby("城市")["销量"].sum()' },
+      { q: 'NumPy 如何创建特定数组？', a: '常用函数：np.zeros()全零、np.ones()全1、np.arange()范围数组、np.linspace()等差数组、np.random.rand()随机数组、np.eye()单位矩阵。' },
+      { q: 'Pandas 如何合并两个 DataFrame？', a: '常用方法：pd.concat()轴向拼接（纵向或横向）、pd.merge()基于列的连接（类似SQL JOIN）、df.join()基于索引的连接。concat支持axis参数指定方向。' },
+    ],
+    'JavaScript': [
+      { q: 'ES6 中 let、const 和 var 的区别？', a: 'var：函数作用域，存在变量提升，可重复声明。let：块级作用域，暂时性死区，不可重复声明。const：块级作用域，必须初始化，不可重新赋值（对象属性可改）。' },
+      { q: '什么是 JavaScript 的闭包？', a: '闭包是函数记住并访问其词法作用域的能力，即使函数在其作用域外执行。用途：数据私有、工厂函数、函数柯里化。经典例子：计数器、缓存。' },
+      { q: 'ES6 模板字符串如何使用？', a: '使用反引号(`)包裹，可嵌入变量和表达式：const msg = `Hello, ${name}!`；支持多行文本；可调用函数：${fn()}。相比拼接字符串更清晰。' },
+      { q: '什么是 Promise 和 async/await？', a: 'Promise 是异步操作结果的对象，有 pending/fulfilled/rejected 三种状态。async/await 是 Promise 的语法糖，让异步代码看起来像同步代码，使代码更易读。' },
+      { q: 'JavaScript 中 == 和 === 的区别？', a: '== 是宽松相等，会进行类型转换，如 "1"==1 为 true。=== 是严格相等，不进行类型转换，更安全。建议使用 ===，避免隐式转换带来的 bug。' },
+      { q: '什么是 JavaScript 的事件循环？', a: '事件循环持续检查调用栈和任务队列。同步代码在栈中执行，异步代码在队列中等待。当栈空时，事件循环将队列中的回调推入栈执行。微任务（Promise）优先于宏任务。' },
+      { q: 'ES6 解构赋值是什么？', a: '从数组或对象提取值赋给变量。数组：const [a,b]=arr；对象：const {name,age}=obj；可设置默认值：const {x=1}=obj；可忽略元素：const [,,third]=arr。' },
+      { q: '什么是 JavaScript 的原型链？', a: '每个对象有 prototype 属性指向其原型对象，原型对象也有自己的原型，形成链式结构。属性查找沿链向上。Object.prototype 是链顶端。__proto__ 已废弃，用 Object.getPrototypeOf()' },
+      { q: '箭头函数和普通函数的区别？', a: '箭头函数没有自己的 this（继承外层）、没有 arguments、没有 prototype。不能用作构造函数。不能直接作为对象方法。语法简洁：arr.map(x=>x*2)' },
+      { q: '什么是 JavaScript 的 Promise.all()？', a: 'Promise.all() 接受 Promise 数组，返回一个新 Promise。当所有 Promise 都成功时 resolve，结果数组顺序与输入一致；任一失败则 reject。常用于并行执行多个异步操作。' },
+    ],
+    '解剖学': [
+      { q: '人体有多少块骨骼？', a: '成人共有 206 块骨骼。分为中轴骨骼（80块：颅骨、脊柱、胸廓）和附肢骨骼（126块：上肢、下肢、肩带、骨盆）。骨骼提供支撑、保护、运动和造血功能。' },
+      { q: '人体最大的骨骼是哪一块？', a: '股骨（大腿骨）是人体最大的骨骼，约占身高的1/4。它是人体最坚固的骨骼之一，主要功能是支撑体重和参与行走、跑步等运动。' },
+      { q: '什么是解剖学中的"方位术语"？', a: '解剖学方位术语用于描述结构位置：上/下（头侧/足侧）、前/后（腹侧/背侧）、内/外、内侧/外侧（靠近中线/远离中线）、浅/深（体表/内部）。' },
+      { q: '肩关节属于什么类型的关节？', a: '肩关节是球窝关节（杵臼关节），由肱骨头和肩胛骨的关节盂构成。特点：活动度最大但稳定性较差，是人体最灵活的关节，也是容易脱位的关节。' },
+      { q: '人体有多少块肌肉？', a: '人体约有 600 多块骨骼肌，占体重的 40% 左右。这些肌肉通过肌腱附着在骨骼上，分为随意肌（受意识控制）和不随意肌（如心肌、平滑肌）。' },
+      { q: '脊柱由多少节椎骨组成？', a: '脊柱由 33 节椎骨组成：颈椎7节、胸椎12节、腰椎5节、骶椎5节（愈合为骶骨）、尾椎4节（愈合为尾骨）。脊柱呈 S 形曲线，有减震和支撑功能。' },
+      { q: '什么是解剖学的"三大轴"？', a: '解剖学三大轴：垂直轴（上下方向）、矢状轴（前后方向）、冠状轴（左右方向）。三大面：矢状面（前后面）、冠状面（左右面）、横断面（水平面）。' },
+      { q: '肱二头肌的主要功能是什么？', a: '肱二头肌位于上臂前侧，主要功能：1.屈肘（主要作用）2.前臂旋后 3.协助肩关节屈曲。长头起于肩胛骨盂上结节，短头起于喙突。' },
+      { q: '骨盆由哪些骨骼组成？', a: '骨盆由左右髋骨、骶骨和尾骨围成。每块髋骨由髂骨、坐骨和耻骨三骨愈合而成。骨盆分为大骨盆（假骨盆）和小骨盆（真骨盆），女性骨盆更适合分娩。' },
+      { q: '膝关节的主要韧带有哪些？', a: '膝关节四大韧带：前交叉韧带（ACL）、后交叉韧带（PCL）防止前后移动、内侧副韧带（MCL）、外侧副韧带（LCL）防止内外翻。ACL损伤是常见的运动损伤。' },
+    ],
+    '药理学': [
+      { q: '药物的半衰期是什么意思？', a: '半衰期（t½）是药物血浆浓度下降50%所需的时间。意义：1.决定给药频率 2.评估药物蓄积风险 3.计算稳态血药浓度时间。通常经过4-5个半衰期达稳态。' },
+      { q: '什么是药物的"首过效应"？', a: '首过效应是药物经口服后在肝脏被首次通过代谢的现象，导致进入体循环的药量减少。可通过改变给药途径（舌下、直肠）或使用前药来避免。' },
+      { q: '常用的降压药分类？', a: '五大类降压药：1.利尿剂（氢氯噻嗪）2.β受体阻滞剂（美托洛尔）3.钙通道阻滞剂（氨氯地平）4.ACE抑制剂（卡托普利）5.ARB（氯沙坦）。' },
+      { q: '阿司匹林属于哪类药物？', a: '阿司匹林属于非甾体抗炎药（NSAIDs），具有镇痛、退热、抗炎、抗血小板聚集作用。低剂量阿司匹林用于预防心脑血管血栓。其机制是抑制 COX 酶。' },
+      { q: '什么是药物的"治疗窗"？', a: '治疗窗是药物产生疗效而不产生毒性反应的血药浓度范围。窗口窄的药物（如华法林、地高辛）需要血药浓度监测，确保在有效浓度范围内。' },
+      { q: '青霉素类抗生素的作用机制？', a: '青霉素抑制细菌细胞壁合成。具体机制：与青霉素结合蛋白（PBPs）结合，阻止细菌合成肽聚糖，导致细胞壁缺损，细菌在渗透压下破裂死亡。对繁殖期细菌作用强。' },
+      { q: '什么是药物的"协同作用"？', a: '协同作用（Synergism）是两种药物合用效果大于单独使用效果之和。例如：磺胺甲噁唑+甲氧苄啶（复方新诺明）阻断叶酸合成的不同步骤，增强抗菌效果。' },
+      { q: '吗啡属于哪类镇痛药？', a: '吗啡是阿片类镇痛药（麻醉性镇痛药），通过激动μ、κ、δ受体发挥镇痛、镇静、欣快感作用。用于重度疼痛，但有成瘾性，属于管制药品。' },
+      { q: '什么是药物的"负荷剂量"？', a: '负荷剂量是为了迅速达到治疗血药浓度而首次使用的较大剂量。适用于半衰期较长的药物（如地高辛、胺碘酮）。给药后需用维持剂量补充消除的药量。' },
+      { q: '胰岛素的主要适应症？', a: '胰岛素主要用于：1型糖尿病（必需）、2型糖尿病口服药无效时、 gestational diabetes、妊娠期糖尿病、 Diabetic ketoacidosis（糖尿病酮症酸中毒）等。' },
+    ],
+  };
+
+  for (const [key, pairs] of Object.entries(qaPairs)) {
+    if (deckName.includes(key)) {
+      const pair = pairs[Math.floor(Math.random() * pairs.length)];
+      return { front: pair.q, back: pair.a };
+    }
+  }
+  return {
+    front: '这是一个重要的知识点',
+    back: '这是该知识点的详细解释和答案'
   };
 }
 
