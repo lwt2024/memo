@@ -418,7 +418,7 @@ export default function SettingsPage() {
                         
                         return (
                           <div className="overflow-x-auto pb-2">
-                            <div className="flex gap-1" style={{ minWidth: 'fit-content' }}>
+                            <div className="flex gap-1 mx-auto" style={{ minWidth: 'fit-content', width: '90%' }}>
                               <div className="flex flex-col gap-[3px] mr-2 pt-5">
                                 {['日', '一', '二', '三', '四', '五', '六'].map((day, idx) => (
                                   <div key={day} className="h-3 w-3 flex items-center justify-center">
