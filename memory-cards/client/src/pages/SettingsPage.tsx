@@ -3,7 +3,13 @@ import { useNavigate } from 'react-router-dom';
 import Layout from '../components/common/Layout';
 import { useTheme, themeStyles, ThemeStyle } from '../context/ThemeContext';
 import { useUser } from '../context/UserContext';
-import { userApi } from '../services/api';
+import { userApi, checkInApi } from '../services/api';
+
+interface CheckInStats {
+  totalPoints: number;
+  streakDays: number;
+  checkedInToday: boolean;
+}
 
 export default function SettingsPage() {
   const navigate = useNavigate();
@@ -15,6 +21,7 @@ export default function SettingsPage() {
   const [username, setUsername] = useState(user?.username || '');
   const [avatar, setAvatar] = useState(user?.avatar || '');
   const [avatarFile, setAvatarFile] = useState<File | null>(null);
+  const [checkInStats, setCheckInStats] = useState<CheckInStats | null>(null);
   
   const [showPasswordForm, setShowPasswordForm] = useState(false);
   const [oldPassword, setOldPassword] = useState('');
@@ -34,6 +41,7 @@ export default function SettingsPage() {
 
   useEffect(() => {
     loadProfile();
+    loadCheckInStats();
   }, []);
 
   const loadProfile = async () => {
@@ -48,6 +56,15 @@ export default function SettingsPage() {
       }
     } catch (error) {
       console.error('加载用户信息失败', error);
+    }
+  };
+
+  const loadCheckInStats = async () => {
+    try {
+      const res = await checkInApi.getStats();
+      setCheckInStats(res.data);
+    } catch (error) {
+      console.error('加载签到信息失败', error);
     }
   };
 
@@ -157,7 +174,7 @@ export default function SettingsPage() {
 
   return (
     <Layout>
-      <h2 className="text-2xl font-bold mb-6 text-[var(--color-text)]">设置</h2>
+      <h2 className="text-2xl font-bold mb-6 text-[var(--color-text)]">个人中心</h2>
 
       {profileMessage && (
         <div className="mb-6 p-4 rounded-xl border-2 text-center" style={{
@@ -285,22 +302,46 @@ export default function SettingsPage() {
               </div>
             </form>
           ) : (
-            <div className="flex items-center gap-4">
-              <div 
-                className="w-16 h-16 rounded-full flex items-center justify-center text-white text-2xl font-bold shadow-lg overflow-hidden"
-                style={{ background: `linear-gradient(135deg, var(--color-primary), var(--color-secondary))` }}
-              >
-                {user.avatar ? (
-                  <img src={user.avatar} alt="头像" className="w-full h-full object-cover" />
-                ) : (
-                  (user.nickname || user.username)?.charAt(0).toUpperCase() || 'U'
-                )}
+            <>
+              <div className="flex items-center gap-4">
+                <div 
+                  className="w-16 h-16 rounded-full flex items-center justify-center text-white text-2xl font-bold shadow-lg overflow-hidden"
+                  style={{ background: `linear-gradient(135deg, var(--color-primary), var(--color-secondary))` }}
+                >
+                  {user.avatar ? (
+                    <img src={user.avatar} alt="头像" className="w-full h-full object-cover" />
+                  ) : (
+                    (user.nickname || user.username)?.charAt(0).toUpperCase() || 'U'
+                  )}
+                </div>
+                <div>
+                  <p className="font-medium text-[var(--color-text)]">{user.nickname || user.username || '未设置昵称'}</p>
+                  <p className="text-[var(--color-text-secondary)]">@{user.username}</p>
+                </div>
               </div>
-              <div>
-                <p className="font-medium text-[var(--color-text)]">{user.nickname || user.username || '未设置昵称'}</p>
-                <p className="text-[var(--color-text-secondary)]">@{user.username}</p>
-              </div>
-            </div>
+              {checkInStats && (
+                <div className="mt-4 p-4 rounded-xl" style={{ backgroundColor: 'var(--color-background-secondary)' }}>
+                  <div className="flex items-center justify-between">
+                    <div className="flex items-center gap-4">
+                      <div className="text-center">
+                        <p className="text-2xl font-bold" style={{ color: '#f59e0b' }}>{checkInStats.streakDays}</p>
+                        <p className="text-xs" style={{ color: 'var(--color-text-secondary)' }}>连续签到</p>
+                      </div>
+                      <div className="w-px h-10" style={{ backgroundColor: 'var(--color-border)' }}></div>
+                      <div className="text-center">
+                        <p className="text-2xl font-bold" style={{ color: '#22c55e' }}>{checkInStats.totalPoints}</p>
+                        <p className="text-xs" style={{ color: 'var(--color-text-secondary)' }}>累计积分</p>
+                      </div>
+                    </div>
+                    {checkInStats.checkedInToday && (
+                      <span className="px-3 py-1 rounded-full text-sm" style={{ backgroundColor: '#22c55e', color: 'white' }}>
+                        今日已签到
+                      </span>
+                    )}
+                  </div>
+                </div>
+              )}
+            </>
           )}
         </div>
 
@@ -491,18 +532,6 @@ export default function SettingsPage() {
               })}
             </div>
           </div>
-        </div>
-
-        <div className="p-6">
-          <h3 className="font-medium mb-4 text-[var(--color-text)]">通知设置</h3>
-          <label className="flex items-center gap-3 cursor-pointer">
-            <input 
-              type="checkbox" 
-              className="w-5 h-5 rounded accent-[var(--color-primary)]" 
-            />
-            <span className="text-[var(--color-text)]">开启浏览器推送提醒</span>
-          </label>
-          <p className="text-sm text-[var(--color-text-secondary)] mt-2">推送通知功能将在 Phase 3 实现</p>
         </div>
 
         <div className="p-6">

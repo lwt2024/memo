@@ -14,7 +14,7 @@ export default function Sidebar({ onToggleTheme, currentMode }: SidebarProps) {
     { path: '/', label: '首页', icon: '🏠' },
     { path: '/decks', label: '我的卡片组', icon: '📚' },
     { path: '/community', label: '社区广场', icon: '🌐' },
-    { path: '/settings', label: '设置', icon: '⚙️' },
+    { path: '/settings', label: '个人中心', icon: '👤' },
   ];
 
   return (
