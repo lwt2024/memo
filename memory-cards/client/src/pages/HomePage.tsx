@@ -144,10 +144,14 @@ export default function HomePage() {
         {statCards.map((stat, index) => (
           <div
             key={index}
-            className={`p-6 rounded-2xl shadow-lg hover:shadow-xl transition-all hover:scale-[1.02] cursor-pointer ${
+            className={`p-6 rounded-2xl transition-all hover:scale-[1.02] cursor-pointer ${
               stat.label === '待复习' && (stats?.dueCount ?? 0) === 0 ? 'opacity-60' : ''
             }`}
-            style={{ background: stat.color }}
+            style={{ 
+              background: stat.color,
+              boxShadow: 'var(--color-stat-card-shadow, 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06))',
+              border: stat.color === '#ffffff' ? '1px solid var(--color-border)' : 'none'
+            }}
             onClick={() => handleStatClick(stat.label)}
           >
             <div className="flex items-center justify-between mb-2">
@@ -161,27 +165,35 @@ export default function HomePage() {
 
       {stats && stats.dueCount > 0 && (
         <div 
-          className="rounded-2xl p-6 mb-8 shadow-lg cursor-pointer hover:shadow-xl transition-all"
-          style={{ background: 'linear-gradient(135deg, var(--color-primary), var(--color-secondary))' }}
+          className="rounded-2xl p-6 mb-8 cursor-pointer transition-all"
+          style={{ 
+            background: 'var(--color-card)',
+            boxShadow: 'var(--color-stat-card-shadow, 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06))',
+            border: '1px solid var(--color-border)'
+          }}
           onClick={() => navigate('/review')}
         >
           <div>
-            <h3 className="text-xl font-bold mb-1" style={{ color: 'var(--color-stat-text)' }}>📚 今日待复习</h3>
-            <p style={{ color: 'var(--color-stat-text-secondary)' }}>你有 <span className="font-bold" style={{ color: 'var(--color-stat-text)' }}>{stats.dueCount}</span> 张卡片需要复习，点击进入复习</p>
+            <h3 className="text-xl font-bold mb-1" style={{ color: 'var(--color-text)' }}>📚 今日待复习</h3>
+            <p style={{ color: 'var(--color-text-secondary)' }}>你有 <span className="font-bold" style={{ color: 'var(--color-text)' }}>{stats.dueCount}</span> 张卡片需要复习，点击进入复习</p>
           </div>
         </div>
       )}
 
       {stats && stats.dueCount === 0 && (
         <div 
-          className="rounded-2xl p-6 mb-8 shadow-lg"
-          style={{ background: 'var(--color-completion)' }}
+          className="rounded-2xl p-6 mb-8"
+          style={{ 
+            background: 'var(--color-card)',
+            boxShadow: 'var(--color-stat-card-shadow, 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06))',
+            border: '1px solid var(--color-border)'
+          }}
         >
           <div className="flex items-center gap-4">
             <span className="text-5xl">🎉</span>
             <div>
-              <h3 className="text-xl font-bold mb-1" style={{ color: 'var(--color-stat-text)' }}>太棒了！</h3>
-              <p style={{ color: 'var(--color-stat-text-secondary)' }}>今日所有卡片都已复习完毕，继续保持！</p>
+              <h3 className="text-xl font-bold mb-1" style={{ color: 'var(--color-text)' }}>太棒了！</h3>
+              <p style={{ color: 'var(--color-text-secondary)' }}>今日所有卡片都已复习完毕，继续保持！</p>
             </div>
           </div>
         </div>
@@ -189,8 +201,12 @@ export default function HomePage() {
 
       {/* 学习数据分析模块 */}
       <div 
-        className="rounded-2xl shadow-lg p-6 transition-colors mb-8"
-        style={{ backgroundColor: 'var(--color-card)' }}
+        className="rounded-2xl p-6 transition-colors mb-8"
+        style={{ 
+          backgroundColor: 'var(--color-card)',
+          boxShadow: 'var(--color-stat-card-shadow, 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06))',
+          border: '1px solid var(--color-border)'
+        }}
       >
         <h3 className="text-lg font-bold mb-6" style={{ color: 'var(--color-text)' }}>📈 学习数据分析</h3>
         
