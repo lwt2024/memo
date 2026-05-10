@@ -14,6 +14,8 @@ interface CheckInStats {
 interface CheckInDay {
   date: string;
   points: number;
+  newCards: number;
+  reviewedCards: number;
 }
 
 export default function SettingsPage() {
@@ -357,67 +359,132 @@ export default function SettingsPage() {
                   </div>
                   {checkInCalendar.length > 0 && (
                     <div className="mt-4 pt-4" style={{ borderTop: '1px solid var(--color-border)' }}>
-                      <p className="text-sm mb-3" style={{ color: 'var(--color-text-secondary)' }}>签到记录（近5周）</p>
-                      <div className="flex justify-between mb-2 text-xs" style={{ color: 'var(--color-text-secondary)' }}>
-                        {['日', '一', '二', '三', '四', '五', '六'].map((day) => (
-                          <div key={day} className="w-8 text-center">
-                            {day}
-                          </div>
-                        ))}
+                      <div className="flex items-center justify-between mb-3">
+                        <p className="text-sm" style={{ color: 'var(--color-text-secondary)' }}>学习活动（近6个月）</p>
+                        <p className="text-xs" style={{ color: 'var(--color-text-secondary)' }}>
+                          累计签到 {checkInCalendar.filter(d => d.points > 0).length} 天
+                        </p>
                       </div>
-                      <div className="flex flex-col gap-1">
+                      
+                      <div className="flex mb-1" style={{ paddingLeft: '16px' }}>
                         {(() => {
-                          const today = new Date();
-                          today.setHours(0, 0, 0, 0);
-                          const startDate = new Date(today);
-                          startDate.setDate(startDate.getDate() - 34);
+                          const months = ['1月', '2月', '3月', '4月', '5月', '6月', '7月', '8月', '9月', '10月', '11月', '12月'];
+                          const monthLabels: JSX.Element[] = [];
+                          let lastMonth = -1;
                           
-                          const rows = [];
-                          let currentDate = new Date(startDate);
-                          
-                          while (currentDate <= today) {
-                            const weekCells = [];
-                            for (let i = 0; i < 7; i++) {
-                              const dateStr = currentDate.toISOString().split('T')[0];
-                              const dayData = checkInCalendar.find(d => d.date === dateStr);
-                              const isToday = currentDate.toDateString() === today.toDateString();
-                              const hasCheckIn = dayData?.points && dayData.points > 0;
-                              
-                              weekCells.push(
+                          checkInCalendar.forEach((day, index) => {
+                            const date = new Date(day.date);
+                            const month = date.getMonth();
+                            const dayOfWeek = date.getDay();
+                            
+                            if (month !== lastMonth) {
+                              lastMonth = month;
+                              const offset = (index % 7) * 14;
+                              monthLabels.push(
                                 <div
-                                  key={dateStr}
-                                  className="w-8 h-8 rounded-sm flex items-center justify-center text-xs font-medium"
-                                  style={{
-                                    backgroundColor: hasCheckIn ? 'var(--color-checkin-calendar-bg)' : 'transparent',
-                                    border: '1px solid var(--color-border)',
-                                    color: isToday ? 'var(--color-primary)' : 'var(--color-text)',
-                                    fontWeight: isToday ? 'bold' : 'normal',
+                                  key={month}
+                                  className="text-xs"
+                                  style={{ 
+                                    color: 'var(--color-text-secondary)',
+                                    marginLeft: index === 0 ? '0' : `${offset}px`,
+                                    marginRight: '8px'
                                   }}
-                                  title={`${dateStr}: ${dayData?.points || 0}积分`}
                                 >
-                                  {currentDate.getDate()}
+                                  {months[month]}
                                 </div>
                               );
-                              currentDate.setDate(currentDate.getDate() + 1);
                             }
-                            rows.push(
-                              <div key={rows.length} className="flex gap-1">
-                                {weekCells}
-                              </div>
-                            );
-                          }
-                          return rows;
+                          });
+                          return monthLabels;
                         })()}
                       </div>
-                      <div className="flex items-center gap-4 mt-3 text-xs" style={{ color: 'var(--color-text-secondary)' }}>
-                        <div className="flex items-center gap-1">
-                          <div className="w-3 h-3 rounded-sm" style={{ backgroundColor: 'var(--color-checkin-calendar-bg)', border: '1px solid var(--color-checkin-calendar-border)' }}></div>
-                          <span>已签到</span>
+                      
+                      <div className="flex gap-1">
+                        <div className="flex flex-col gap-1 mr-2">
+                          {['日', '一', '二', '三', '四', '五', '六'].map((day, idx) => (
+                            <div key={day} className="h-3 w-3 flex items-center justify-center">
+                              {idx % 2 === 1 && (
+                                <span className="text-[10px]" style={{ color: 'var(--color-text-secondary)' }}>{day}</span>
+                              )}
+                            </div>
+                          ))}
                         </div>
-                        <div className="flex items-center gap-1">
-                          <div className="w-3 h-3 rounded-sm" style={{ border: '1px solid var(--color-border)' }}></div>
-                          <span>未签到</span>
+                        
+                        <div className="flex gap-[3px] overflow-x-auto">
+                          {checkInCalendar.reduce((rows, day, index) => {
+                            const rowIndex = Math.floor(index / 7);
+                            if (!rows[rowIndex]) rows[rowIndex] = [];
+                            rows[rowIndex].push(day);
+                            return rows;
+                          }, [] as CheckInDay[][]).map((week, weekIndex) => (
+                            <div key={weekIndex} className="flex flex-col gap-[3px]">
+                              {week.map((day) => {
+                                const date = new Date(day.date);
+                                const today = new Date();
+                                today.setHours(0, 0, 0, 0);
+                                const isToday = date.toDateString() === today.toDateString();
+                                const totalCards = day.newCards + day.reviewedCards;
+                                const intensity = totalCards > 10 ? 3 : totalCards > 5 ? 2 : totalCards > 0 ? 1 : 0;
+                                
+                                return (
+                                  <div
+                                    key={day.date}
+                                    className={`w-3 h-3 rounded-sm relative group cursor-default ${
+                                      isToday ? 'ring-1 ring-offset-1' : ''
+                                    }`}
+                                    style={{
+                                      backgroundColor: intensity === 0 
+                                        ? 'transparent' 
+                                        : intensity === 1 
+                                          ? 'var(--color-checkin-calendar-bg)' 
+                                          : intensity === 2 
+                                            ? 'rgba(34, 197, 94, 0.4)' 
+                                            : 'rgba(34, 197, 94, 0.7)',
+                                      border: '1px solid var(--color-border)',
+                                      ringColor: 'var(--color-primary)',
+                                    }}
+                                  >
+                                    <div className="absolute bottom-full left-1/2 -translate-x-1/2 mb-2 px-2 py-1.5 rounded-md text-xs whitespace-nowrap opacity-0 group-hover:opacity-100 transition-opacity z-10"
+                                      style={{ 
+                                        backgroundColor: 'var(--color-card)',
+                                        color: 'var(--color-text)',
+                                        boxShadow: '0 2px 10px rgba(0,0,0,0.2)',
+                                        border: '1px solid var(--color-border)'
+                                      }}
+                                    >
+                                      <div className="font-medium">{day.date}</div>
+                                      <div className="mt-1">
+                                        {totalCards > 0 ? (
+                                          <div className="flex items-center gap-2">
+                                            <span style={{ color: '#f59e0b' }}>📚 学习 {totalCards} 张</span>
+                                            {day.newCards > 0 && <span style={{ color: '#3b82f6' }}>（新学 {day.newCards}）</span>}
+                                            {day.reviewedCards > 0 && <span style={{ color: '#22c55e' }}>（复习 {day.reviewedCards}）</span>}
+                                          </div>
+                                        ) : (
+                                          <span style={{ color: 'var(--color-text-secondary)' }}>今日无学习记录</span>
+                                        )}
+                                      </div>
+                                      {day.points > 0 && (
+                                        <div className="mt-1" style={{ color: '#fbbf24' }}>
+                                          🎁 获得 {day.points} 积分
+                                        </div>
+                                      )}
+                                    </div>
+                                  </div>
+                                );
+                              })}
+                            </div>
+                          ))}
                         </div>
+                      </div>
+                      
+                      <div className="flex items-center gap-2 mt-3 text-xs" style={{ color: 'var(--color-text-secondary)' }}>
+                        <span>少</span>
+                        <div className="w-3 h-3 rounded-sm border border-[var(--color-border)]"></div>
+                        <div className="w-3 h-3 rounded-sm" style={{ backgroundColor: 'var(--color-checkin-calendar-bg)', border: '1px solid var(--color-checkin-calendar-border)' }}></div>
+                        <div className="w-3 h-3 rounded-sm" style={{ backgroundColor: 'rgba(34, 197, 94, 0.4)' }}></div>
+                        <div className="w-3 h-3 rounded-sm" style={{ backgroundColor: 'rgba(34, 197, 94, 0.7)' }}></div>
+                        <span>多</span>
                       </div>
                     </div>
                   )}

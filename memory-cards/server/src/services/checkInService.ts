@@ -125,7 +125,14 @@ export async function getUserStats(userId: string) {
   };
 }
 
-export async function getCheckInCalendar(userId: string, months: number = 3) {
+export interface CalendarDay {
+  date: string;
+  points: number;
+  newCards: number;
+  reviewedCards: number;
+}
+
+export async function getCheckInCalendar(userId: string, months: number = 6) {
   const today = new Date();
   today.setHours(0, 0, 0, 0);
   
@@ -145,8 +152,34 @@ export async function getCheckInCalendar(userId: string, months: number = 3) {
     },
   });
   
-  const calendar: { date: string; points: number }[] = [];
+  const reviews = await prisma.reviewHistory.findMany({
+    where: {
+      userId,
+      reviewedAt: {
+        gte: startDate,
+      },
+    },
+    orderBy: {
+      reviewedAt: 'asc',
+    },
+  });
+  
+  const cards = await prisma.card.findMany({
+    where: {
+      userId,
+      createdAt: {
+        gte: startDate,
+      },
+    },
+    orderBy: {
+      createdAt: 'asc',
+    },
+  });
+  
+  const calendar: CalendarDay[] = [];
   const checkInMap = new Map<string, number>();
+  const reviewMap = new Map<string, number>();
+  const cardMap = new Map<string, number>();
   
   checkIns.forEach((checkIn) => {
     const date = new Date(checkIn.checkInAt);
@@ -155,7 +188,21 @@ export async function getCheckInCalendar(userId: string, months: number = 3) {
     checkInMap.set(dateStr, checkIn.points);
   });
   
-  for (let i = 0; i <= months * 30; i++) {
+  reviews.forEach((review) => {
+    const date = new Date(review.reviewedAt);
+    date.setHours(0, 0, 0, 0);
+    const dateStr = date.toISOString().split('T')[0];
+    reviewMap.set(dateStr, (reviewMap.get(dateStr) || 0) + 1);
+  });
+  
+  cards.forEach((card) => {
+    const date = new Date(card.createdAt);
+    date.setHours(0, 0, 0, 0);
+    const dateStr = date.toISOString().split('T')[0];
+    cardMap.set(dateStr, (cardMap.get(dateStr) || 0) + 1);
+  });
+  
+  for (let i = 0; i <= months * 31; i++) {
     const date = new Date(startDate);
     date.setDate(date.getDate() + i);
     if (date > today) break;
@@ -164,6 +211,8 @@ export async function getCheckInCalendar(userId: string, months: number = 3) {
     calendar.push({
       date: dateStr,
       points: checkInMap.get(dateStr) || 0,
+      newCards: cardMap.get(dateStr) || 0,
+      reviewedCards: reviewMap.get(dateStr) || 0,
     });
   }
   
