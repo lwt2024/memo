@@ -129,13 +129,7 @@ export default function DecksPage() {
                   {deck.description || '暂无描述'}
                 </p>
               </Link>
-              <div className="px-6 pb-4 flex gap-2">
-                <Link
-                  to={`/decks/${deck.id}/review`}
-                  className="flex-1 bg-gradient-to-r from-green-500 to-emerald-500 text-white text-center py-2 rounded-lg text-sm font-medium hover:shadow-md transition-all"
-                >
-                  开始复习
-                </Link>
+              <div className="px-6 pb-4 flex justify-end">
                 <button
                   onClick={(e) => {
                     e.preventDefault();

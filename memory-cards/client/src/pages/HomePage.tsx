@@ -22,6 +22,8 @@ export default function HomePage() {
   const [stats, setStats] = useState<ReviewStats | null>(null);
   const [dailyStats, setDailyStats] = useState<DailyStats[]>([]);
   const [loading, setLoading] = useState(true);
+  const [hoveredDay, setHoveredDay] = useState<number | null>(null);
+  const [tooltipPos, setTooltipPos] = useState({ x: 0, y: 0 });
 
   useEffect(() => {
     Promise.all([fetchStats(), fetchDailyStats()]).finally(() => setLoading(false));
@@ -216,7 +218,19 @@ export default function HomePage() {
           </div>
           
           {/* 曲线图区域 */}
-          <div className="absolute left-14 right-0 top-0 bottom-0">
+          <div 
+            className="absolute left-14 right-0 top-0 bottom-0"
+            onMouseMove={(e) => {
+              const rect = e.currentTarget.getBoundingClientRect();
+              const x = e.clientX - rect.left;
+              const index = Math.round((x / rect.width) * (dailyStats.length - 1));
+              if (index >= 0 && index < dailyStats.length) {
+                setHoveredDay(index);
+                setTooltipPos({ x: e.clientX - rect.left, y: e.clientY - rect.top });
+              }
+            }}
+            onMouseLeave={() => setHoveredDay(null)}
+          >
             {/* 已复习曲线 */}
             <svg className="w-full h-full" viewBox={`0 0 ${dailyStats.length * 60} 200`} preserveAspectRatio="none">
               <defs>
@@ -286,14 +300,63 @@ export default function HomePage() {
               {/* 数据点 */}
               {dailyStats.map((d, i) => (
                 <g key={i}>
-                  <circle cx={i * 60} cy={200 - (d.reviewed / maxValue) * 200} r="4" fill="#0ea5e9" className="hover:r-6 transition-all" />
-                  <circle cx={i * 60} cy={200 - (d.learned / maxValue) * 200} r="4" fill="#22c55e" className="hover:r-6 transition-all" />
+                  <circle 
+                    cx={i * 60} 
+                    cy={200 - (d.reviewed / maxValue) * 200} 
+                    r={hoveredDay === i ? 6 : 4} 
+                    fill="#0ea5e9" 
+                    className="transition-all cursor-pointer"
+                  />
+                  <circle 
+                    cx={i * 60} 
+                    cy={200 - (d.learned / maxValue) * 200} 
+                    r={hoveredDay === i ? 6 : 4} 
+                    fill="#22c55e" 
+                    className="transition-all cursor-pointer"
+                  />
                   {d.predictedDue !== undefined && (
-                    <circle cx={i * 60} cy={200 - (d.predictedDue / maxValue) * 200} r="4" fill="#f59e0b" className="hover:r-6 transition-all" />
+                    <circle 
+                      cx={i * 60} 
+                      cy={200 - (d.predictedDue / maxValue) * 200} 
+                      r={hoveredDay === i ? 6 : 4} 
+                      fill="#f59e0b" 
+                      className="transition-all cursor-pointer"
+                    />
                   )}
                 </g>
               ))}
             </svg>
+            
+            {/* 悬停提示 */}
+            {hoveredDay !== null && (
+              <div 
+                className="absolute bg-gray-800 text-white px-3 py-2 rounded-lg text-xs shadow-lg z-10 pointer-events-none"
+                style={{
+                  left: `${(hoveredDay / (dailyStats.length - 1)) * 100}%`,
+                  top: '10%',
+                  transform: 'translateX(-50%)',
+                  whiteSpace: 'nowrap'
+                }}
+              >
+                <div className="font-medium mb-1">{dailyStats[hoveredDay].predictedDue !== undefined ? `预测${formatDate(dailyStats[hoveredDay].date)}` : formatDate(dailyStats[hoveredDay].date)}</div>
+                <div className="flex flex-col gap-1">
+                  <div className="flex items-center gap-2">
+                    <span className="w-2 h-2 rounded-full" style={{ backgroundColor: '#0ea5e9' }}></span>
+                    <span>已复习: {dailyStats[hoveredDay].reviewed}</span>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <span className="w-2 h-2 rounded-full" style={{ backgroundColor: '#22c55e' }}></span>
+                    <span>新学习: {dailyStats[hoveredDay].learned}</span>
+                  </div>
+                  {dailyStats[hoveredDay].predictedDue !== undefined && (
+                    <div className="flex items-center gap-2">
+                      <span className="w-2 h-2 rounded-full" style={{ backgroundColor: '#f59e0b' }}></span>
+                      <span>预测复习: {dailyStats[hoveredDay].predictedDue}</span>
+                    </div>
+                  )}
+                </div>
+              </div>
+            )}
           </div>
           
           {/* X轴日期标签 */}

@@ -290,13 +290,6 @@ export default function DeckDetailPage() {
           </div>
           <div className="flex flex-wrap gap-3">
             <button
-              onClick={() => navigate(`/decks/${id}/review`)}
-              className="px-4 py-2 rounded-lg text-white"
-              style={{ background: 'linear-gradient(135deg, #22c55e, #16a34a)' }}
-            >
-              开始复习
-            </button>
-            <button
               onClick={openCreateModal}
               className="px-4 py-2 rounded-lg text-white"
               style={{ background: 'linear-gradient(135deg, #0ea5e9, #06b6d4)' }}
