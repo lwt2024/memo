@@ -178,7 +178,7 @@ export default function DecksPage() {
           {decks.map((deck, index) => (
             <div
               key={deck.id}
-              className="rounded-2xl shadow-lg hover:shadow-xl transition-all group overflow-hidden relative"
+              className="rounded-2xl shadow-lg hover:shadow-xl transition-all group overflow-hidden"
               style={{ backgroundColor: 'var(--color-card)', animationDelay: `${index * 100}ms` }}
             >
               <Link to={`/decks/${deck.id}`} className="block p-6">
@@ -189,58 +189,12 @@ export default function DecksPage() {
                   >
                     📚
                   </div>
-                  <div className="flex items-center gap-2">
-                    <span 
-                      className="text-sm px-3 py-1 rounded-full"
-                      style={{ backgroundColor: 'var(--color-background-secondary)', color: 'var(--color-primary)' }}
-                    >
-                      {deck._count?.cards || 0} 张
-                    </span>
-                    <div className="relative">
-                      <button
-                        onClick={(e) => {
-                          e.preventDefault();
-                          e.stopPropagation();
-                          setMenuDeckId(menuDeckId === deck.id ? null : deck.id);
-                        }}
-                        className="p-1 rounded-lg hover:bg-gray-100 transition-colors"
-                        style={{ color: 'var(--color-text-secondary)' }}
-                      >
-                        ⋮⋮⋮
-                      </button>
-                      {menuDeckId === deck.id && (
-                        <div 
-                          className="absolute right-0 top-full mt-1 w-24 rounded-xl shadow-lg z-10 animate-fade-in"
-                          style={{ backgroundColor: 'var(--color-card)', border: '1px solid var(--color-border)' }}
-                        >
-                          <button
-                            onClick={(e) => {
-                              e.preventDefault();
-                              e.stopPropagation();
-                              handleShareClick(deck.id);
-                              setMenuDeckId(null);
-                            }}
-                            className="w-full px-3 py-2 text-center text-sm hover:bg-gray-100 transition-colors"
-                            style={{ color: 'var(--color-text)' }}
-                          >
-                            分享
-                          </button>
-                          <button
-                            onClick={(e) => {
-                              e.preventDefault();
-                              e.stopPropagation();
-                              handleDeleteClick(deck.id);
-                              setMenuDeckId(null);
-                            }}
-                            className="w-full px-3 py-2 text-center text-sm hover:bg-gray-100 transition-colors"
-                            style={{ color: '#ef4444' }}
-                          >
-                            删除
-                          </button>
-                        </div>
-                      )}
-                    </div>
-                  </div>
+                  <span 
+                    className="text-sm px-3 py-1 rounded-full"
+                    style={{ backgroundColor: 'var(--color-background-secondary)', color: 'var(--color-primary)' }}
+                  >
+                    {deck._count?.cards || 0} 张
+                  </span>
                 </div>
                 <h3 
                   className="font-bold text-lg mb-2 transition-colors"
@@ -260,6 +214,17 @@ export default function DecksPage() {
                   </span>
                 </div>
               </Link>
+              <div className="px-6 pb-4 flex justify-end">
+                <button
+                  onClick={(e) => {
+                    e.preventDefault();
+                    handleDeleteClick(deck.id);
+                  }}
+                  className="px-4 py-2 text-red-500 hover:bg-red-50 dark:hover:bg-red-900/30 rounded-lg text-sm transition-colors"
+                >
+                  删除
+                </button>
+              </div>
             </div>
           ))}
         </div>
