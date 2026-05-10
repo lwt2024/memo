@@ -194,7 +194,7 @@ async function generateMockData() {
           front: qa.front,
           back: qa.back,
           cardType: 'text',
-          createdAt: randomDate(20 + Math.floor(Math.random() * 15)),
+          createdAt: randomDate(Math.floor(Math.random() * 25)),
         },
       });
 
@@ -225,8 +225,8 @@ async function generateMockData() {
         }
       }
 
-      const reviewCount = Math.floor(Math.random() * 21) + 5;
-      const masteryLevel = Math.min(Math.floor(reviewCount / 5), 5);
+      const reviewCount = Math.floor(Math.random() * 11) + 3;
+      const masteryLevel = Math.min(Math.floor(reviewCount / 3), 5);
       
       const daysAgo = Math.floor(Math.random() * 7);
       const lastReviewAt = randomDate(daysAgo);
@@ -245,7 +245,7 @@ async function generateMockData() {
         data: {
           cardId: card.id,
           userId,
-          easeLevel: Math.min(3 + Math.floor(masteryLevel / 2), 5),
+          easeLevel: Math.min(2 + Math.floor(reviewCount / 2), 5),
           nextReviewAt: nextReviewAt,
           lastReviewAt: lastReviewAt,
           reviewCount: reviewCount,
