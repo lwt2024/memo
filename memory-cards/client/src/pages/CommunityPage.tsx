@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import { shareApi } from '../services/api';
 import Layout from '../components/common/Layout';
 import PublicDeckCard from '../components/common/PublicDeckCard';
+import AlertModal from '../components/common/AlertModal';
 import { useUser } from '../context/UserContext';
 
 interface PublicDeck {
@@ -25,7 +26,7 @@ export default function CommunityPage() {
   const [loading, setLoading] = useState(true);
   const [sortBy, setSortBy] = useState<'latest' | 'popular'>('latest');
   const [searchQuery, setSearchQuery] = useState('');
-  const [importMessage, setImportMessage] = useState<{ type: 'success' | 'error'; text: string } | null>(null);
+  const [alertModal, setAlertModal] = useState<{ type: 'success' | 'error'; message: string } | null>(null);
 
   useEffect(() => {
     fetchPublicDecks();
@@ -60,14 +61,11 @@ export default function CommunityPage() {
   };
 
   const handleImport = async (deckId: string) => {
-    setImportMessage(null);
     try {
       const res = await shareApi.importPublicDeck(deckId);
-      setImportMessage({ type: 'success', text: `导入成功！卡片组 "${res.data.name}" 已添加到您的账户` });
-      setTimeout(() => setImportMessage(null), 3000);
+      setAlertModal({ type: 'success', message: `导入成功！卡片组 "${res.data.name}" 已添加到您的账户` });
     } catch (err: any) {
-      setImportMessage({ type: 'error', text: err.response?.data?.error || '导入失败' });
-      setTimeout(() => setImportMessage(null), 3000);
+      setAlertModal({ type: 'error', message: err.response?.data?.error || '导入失败' });
     }
   };
 
@@ -77,14 +75,6 @@ export default function CommunityPage() {
         <h2 className="text-2xl font-bold mb-6" style={{ color: 'var(--color-text)' }}>
           社区广场
         </h2>
-
-        {importMessage && (
-          <div className={`mb-4 p-4 rounded-xl ${
-            importMessage.type === 'success' ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'
-          }`}>
-            {importMessage.text}
-          </div>
-        )}
 
         <div className="flex flex-col sm:flex-row gap-4 mb-6">
           <div className="flex-1 relative">
@@ -159,6 +149,14 @@ export default function CommunityPage() {
           </div>
         )}
       </div>
+
+      {alertModal && (
+        <AlertModal
+          message={alertModal.message}
+          type={alertModal.type}
+          onClose={() => setAlertModal(null)}
+        />
+      )}
     </Layout>
   );
 }
