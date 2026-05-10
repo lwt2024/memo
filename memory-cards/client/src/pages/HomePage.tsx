@@ -346,28 +346,33 @@ export default function HomePage() {
             {/* 悬停提示 */}
             {hoveredDay !== null && (
               <div 
-                className="absolute bg-gray-800 text-white px-3 py-2 rounded-lg text-xs shadow-lg z-10 pointer-events-none"
+                className="absolute px-3 py-2 rounded-lg text-xs shadow-lg z-10 pointer-events-none backdrop-blur-sm"
                 style={{
                   left: `${(hoveredDay / (dailyStats.length - 1)) * 100}%`,
                   top: '10%',
                   transform: 'translateX(-50%)',
-                  whiteSpace: 'nowrap'
+                  whiteSpace: 'nowrap',
+                  backgroundColor: 'rgba(0, 0, 0, 0.7)',
+                  color: 'var(--color-text)',
+                  border: '1px solid var(--color-border)'
                 }}
               >
-                <div className="font-medium mb-1">{dailyStats[hoveredDay].predictedDue !== undefined ? `预测${formatDate(dailyStats[hoveredDay].date)}` : formatDate(dailyStats[hoveredDay].date)}</div>
+                <div className="font-medium mb-1" style={{ color: 'var(--color-text)' }}>
+                  {dailyStats[hoveredDay].predictedDue !== undefined ? `预测${formatDate(dailyStats[hoveredDay].date)}` : formatDate(dailyStats[hoveredDay].date)}
+                </div>
                 <div className="flex flex-col gap-1">
                   <div className="flex items-center gap-2">
-                    <span className="w-2 h-2 rounded-full" style={{ backgroundColor: '#0ea5e9' }}></span>
-                    <span>已复习: {dailyStats[hoveredDay].reviewed}</span>
+                    <span className="w-2 h-2 rounded-full" style={{ backgroundColor: 'var(--color-primary)' }}></span>
+                    <span style={{ color: 'var(--color-text-secondary)' }}>已复习: {dailyStats[hoveredDay].reviewed}</span>
                   </div>
                   <div className="flex items-center gap-2">
                     <span className="w-2 h-2 rounded-full" style={{ backgroundColor: '#22c55e' }}></span>
-                    <span>新学习: {dailyStats[hoveredDay].learned}</span>
+                    <span style={{ color: 'var(--color-text-secondary)' }}>新学习: {dailyStats[hoveredDay].learned}</span>
                   </div>
                   {dailyStats[hoveredDay].predictedDue !== undefined && (
                     <div className="flex items-center gap-2">
                       <span className="w-2 h-2 rounded-full" style={{ backgroundColor: '#f59e0b' }}></span>
-                      <span>预测复习: {dailyStats[hoveredDay].predictedDue}</span>
+                      <span style={{ color: 'var(--color-text-secondary)' }}>预测复习: {dailyStats[hoveredDay].predictedDue}</span>
                     </div>
                   )}
                 </div>

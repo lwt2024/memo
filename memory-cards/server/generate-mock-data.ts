@@ -188,13 +188,17 @@ async function generateMockData() {
 
     for (let i = 0; i < deckInfo.cardCount; i++) {
       const qa = getQAForDeck(deckInfo.name);
+      
+      const createdDaysAgo = Math.floor(Math.random() * 28) + 2;
+      const cardCreatedAt = randomDate(createdDaysAgo);
+      
       const card = await prisma.card.create({
         data: {
           deckId: deck.id,
           front: qa.front,
           back: qa.back,
           cardType: 'text',
-          createdAt: randomDate(Math.floor(Math.random() * 25)),
+          createdAt: cardCreatedAt,
         },
       });
 
@@ -225,27 +229,27 @@ async function generateMockData() {
         }
       }
 
-      const reviewCount = Math.floor(Math.random() * 11) + 3;
-      const masteryLevel = Math.min(Math.floor(reviewCount / 3), 5);
+      const reviewCount = Math.floor(Math.random() * 8) + 2;
+      const masteryLevel = Math.min(Math.floor(reviewCount / 2), 5);
       
-      const daysAgo = Math.floor(Math.random() * 7);
-      const lastReviewAt = randomDate(daysAgo);
+      const reviewDaysAgo = Math.min(Math.floor(Math.random() * 7), createdDaysAgo - 1);
+      const lastReviewAt = reviewDaysAgo > 0 ? randomDate(reviewDaysAgo) : cardCreatedAt;
       
-      const baseInterval = Math.pow(2, Math.min(reviewCount, 6));
+      const baseInterval = Math.pow(1.5, Math.min(reviewCount, 5));
       const nextReviewAt = new Date(lastReviewAt);
-      nextReviewAt.setDate(nextReviewAt.getDate() + baseInterval);
+      nextReviewAt.setDate(nextReviewAt.getDate() + Math.floor(baseInterval));
 
-      const isDueForReview = Math.random() < 0.3;
+      const isDueForReview = Math.random() < 0.25;
       if (isDueForReview) {
-        const daysOverdue = Math.floor(Math.random() * 7) + 1;
-        nextReviewAt.setDate(nextReviewAt.getDate() - baseInterval - daysOverdue);
+        const daysOverdue = Math.floor(Math.random() * 5) + 1;
+        nextReviewAt.setDate(nextReviewAt.getDate() - Math.floor(baseInterval) - daysOverdue);
       }
 
       await prisma.reviewRecord.create({
         data: {
           cardId: card.id,
           userId,
-          easeLevel: Math.min(2 + Math.floor(reviewCount / 2), 5),
+          easeLevel: Math.min(2 + Math.floor(reviewCount / 2) + Math.floor(Math.random() * 2), 5),
           nextReviewAt: nextReviewAt,
           lastReviewAt: lastReviewAt,
           reviewCount: reviewCount,
