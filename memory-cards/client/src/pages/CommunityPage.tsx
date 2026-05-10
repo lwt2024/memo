@@ -2,12 +2,14 @@ import { useState, useEffect } from 'react';
 import { shareApi } from '../services/api';
 import Layout from '../components/common/Layout';
 import PublicDeckCard from '../components/common/PublicDeckCard';
+import { useUser } from '../context/UserContext';
 
 interface PublicDeck {
   id: string;
   name: string;
   description?: string;
   user: {
+    id: string;
     nickname?: string;
     avatar?: string;
   };
@@ -18,6 +20,7 @@ interface PublicDeck {
 }
 
 export default function CommunityPage() {
+  const { user } = useUser();
   const [decks, setDecks] = useState<PublicDeck[]>([]);
   const [loading, setLoading] = useState(true);
   const [sortBy, setSortBy] = useState<'latest' | 'popular'>('latest');
@@ -149,6 +152,7 @@ export default function CommunityPage() {
               <PublicDeckCard
                 key={deck.id}
                 deck={deck}
+                currentUserId={user?.id}
                 onImport={handleImport}
               />
             ))}

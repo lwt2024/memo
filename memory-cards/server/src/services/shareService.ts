@@ -104,12 +104,12 @@ export async function importDeckByCode(inviteCode: string, userId: string) {
   return newDeck;
 }
 
-export async function getPublicDecks(userId: string, filters?: {
+export async function getPublicDecks(filters?: {
   sortBy?: 'latest' | 'popular';
   category?: string;
   search?: string;
 }) {
-  const whereClause: any = { isPublic: true, userId: { not: userId } };
+  const whereClause: any = { isPublic: true };
 
   let orderByClause: any = { createdAt: 'desc' };
 
@@ -121,7 +121,7 @@ export async function getPublicDecks(userId: string, filters?: {
     where: whereClause,
     include: {
       user: {
-        select: { nickname: true, avatar: true },
+        select: { id: true, nickname: true, avatar: true },
       },
       _count: {
         select: { cards: true },
