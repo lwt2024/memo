@@ -156,6 +156,7 @@ export async function getCheckInCalendar(userId: string, months: number = 6) {
     where: {
       userId,
       lastReviewAt: {
+        not: null,
         gte: startDate,
       },
     },
@@ -166,9 +167,16 @@ export async function getCheckInCalendar(userId: string, months: number = 6) {
   
   const cards = await prisma.card.findMany({
     where: {
-      userId,
+      deck: {
+        userId,
+      },
       createdAt: {
         gte: startDate,
+      },
+    },
+    include: {
+      deck: {
+        select: { userId: true },
       },
     },
     orderBy: {
