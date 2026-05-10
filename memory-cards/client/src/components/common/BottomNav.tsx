@@ -19,9 +19,8 @@ export default function BottomNav() {
             <Link
               key={item.path}
               to={item.path}
-              className={`flex flex-col items-center py-2 px-4 transition-colors ${
-                isActive ? 'text-blue-600' : 'text-gray-400'
-              }`}
+              className="flex flex-col items-center py-2 px-4 transition-colors"
+              style={{ color: isActive ? 'var(--color-primary)' : 'var(--color-text-secondary)' }}
             >
               <span className="text-xs font-medium">{item.label}</span>
             </Link>

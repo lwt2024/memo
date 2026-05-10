@@ -11,10 +11,10 @@ export default function Sidebar({ onToggleTheme, currentMode }: SidebarProps) {
   const location = useLocation();
 
   const navItems = [
-    { path: '/', label: '首页', icon: '🏠' },
-    { path: '/decks', label: '我的卡片组', icon: '📚' },
-    { path: '/community', label: '社区广场', icon: '🌐' },
-    { path: '/settings', label: '个人中心', icon: '😊' },
+    { path: '/', label: '首页' },
+    { path: '/decks', label: '我的卡片组' },
+    { path: '/community', label: '社区广场' },
+    { path: '/settings', label: '个人中心' },
   ];
 
   return (
@@ -59,7 +59,6 @@ export default function Sidebar({ onToggleTheme, currentMode }: SidebarProps) {
                 color: 'var(--color-active-text)'
               } : { color: 'var(--color-text)' }}
             >
-              <span className="text-xl">{item.icon}</span>
               <span className="font-medium">{item.label}</span>
             </Link>
           );
