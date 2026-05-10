@@ -5,6 +5,7 @@ import * as shareController from '../controllers/shareController.js';
 const router = Router();
 
 router.get('/public', shareController.getPublicDecks);
+router.get('/public/:deckId', shareController.getPublicDeckDetail);
 
 router.use(authMiddleware);
 

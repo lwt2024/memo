@@ -191,6 +191,25 @@ export async function importDeckByCode(inviteCode: string, userId: string) {
   return newDeck;
 }
 
+export async function getPublicDeckDetail(deckId: string) {
+  return prisma.deck.findFirst({
+    where: { id: deckId, isPublic: true },
+    include: {
+      user: {
+        select: { id: true, nickname: true, avatar: true },
+      },
+      cards: {
+        select: {
+          id: true,
+          front: true,
+          back: true,
+          cardType: true,
+        },
+      },
+    },
+  });
+}
+
 export async function getPublicDecks(filters?: {
   sortBy?: 'latest' | 'popular';
   category?: string;

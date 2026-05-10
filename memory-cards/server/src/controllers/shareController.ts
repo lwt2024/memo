@@ -58,3 +58,16 @@ export async function getPublicDecks(req: Request, res: Response) {
     res.status(400).json({ error: error.message });
   }
 }
+
+export async function getPublicDeckDetail(req: Request, res: Response) {
+  try {
+    const { deckId } = req.params;
+    const deck = await shareService.getPublicDeckDetail(deckId);
+    if (!deck) {
+      return res.status(404).json({ error: '卡片组不存在或未公开' });
+    }
+    res.json(deck);
+  } catch (error: any) {
+    res.status(400).json({ error: error.message });
+  }
+}

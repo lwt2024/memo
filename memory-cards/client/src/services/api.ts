@@ -48,6 +48,9 @@ export const shareApi = {
   getPublicDecks: (params?: { sortBy?: string; search?: string }) =>
     api.get('/share/public', { params }),
 
+  getPublicDeckDetail: (deckId: string) =>
+    api.get(`/share/public/${deckId}`),
+
   importByCode: (inviteCode: string) =>
     api.post('/share/import', { inviteCode }),
 
