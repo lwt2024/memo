@@ -22,6 +22,7 @@ export interface Deck {
   cardCount?: number;
   _count?: { cards: number };
   cards?: Card[];
+  user?: User;
 }
 
 export interface Tag {

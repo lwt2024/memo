@@ -375,7 +375,6 @@ export default function SettingsPage() {
                           checkInCalendar.forEach((day, index) => {
                             const date = new Date(day.date);
                             const month = date.getMonth();
-                            const dayOfWeek = date.getDay();
                             
                             if (month !== lastMonth) {
                               lastMonth = month;
@@ -430,7 +429,7 @@ export default function SettingsPage() {
                                   <div
                                     key={day.date}
                                     className={`w-3 h-3 rounded-sm relative group cursor-default ${
-                                      isToday ? 'ring-1 ring-offset-1' : ''
+                                      isToday ? 'ring-1 ring-offset-1 ring-[var(--color-primary)]' : ''
                                     }`}
                                     style={{
                                       backgroundColor: intensity === 0 
@@ -441,7 +440,6 @@ export default function SettingsPage() {
                                             ? 'rgba(34, 197, 94, 0.4)' 
                                             : 'rgba(34, 197, 94, 0.7)',
                                       border: '1px solid var(--color-border)',
-                                      ringColor: 'var(--color-primary)',
                                     }}
                                   >
                                     <div className="absolute bottom-full left-1/2 -translate-x-1/2 mb-2 px-2 py-1.5 rounded-md text-xs whitespace-nowrap opacity-0 group-hover:opacity-100 transition-opacity z-10"

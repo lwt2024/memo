@@ -29,7 +29,7 @@ export default function HomePage() {
   const [dailyStats, setDailyStats] = useState<DailyStats[]>([]);
   const [loading, setLoading] = useState(true);
   const [hoveredDay, setHoveredDay] = useState<number | null>(null);
-  const [tooltipPos, setTooltipPos] = useState({ x: 0, y: 0 });
+  const [_tooltipPos, setTooltipPos] = useState({ x: 0, y: 0 });
   const [checkInStats, setCheckInStats] = useState<CheckInStats | null>(null);
   const [checkingIn, setCheckingIn] = useState(false);
   const [checkInMessage, setCheckInMessage] = useState('');
