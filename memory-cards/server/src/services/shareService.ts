@@ -40,6 +40,81 @@ export async function generateInviteLink(deckId: string, userId: string) {
   };
 }
 
+export async function importPublicDeck(deckId: string, userId: string) {
+  const sourceDeck = await prisma.deck.findFirst({
+    where: { id: deckId, isPublic: true },
+    include: {
+      cards: {
+        include: {
+          cardTags: { include: { tag: true } },
+        },
+      },
+    },
+  });
+
+  if (!sourceDeck) {
+    throw new Error('卡片组不存在或未公开');
+  }
+
+  if (sourceDeck.userId === userId) {
+    throw new Error('不能导入自己的卡片组');
+  }
+
+  const existingDeck = await prisma.deck.findFirst({
+    where: { userId, name: `${sourceDeck.name} (导入)` },
+  });
+
+  if (existingDeck) {
+    throw new Error('您已经导入过这个卡片组');
+  }
+
+  const newDeck = await prisma.deck.create({
+    data: {
+      userId,
+      name: `${sourceDeck.name} (导入)`,
+      description: sourceDeck.description,
+    },
+  });
+
+  for (const card of sourceDeck.cards) {
+    const newCard = await prisma.card.create({
+      data: {
+        deckId: newDeck.id,
+        front: card.front,
+        back: card.back,
+        cardType: card.cardType,
+        mediaUrls: card.mediaUrls,
+      },
+    });
+
+    for (const cardTag of card.cardTags) {
+      let tag = await prisma.tag.findFirst({
+        where: { userId, name: cardTag.tag.name },
+      });
+      
+      if (!tag) {
+        tag = await prisma.tag.create({
+          data: {
+            userId,
+            name: cardTag.tag.name,
+            color: cardTag.tag.color,
+          },
+        });
+      }
+
+      await prisma.cardTag.create({
+        data: {
+          cardId: newCard.id,
+          tagId: tag.id,
+          userId,
+        },
+      });
+    }
+  }
+
+  return newDeck;
+}
+
 export async function importDeckByCode(inviteCode: string, userId: string) {
   const sourceDeck = await prisma.deck.findFirst({
     where: { inviteCode },

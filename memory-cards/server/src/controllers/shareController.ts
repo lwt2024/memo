@@ -36,6 +36,16 @@ export async function importByCode(req: AuthRequest, res: Response) {
   }
 }
 
+export async function importPublicDeck(req: AuthRequest, res: Response) {
+  try {
+    const { deckId } = req.body;
+    const newDeck = await shareService.importPublicDeck(deckId, req.userId!);
+    res.status(201).json(newDeck);
+  } catch (error: any) {
+    res.status(400).json({ error: error.message });
+  }
+}
+
 export async function getPublicDecks(req: Request, res: Response) {
   try {
     const { sortBy, search } = req.query;

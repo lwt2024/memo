@@ -62,7 +62,7 @@ export default function CommunityPage() {
   const handleImport = async (deckId: string) => {
     setImportMessage(null);
     try {
-      const res = await shareApi.importByCode(deckId);
+      const res = await shareApi.importPublicDeck(deckId);
       setImportMessage({ type: 'success', text: `导入成功！卡片组 "${res.data.name}" 已添加到您的账户` });
       setTimeout(() => setImportMessage(null), 3000);
     } catch (err: any) {

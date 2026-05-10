@@ -51,6 +51,9 @@ export const shareApi = {
   importByCode: (inviteCode: string) =>
     api.post('/share/import', { inviteCode }),
 
+  importPublicDeck: (deckId: string) =>
+    api.post('/share/import/public', { deckId }),
+
   setPublic: (deckId: string, isPublic: boolean) =>
     api.post(`/share/${deckId}/public`, { isPublic }),
 

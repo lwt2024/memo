@@ -19,9 +19,8 @@ interface PublicDeckCardProps {
   onImport: (deckId: string) => void;
 }
 
-export default function PublicDeckCard({ deck, currentUserId, onImport }: PublicDeckCardProps) {
+export default function PublicDeckCard({ deck, onImport }: PublicDeckCardProps) {
   const navigate = useNavigate();
-  const isOwnDeck = currentUserId && deck.user.id === currentUserId;
 
   return (
     <div
@@ -56,22 +55,16 @@ export default function PublicDeckCard({ deck, currentUserId, onImport }: Public
         </span>
       </div>
 
-      {isOwnDeck ? (
-        <div className="w-full py-2 rounded-xl text-sm font-medium text-center" style={{ backgroundColor: '#f0fdf4', color: '#166534', border: '1px solid #86efac' }}>
-          这是您发布的卡片组
-        </div>
-      ) : (
-        <button
-          onClick={(e) => {
-            e.stopPropagation();
-            onImport(deck.id);
-          }}
-          className="w-full py-2 rounded-xl text-sm font-medium transition-all hover:scale-[1.02]"
-          style={{ backgroundColor: 'var(--color-primary)', color: 'white' }}
-        >
-          导入到我的卡片组
-        </button>
-      )}
+      <button
+        onClick={(e) => {
+          e.stopPropagation();
+          onImport(deck.id);
+        }}
+        className="w-full py-2 rounded-xl text-sm font-medium transition-all hover:scale-[1.02]"
+        style={{ backgroundColor: 'var(--color-primary)', color: 'white' }}
+      >
+        导入到我的卡片组
+      </button>
     </div>
   );
 }
