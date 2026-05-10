@@ -44,6 +44,11 @@ export const deckApi = {
   getDeckStats: (deckId: string) => api.get(`/decks/${deckId}/stats`),
 };
 
+export const checkInApi = {
+  checkIn: () => api.post('/checkin'),
+  getStats: () => api.get('/checkin/stats'),
+};
+
 export const shareApi = {
   getPublicDecks: (params?: { sortBy?: string; search?: string }) =>
     api.get('/share/public', { params }),

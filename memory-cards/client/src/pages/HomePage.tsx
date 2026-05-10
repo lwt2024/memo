@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import api from '../services/api';
+import api, { checkInApi } from '../services/api';
 import Layout from '../components/common/Layout';
 
 interface ReviewStats {
@@ -17,6 +17,12 @@ interface DailyStats {
   predictedDue?: number;
 }
 
+interface CheckInStats {
+  totalPoints: number;
+  streakDays: number;
+  checkedInToday: boolean;
+}
+
 export default function HomePage() {
   const navigate = useNavigate();
   const [stats, setStats] = useState<ReviewStats | null>(null);
@@ -24,10 +30,44 @@ export default function HomePage() {
   const [loading, setLoading] = useState(true);
   const [hoveredDay, setHoveredDay] = useState<number | null>(null);
   const [tooltipPos, setTooltipPos] = useState({ x: 0, y: 0 });
+  const [checkInStats, setCheckInStats] = useState<CheckInStats | null>(null);
+  const [checkingIn, setCheckingIn] = useState(false);
+  const [checkInMessage, setCheckInMessage] = useState('');
 
   useEffect(() => {
-    Promise.all([fetchStats(), fetchDailyStats()]).finally(() => setLoading(false));
+    Promise.all([fetchStats(), fetchDailyStats(), fetchCheckInStats()]).finally(() => setLoading(false));
   }, []);
+
+  const fetchCheckInStats = async () => {
+    try {
+      const res = await checkInApi.getStats();
+      setCheckInStats(res.data);
+    } catch (err) {
+      console.error('获取签到状态失败', err);
+    }
+  };
+
+  const handleCheckIn = async () => {
+    if (checkingIn || checkInStats?.checkedInToday) return;
+    
+    setCheckingIn(true);
+    try {
+      const res = await checkInApi.checkIn();
+      setCheckInMessage(res.data.message);
+      setCheckInStats(prev => ({
+        ...prev!,
+        totalPoints: prev!.totalPoints + res.data.points,
+        streakDays: res.data.streakDays,
+        checkedInToday: true,
+      }));
+      setTimeout(() => setCheckInMessage(''), 3000);
+    } catch (err: any) {
+      setCheckInMessage(err.response?.data?.error || '签到失败');
+      setTimeout(() => setCheckInMessage(''), 3000);
+    } finally {
+      setCheckingIn(false);
+    }
+  };
 
   const fetchStats = async () => {
     try {
@@ -196,6 +236,46 @@ export default function HomePage() {
               <p style={{ color: 'var(--color-text-secondary)' }}>今日所有卡片都已复习完毕，继续保持！</p>
             </div>
           </div>
+        </div>
+      )}
+
+      {checkInStats && (
+        <div 
+          className="rounded-2xl p-6 mb-8 transition-colors"
+          style={{ 
+            backgroundColor: 'var(--color-card)',
+            boxShadow: 'var(--color-stat-card-shadow, 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06))',
+            border: '1px solid var(--color-border)'
+          }}
+        >
+          <div className="flex items-center justify-between">
+            <div>
+              <h3 className="text-xl font-bold mb-1" style={{ color: 'var(--color-text)' }}>🎁 每日签到</h3>
+              <p style={{ color: 'var(--color-text-secondary)' }}>
+                连续签到 <span className="font-bold" style={{ color: '#f59e0b' }}>{checkInStats.streakDays}</span> 天
+                <span className="mx-2">|</span>
+                累计积分 <span className="font-bold" style={{ color: '#22c55e' }}>{checkInStats.totalPoints}</span>
+              </p>
+            </div>
+            <button
+              onClick={handleCheckIn}
+              disabled={checkInStats.checkedInToday || checkingIn}
+              className={`px-6 py-3 rounded-xl font-semibold transition-all ${
+                checkInStats.checkedInToday ? 'opacity-60 cursor-not-allowed' : 'hover:scale-[1.02] hover:shadow-lg'
+              }`}
+              style={{ 
+                background: checkInStats.checkedInToday ? '#d1d5db' : 'linear-gradient(135deg, #f59e0b, #f97316)',
+                color: 'white'
+              }}
+            >
+              {checkingIn ? '签到中...' : checkInStats.checkedInToday ? '已签到' : '签到'}
+            </button>
+          </div>
+          {checkInMessage && (
+            <div className="mt-4 p-3 rounded-lg text-sm" style={{ backgroundColor: 'var(--color-background-secondary)' }}>
+              <span style={{ color: 'var(--color-text)' }}>{checkInMessage}</span>
+            </div>
+          )}
         </div>
       )}
 

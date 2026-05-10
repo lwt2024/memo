@@ -14,12 +14,14 @@ model User {
   passwordHash String   @map("password_hash")
   nickname     String?
   avatar       String?
+  totalPoints  Int      @default(0) @map("total_points")
   createdAt    DateTime @default(now()) @map("created_at")
 
   decks         Deck[]
   reviewRecords ReviewRecord[]
   tags          Tag[]
   cardTags      CardTag[]
+  checkIns      CheckIn[]
 
   @@map("users")
 }
@@ -101,4 +103,15 @@ model ReviewRecord {
 
   @@unique([cardId, userId])
   @@map("review_records")
+}
+
+model CheckIn {
+  id        String   @id @default(cuid())
+  userId    String   @map("user_id")
+  checkInAt DateTime @default(now()) @map("check_in_at")
+  points    Int      @default(10)
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@map("check_ins")
 }

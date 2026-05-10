@@ -1,0 +1,126 @@
+import { PrismaClient } from '@prisma/client';
+
+const prisma = new PrismaClient();
+
+export async function checkIn(userId: string) {
+  const today = new Date();
+  today.setHours(0, 0, 0, 0);
+  
+  const existingCheckIn = await prisma.checkIn.findFirst({
+    where: {
+      userId,
+      checkInAt: {
+        gte: today,
+      },
+    },
+  });
+  
+  if (existingCheckIn) {
+    throw new Error('今日已签到');
+  }
+  
+  const yesterday = new Date(today);
+  yesterday.setDate(yesterday.getDate() - 1);
+  
+  const yesterdayCheckIn = await prisma.checkIn.findFirst({
+    where: {
+      userId,
+      checkInAt: {
+        gte: yesterday,
+        lt: today,
+      },
+    },
+  });
+  
+  const streakDays = yesterdayCheckIn ? await getCurrentStreak(userId) + 1 : 1;
+  const bonusPoints = streakDays > 1 ? Math.min(streakDays - 1, 5) * 5 : 0;
+  const totalPoints = 10 + bonusPoints;
+  
+  await prisma.$transaction([
+    prisma.checkIn.create({
+      data: {
+        userId,
+        points: totalPoints,
+      },
+    }),
+    prisma.user.update({
+      where: { id: userId },
+      data: {
+        totalPoints: {
+          increment: totalPoints,
+        },
+      },
+    }),
+  ]);
+  
+  return {
+    success: true,
+    points: totalPoints,
+    streakDays,
+    message: bonusPoints > 0 
+      ? `签到成功！获得 ${totalPoints} 积分（连续签到奖励 +${bonusPoints}）`
+      : '签到成功！获得 10 积分',
+  };
+}
+
+export async function getCurrentStreak(userId: string) {
+  const today = new Date();
+  today.setHours(0, 0, 0, 0);
+  
+  let streak = 0;
+  let checkDate = new Date(today);
+  
+  for (let i = 0; i < 365; i++) {
+    const nextDate = new Date(checkDate);
+    nextDate.setDate(nextDate.getDate() + 1);
+    
+    const checkIn = await prisma.checkIn.findFirst({
+      where: {
+        userId,
+        checkInAt: {
+          gte: checkDate,
+          lt: nextDate,
+        },
+      },
+    });
+    
+    if (checkIn) {
+      streak++;
+      checkDate.setDate(checkDate.getDate() - 1);
+    } else {
+      break;
+    }
+  }
+  
+  return streak;
+}
+
+export async function getUserStats(userId: string) {
+  const user = await prisma.user.findFirst({
+    where: { id: userId },
+    select: { totalPoints: true },
+  });
+  
+  const streak = await getCurrentStreak(userId);
+  
+  const today = new Date();
+  today.setHours(0, 0, 0, 0);
+  const nextDay = new Date(today);
+  nextDay.setDate(nextDay.getDate() + 1);
+  
+  const todayCheckIn = await prisma.checkIn.findFirst({
+    where: {
+      userId,
+      checkInAt: { 
+        gte: today,
+        lt: nextDay,
+      },
+    },
+  });
+  
+  return {
+    totalPoints: user?.totalPoints || 0,
+    streakDays: streak,
+    checkedInToday: !!todayCheckIn,
+  };
+}
