@@ -105,10 +105,8 @@ export default function ReviewPage() {
 
   const ratingButtons = [
     { level: 1, label: '忘记', colorVar: '--color-rating-failed', emoji: '😵' },
-    { level: 2, label: '困难', colorVar: '--color-rating-hard', emoji: '😓' },
-    { level: 3, label: '一般', colorVar: '--color-rating-medium', emoji: '🤔' },
-    { level: 4, label: '简单', colorVar: '--color-rating-easy', emoji: '😊' },
-    { level: 5, label: '太简单', colorVar: '--color-rating-very-easy', emoji: '🤩' },
+    { level: 2, label: '模糊', colorVar: '--color-rating-medium', emoji: '😕' },
+    { level: 3, label: '简单', colorVar: '--color-rating-easy', emoji: '😊' },
   ];
 
   return (

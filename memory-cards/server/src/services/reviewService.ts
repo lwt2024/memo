@@ -10,20 +10,16 @@ function calculateNextReview(easeLevel: number, reviewCount: number): Date {
 
   switch (easeLevel) {
     case 1:
-      multiplier = 0.5;
+      multiplier = 0.3;
       break;
     case 2:
-      multiplier = 0.7;
+      multiplier = 0.8;
       break;
     case 3:
-      multiplier = 1;
-      break;
-    case 4:
-      multiplier = 1.3;
-      break;
-    case 5:
       multiplier = 1.5;
       break;
+    default:
+      multiplier = 1;
   }
 
   const days = Math.round(baseDays * multiplier);
@@ -105,11 +101,11 @@ export async function submitReview(cardId: string, userId: string, easeLevel: nu
   if (easeLevel === 1) {
     // 忘记了，降低掌握程度
     masteryLevel = Math.max(0, masteryLevel - 1);
-  } else if (easeLevel >= 4) {
-    // 很熟悉，提高掌握程度
+  } else if (easeLevel === 3) {
+    // 简单，提高掌握程度
     masteryLevel = Math.min(5, masteryLevel + 1);
-  } else if (easeLevel === 3 && masteryLevel < 3) {
-    // 一般，适当提高掌握程度
+  } else if (easeLevel === 2) {
+    // 模糊，适当提高掌握程度
     masteryLevel = Math.min(5, masteryLevel + 0.5);
   }
   // 确保是整数
