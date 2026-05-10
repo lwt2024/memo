@@ -137,9 +137,9 @@ export default function ReviewPage() {
   const progress = ((currentIndex + 1) / cards.length) * 100;
 
   const ratingButtons = [
-    { level: 1, label: '忘记', colorVar: '--color-rating-failed', emoji: '😵' },
+    { level: 1, label: '忘记了', colorVar: '--color-rating-failed', emoji: '😵' },
     { level: 2, label: '模糊', colorVar: '--color-rating-medium', emoji: '😕' },
-    { level: 3, label: '简单', colorVar: '--color-rating-easy', emoji: '😊' },
+    { level: 3, label: '记对啦', colorVar: '--color-rating-easy', emoji: '😊' },
   ];
 
   return (
