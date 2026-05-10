@@ -12,6 +12,16 @@ api.interceptors.request.use((config) => {
   return config;
 });
 
+api.interceptors.response.use(
+  (response) => response,
+  (error) => {
+    if (error.response) {
+      return Promise.reject(error);
+    }
+    return Promise.reject(error);
+  }
+);
+
 export const authApi = {
   register: (username: string, password: string, nickname?: string) =>
     api.post('/auth/register', { username, password, nickname }),
