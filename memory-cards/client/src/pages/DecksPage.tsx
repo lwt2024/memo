@@ -3,6 +3,7 @@ import { Link, useNavigate } from 'react-router-dom';
 import api, { shareApi } from '../services/api';
 import { Deck } from '../types';
 import Layout from '../components/common/Layout';
+import ConfirmModal from '../components/common/ConfirmModal';
 
 export default function DecksPage() {
   const navigate = useNavigate();
@@ -10,6 +11,8 @@ export default function DecksPage() {
   const [loading, setLoading] = useState(true);
   const [showModal, setShowModal] = useState(false);
   const [showImportModal, setShowImportModal] = useState(false);
+  const [showConfirmModal, setShowConfirmModal] = useState(false);
+  const [deckToDelete, setDeckToDelete] = useState<string | null>(null);
   const [newDeckName, setNewDeckName] = useState('');
   const [newDeckDesc, setNewDeckDesc] = useState('');
   const [inviteCode, setInviteCode] = useState('');
@@ -69,14 +72,27 @@ export default function DecksPage() {
     }
   };
 
-  const deleteDeck = async (deckId: string) => {
-    if (!confirm('确定要删除这个卡片组吗？所有卡片都将被删除！')) return;
+  const handleDeleteClick = (deckId: string) => {
+    setDeckToDelete(deckId);
+    setShowConfirmModal(true);
+  };
+
+  const confirmDelete = async () => {
+    if (!deckToDelete) return;
     try {
-      await api.delete(`/decks/${deckId}`);
+      await api.delete(`/decks/${deckToDelete}`);
       fetchDecks();
     } catch (err) {
       console.error('删除卡片组失败', err);
+    } finally {
+      setShowConfirmModal(false);
+      setDeckToDelete(null);
     }
+  };
+
+  const cancelDelete = () => {
+    setShowConfirmModal(false);
+    setDeckToDelete(null);
   };
 
   if (loading) {
@@ -176,7 +192,7 @@ export default function DecksPage() {
                 <button
                   onClick={(e) => {
                     e.preventDefault();
-                    deleteDeck(deck.id);
+                    handleDeleteClick(deck.id);
                   }}
                   className="px-4 py-2 text-red-500 hover:bg-red-50 dark:hover:bg-red-900/30 rounded-lg text-sm transition-colors"
                 >
@@ -313,6 +329,17 @@ export default function DecksPage() {
             </form>
           </div>
         </div>
+      )}
+
+      {showConfirmModal && (
+        <ConfirmModal
+          title="确认删除"
+          message="确定要删除这个卡片组吗？所有卡片都将被删除！"
+          confirmText="删除"
+          cancelText="取消"
+          onConfirm={confirmDelete}
+          onCancel={cancelDelete}
+        />
       )}
     </Layout>
   );
