@@ -187,6 +187,23 @@ cd server
 npm run build
 ```
 
+## 🚀 部署指南
+
+想要让其他人也能用？查看我们的部署指南：
+
+- [详细部署文档](./DEPLOY.md) - 包含三种部署方案
+- **推荐方案**：使用 Vercel（前端）+ Railway（后端）免费部署
+
+主要部署选项：
+1. **Vercel + Railway**（最简单，免费）
+2. **Docker**（适合有容器经验）
+3. **传统 VPS**（完全控制）
+
+### 部署前准备
+1. Fork 仓库到你的 GitHub
+2. 修改 `JWT_SECRET` 为强密码
+3. 配置邮件服务（可选）
+
 ## 📄 许可证
 
 MIT License

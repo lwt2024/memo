@@ -18,6 +18,9 @@ app.use(cors());
 app.use(express.json({ limit: '50mb' }));
 app.use('/uploads', express.static(path.join(__dirname, '../uploads')));
 
+// 服务前端静态文件（生产环境）
+app.use(express.static(path.join(__dirname, '../../client/dist')));
+
 app.use('/api/auth', authRoutes);
 app.use('/api/decks', deckRoutes);
 app.use('/api/cards', cardRoutes);
@@ -29,6 +32,11 @@ app.use('/api', checkInRoutes);
 
 app.get('/api/health', (req, res) => {
   res.json({ status: 'ok' });
+});
+
+// 所有其他路由返回前端 index.html（SPA 路由支持）
+app.get('*', (req, res) => {
+  res.sendFile(path.join(__dirname, '../../client/dist/index.html'));
 });
 
 app.listen(PORT, () => {
