@@ -44,6 +44,7 @@ export default function DeckDetailPage() {
   const [tagError, setTagError] = useState('');
   const [stats, setStats] = useState<DeckStats | null>(null);
   const [pastingImage, setPastingImage] = useState(false);
+  const [isComposing, setIsComposing] = useState(false);
   const frontEditorRef = useRef<HTMLDivElement>(null);
   const backEditorRef = useRef<HTMLDivElement>(null);
   const [showCodeEditor, setShowCodeEditor] = useState(false);
@@ -180,11 +181,21 @@ export default function DeckDetailPage() {
   };
 
   const updateContent = (field: 'front' | 'back') => {
+    if (isComposing) return;
     if (field === 'front' && frontEditorRef.current) {
       setCardFront(frontEditorRef.current.innerHTML);
     } else if (field === 'back' && backEditorRef.current) {
       setCardBack(backEditorRef.current.innerHTML);
     }
+  };
+
+  const handleCompositionStart = () => {
+    setIsComposing(true);
+  };
+
+  const handleCompositionEnd = (field: 'front' | 'back') => {
+    setIsComposing(false);
+    updateContent(field);
   };
 
   const handleInsertCode = (codeHtml: string) => {
@@ -595,6 +606,8 @@ export default function DeckDetailPage() {
                   }}
                   onPaste={(e) => handlePaste(e, 'front')}
                   onInput={() => updateContent('front')}
+                  onCompositionStart={handleCompositionStart}
+                  onCompositionEnd={() => handleCompositionEnd('front')}
                   dangerouslySetInnerHTML={{ __html: cardFront || '<br>' }}
                 />
                 {pastingImage && (
@@ -635,6 +648,8 @@ export default function DeckDetailPage() {
                   }}
                   onPaste={(e) => handlePaste(e, 'back')}
                   onInput={() => updateContent('back')}
+                  onCompositionStart={handleCompositionStart}
+                  onCompositionEnd={() => handleCompositionEnd('back')}
                   dangerouslySetInnerHTML={{ __html: cardBack || '<br>' }}
                 />
               </div>
