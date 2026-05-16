@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef } from 'react';
+import { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import api, { tagApi, deckApi } from '../services/api';
 import { Card, Deck, Tag as TagType } from '../types';
@@ -43,10 +43,6 @@ export default function DeckDetailPage() {
   const [deckTags, setDeckTags] = useState<TagType[]>([]);
   const [tagError, setTagError] = useState('');
   const [stats, setStats] = useState<DeckStats | null>(null);
-  const [pastingImage, setPastingImage] = useState(false);
-  const [isComposing, setIsComposing] = useState(false);
-  const frontEditorRef = useRef<HTMLDivElement>(null);
-  const backEditorRef = useRef<HTMLDivElement>(null);
   const [showCodeEditor, setShowCodeEditor] = useState(false);
   const [codeEditorTarget, setCodeEditorTarget] = useState<'front' | 'back'>('front');
   const [showShareModal, setShowShareModal] = useState(false);
@@ -122,80 +118,6 @@ export default function DeckDetailPage() {
     setCardBack('');
     setShowModal(true);
     setSelectedTagIds([]);
-  };
-
-  const handlePaste = async (e: React.ClipboardEvent<HTMLDivElement>, field: 'front' | 'back') => {
-    const items = e.clipboardData.items;
-    
-    for (let i = 0; i < items.length; i++) {
-      if (items[i].type.indexOf('image') !== -1) {
-        e.preventDefault();
-        setPastingImage(true);
-        
-        const file = items[i].getAsFile();
-        if (!file) {
-          setPastingImage(false);
-          return;
-        }
-        
-        try {
-          const reader = new FileReader();
-          reader.onload = (event) => {
-            const base64 = event.target?.result as string;
-            
-            const selection = window.getSelection();
-            if (selection && selection.rangeCount > 0) {
-              const range = selection.getRangeAt(0);
-              range.deleteContents();
-              
-              const img = document.createElement('img');
-              img.src = base64;
-              img.style.maxWidth = '100%';
-              img.style.maxHeight = '150px';
-              img.style.objectFit = 'contain';
-              img.style.display = 'block';
-              img.style.margin = '8px 0';
-              img.className = 'pasted-image';
-              range.insertNode(img);
-              
-              const br = document.createElement('br');
-              range.insertNode(br);
-            }
-            
-            updateContent(field);
-            setPastingImage(false);
-          };
-          reader.onerror = () => {
-            console.error('读取图片失败');
-            setPastingImage(false);
-          };
-          reader.readAsDataURL(file);
-        } catch (error) {
-          console.error('处理图片失败', error);
-          setPastingImage(false);
-        }
-        
-        return;
-      }
-    }
-  };
-
-  const updateContent = (field: 'front' | 'back') => {
-    if (isComposing) return;
-    if (field === 'front' && frontEditorRef.current) {
-      setCardFront(frontEditorRef.current.innerHTML);
-    } else if (field === 'back' && backEditorRef.current) {
-      setCardBack(backEditorRef.current.innerHTML);
-    }
-  };
-
-  const handleCompositionStart = () => {
-    setIsComposing(true);
-  };
-
-  const handleCompositionEnd = (field: 'front' | 'back') => {
-    setIsComposing(false);
-    updateContent(field);
   };
 
   const handleInsertCode = (codeHtml: string) => {
@@ -592,10 +514,8 @@ export default function DeckDetailPage() {
                     </>
                   </button>
                 </label>
-                <div
-                  ref={frontEditorRef}
-                  contentEditable
-                  className="w-full px-4 py-3 rounded border focus:outline-none focus:ring-2 focus:ring-blue-500 overflow-y-auto [&::-webkit-scrollbar]:w-1.5 [&::-webkit-scrollbar-track]:bg-transparent [&::-webkit-scrollbar-thumb]:bg-gray-200 [&::-webkit-scrollbar-thumb]:rounded-full hover:[&::-webkit-scrollbar-thumb]:bg-gray-300 [&::-webkit-scrollbar-thumb]:hover:bg-gray-400"
+                <textarea
+                  className="w-full px-4 py-3 rounded border focus:outline-none focus:ring-2 focus:ring-blue-500 overflow-y-auto [&::-webkit-scrollbar]:w-1.5 [&::-webkit-scrollbar-track]:bg-transparent [&::-webkit-scrollbar-thumb]:bg-gray-200 [&::-webkit-scrollbar-thumb]:rounded-full hover:[&::-webkit-scrollbar-thumb]:bg-gray-300 [&::-webkit-scrollbar-thumb]:hover:bg-gray-400 resize-none"
                   style={{
                     backgroundColor: 'var(--color-background)',
                     color: 'var(--color-text)',
@@ -604,17 +524,10 @@ export default function DeckDetailPage() {
                     scrollbarWidth: 'thin',
                     scrollbarColor: '#e5e7eb transparent'
                   }}
-                  onPaste={(e) => handlePaste(e, 'front')}
-                  onInput={() => updateContent('front')}
-                  onCompositionStart={handleCompositionStart}
-                  onCompositionEnd={() => handleCompositionEnd('front')}
-                  dangerouslySetInnerHTML={{ __html: cardFront || '<br>' }}
+                  value={cardFront}
+                  onChange={(e) => setCardFront(e.target.value)}
+                  placeholder="输入问题..."
                 />
-                {pastingImage && (
-                  <p className="text-sm mt-2" style={{ color: 'var(--color-primary)' }}>
-                    正在处理图片...
-                  </p>
-                )}
               </div>
               <div className="mb-6">
                 <label className="block mb-3 text-lg font-medium" style={{ color: 'var(--color-text)' }}>
@@ -634,10 +547,8 @@ export default function DeckDetailPage() {
                     </>
                   </button>
                 </label>
-                <div
-                  ref={backEditorRef}
-                  contentEditable
-                  className="w-full px-4 py-3 rounded border focus:outline-none focus:ring-2 focus:ring-blue-500 overflow-y-auto [&::-webkit-scrollbar]:w-1.5 [&::-webkit-scrollbar-track]:bg-transparent [&::-webkit-scrollbar-thumb]:bg-gray-200 [&::-webkit-scrollbar-thumb]:rounded-full hover:[&::-webkit-scrollbar-thumb]:bg-gray-300 [&::-webkit-scrollbar-thumb]:hover:bg-gray-400"
+                <textarea
+                  className="w-full px-4 py-3 rounded border focus:outline-none focus:ring-2 focus:ring-blue-500 overflow-y-auto [&::-webkit-scrollbar]:w-1.5 [&::-webkit-scrollbar-track]:bg-transparent [&::-webkit-scrollbar-thumb]:bg-gray-200 [&::-webkit-scrollbar-thumb]:rounded-full hover:[&::-webkit-scrollbar-thumb]:bg-gray-300 [&::-webkit-scrollbar-thumb]:hover:bg-gray-400 resize-none"
                   style={{
                     backgroundColor: 'var(--color-background)',
                     color: 'var(--color-text)',
@@ -646,11 +557,9 @@ export default function DeckDetailPage() {
                     scrollbarWidth: 'thin',
                     scrollbarColor: '#e5e7eb transparent'
                   }}
-                  onPaste={(e) => handlePaste(e, 'back')}
-                  onInput={() => updateContent('back')}
-                  onCompositionStart={handleCompositionStart}
-                  onCompositionEnd={() => handleCompositionEnd('back')}
-                  dangerouslySetInnerHTML={{ __html: cardBack || '<br>' }}
+                  value={cardBack}
+                  onChange={(e) => setCardBack(e.target.value)}
+                  placeholder="输入答案..."
                 />
               </div>
               <div className="mb-6">
