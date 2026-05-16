@@ -1,9 +1,19 @@
 import { PrismaClient } from '@prisma/client';
 const prisma = new PrismaClient();
 export async function createDeck(userId, name, description) {
-    return prisma.deck.create({
+    console.log('Service: Creating deck for user:', userId, 'name:', name);
+    // 验证用户是否存在
+    const user = await prisma.user.findUnique({
+        where: { id: userId },
+    });
+    if (!user) {
+        throw new Error('用户不存在');
+    }
+    const deck = await prisma.deck.create({
         data: { userId, name, description },
     });
+    console.log('Service: Deck created successfully:', deck.id);
+    return deck;
 }
 export async function getUserDecks(userId) {
     return prisma.deck.findMany({
