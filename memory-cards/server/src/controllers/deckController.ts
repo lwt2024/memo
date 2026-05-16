@@ -4,10 +4,19 @@ import * as deckService from '../services/deckService.js';
 
 export async function createDeck(req: AuthRequest, res: Response) {
   try {
+    console.log('Creating deck for user:', req.userId);
+    console.log('Request body:', req.body);
     const { name, description } = req.body;
-    const deck = await deckService.createDeck(req.userId!, name, description);
+    
+    if (!name || !name.trim()) {
+      return res.status(400).json({ error: '卡片组名称不能为空' });
+    }
+    
+    const deck = await deckService.createDeck(req.userId!, name.trim(), description);
+    console.log('Deck created:', deck.id);
     res.status(201).json(deck);
   } catch (error: any) {
+    console.error('Error creating deck:', error);
     res.status(400).json({ error: error.message });
   }
 }

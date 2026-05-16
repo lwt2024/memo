@@ -18,6 +18,7 @@ export default function DecksPage() {
   const [inviteCode, setInviteCode] = useState('');
   const [importing, setImporting] = useState(false);
   const [importError, setImportError] = useState('');
+  const [createError, setCreateError] = useState('');
 
   useEffect(() => {
     fetchDecks();
@@ -36,14 +37,17 @@ export default function DecksPage() {
 
   const createDeck = async (e: React.FormEvent) => {
     e.preventDefault();
+    setCreateError('');
     try {
       await api.post('/decks', { name: newDeckName, description: newDeckDesc });
       setShowModal(false);
       setNewDeckName('');
       setNewDeckDesc('');
+      setCreateError('');
       fetchDecks();
-    } catch (err) {
+    } catch (err: any) {
       console.error('创建卡片组失败', err);
+      setCreateError(err.response?.data?.error || '创建失败，请重试');
     }
   };
 
@@ -246,18 +250,21 @@ export default function DecksPage() {
                 <input
                   type="text"
                   value={newDeckName}
-                  onChange={(e) => setNewDeckName(e.target.value)}
+                  onChange={(e) => {
+                    setNewDeckName(e.target.value);
+                    if (createError) setCreateError('');
+                  }}
                   className="w-full px-4 py-3 border rounded-xl focus:outline-none focus:ring-2 transition-all"
                   style={{ 
                     backgroundColor: 'var(--color-background-secondary)', 
-                    borderColor: 'var(--color-border)',
+                    borderColor: createError ? '#ef4444' : 'var(--color-border)',
                     color: 'var(--color-text)'
                   }}
                   placeholder="例如：英语单词、历史年代"
                   required
                 />
               </div>
-              <div className="mb-6">
+              <div className="mb-4">
                 <label className="block font-medium mb-2" style={{ color: 'var(--color-text)' }}>描述（可选）</label>
                 <textarea
                   value={newDeckDesc}
@@ -272,6 +279,11 @@ export default function DecksPage() {
                   placeholder="简单描述一下这个卡片组的内容..."
                 />
               </div>
+              {createError && (
+                <div className="mb-4 p-3 rounded-lg bg-red-50 dark:bg-red-900/20 text-red-500 text-sm">
+                  {createError}
+                </div>
+              )}
               <div className="flex gap-3">
                 <button
                   type="button"
