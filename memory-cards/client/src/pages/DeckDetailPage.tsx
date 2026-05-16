@@ -8,6 +8,7 @@ import TagDisplay from '../components/common/TagDisplay';
 import TagFilter from '../components/common/TagFilter';
 import CodeEditor from '../components/common/CodeEditor';
 import CardContent from '../components/common/CardContent';
+import RichTextEditor from '../components/common/RichTextEditor';
 import ShareModal from '../components/common/ShareModal';
 import ConfirmModal from '../components/common/ConfirmModal';
 
@@ -514,18 +515,10 @@ export default function DeckDetailPage() {
                     </>
                   </button>
                 </label>
-                <textarea
-                  className="w-full px-4 py-3 rounded border focus:outline-none focus:ring-2 focus:ring-blue-500 overflow-y-auto [&::-webkit-scrollbar]:w-1.5 [&::-webkit-scrollbar-track]:bg-transparent [&::-webkit-scrollbar-thumb]:bg-gray-200 [&::-webkit-scrollbar-thumb]:rounded-full hover:[&::-webkit-scrollbar-thumb]:bg-gray-300 [&::-webkit-scrollbar-thumb]:hover:bg-gray-400 resize-none"
-                  style={{
-                    backgroundColor: 'var(--color-background)',
-                    color: 'var(--color-text)',
-                    borderColor: 'var(--color-border)',
-                    height: '200px',
-                    scrollbarWidth: 'thin',
-                    scrollbarColor: '#e5e7eb transparent'
-                  }}
-                  value={cardFront}
-                  onChange={(e) => setCardFront(e.target.value)}
+                <RichTextEditor
+                  content={cardFront}
+                  onChange={setCardFront}
+                  height="200px"
                   placeholder="输入问题..."
                 />
               </div>
@@ -547,18 +540,10 @@ export default function DeckDetailPage() {
                     </>
                   </button>
                 </label>
-                <textarea
-                  className="w-full px-4 py-3 rounded border focus:outline-none focus:ring-2 focus:ring-blue-500 overflow-y-auto [&::-webkit-scrollbar]:w-1.5 [&::-webkit-scrollbar-track]:bg-transparent [&::-webkit-scrollbar-thumb]:bg-gray-200 [&::-webkit-scrollbar-thumb]:rounded-full hover:[&::-webkit-scrollbar-thumb]:bg-gray-300 [&::-webkit-scrollbar-thumb]:hover:bg-gray-400 resize-none"
-                  style={{
-                    backgroundColor: 'var(--color-background)',
-                    color: 'var(--color-text)',
-                    borderColor: 'var(--color-border)',
-                    height: '250px',
-                    scrollbarWidth: 'thin',
-                    scrollbarColor: '#e5e7eb transparent'
-                  }}
-                  value={cardBack}
-                  onChange={(e) => setCardBack(e.target.value)}
+                <RichTextEditor
+                  content={cardBack}
+                  onChange={setCardBack}
+                  height="250px"
                   placeholder="输入答案..."
                 />
               </div>
