@@ -35,14 +35,53 @@
 
 ## 📷 界面展示
 
+### 首页
+展示用户待复习的卡片组和快速入口，帮助用户快速开始学习。
+
+![首页](memory-cards/screenshots/首页.png)
+
 ### 卡片复习页
 复习模式下显示问题，点击翻转卡片查看答案，然后根据记忆程度选择评级。支持进度条显示当前复习进度。
+
+![复习模式-问题](memory-cards/screenshots/复习模式（问题）.png)
+![复习模式-答案](memory-cards/screenshots/复习模式（答案）.png)
+
+### 卡片组管理
+展示用户创建和导入的所有卡片组，支持新建卡片组、通过邀请码导入、删除卡片组等操作。
+
+![我的卡片组](memory-cards/screenshots/我的卡片组.png)
+![卡片组列表](memory-cards/screenshots/卡片组列表.png)
+![添加卡片](memory-cards/screenshots/添加卡片.png)
 
 ### 个人中心
 包含用户信息、签到统计（连续签到天数、累计积分）、GitHub 风格学习活动热力图（近12个月）、外观设置等功能。
 
-### 卡片组管理
-展示用户创建和导入的所有卡片组，支持新建卡片组、通过邀请码导入、删除卡片组等操作。
+![个人中心](memory-cards/screenshots/个人中心.png)
+
+### 社区广场
+浏览和搜索社区分享的卡片组，支持导入公开的卡片组。
+
+![社区广场](memory-cards/screenshots/社区广场.png)
+
+### 分享功能
+将卡片组设为公开或生成邀请码分享给其他用户。
+
+![分享](memory-cards/screenshots/分享.png)
+
+### 主题风格
+支持四种精心设计的主题风格：
+
+| 海洋蓝 | 活力橙 | 深色模式 | 极简白 |
+|--------|--------|----------|--------|
+| ![海洋蓝](memory-cards/screenshots/海洋蓝.png) | ![活力橙](memory-cards/screenshots/活力橙.png) | ![深色模式](memory-cards/screenshots/深色模式.png) | ![极简白](memory-cards/screenshots/极简白.png) |
+
+### 响应式设计
+支持桌面、平板、手机等多种设备自适应显示。
+
+| 桌面设备 | 平板设备 | 手机设备 |
+|----------|----------|----------|
+| 首页展示 | 平板适配 | 手机适配 |
+| ![首页](memory-cards/screenshots/首页.png) | ![平板设备](memory-cards/screenshots/平板设备.png) | ![手机设备](memory-cards/screenshots/手机设备.png) |
 
 ## 🛠️ 技术栈
 
@@ -136,6 +175,7 @@ memory-cards/
 │   ├── prisma/                # Prisma 配置
 │   ├── .env                   # 环境变量
 │   └── package.json
+├── screenshots/               # 界面截图
 ├── .gitignore
 └── README.md
 ```
@@ -145,7 +185,7 @@ memory-cards/
 ### 智能复习算法
 基于艾宾浩斯遗忘曲线，根据用户的记忆评级自动计算下次复习时间：
 - **忘记了**: 1天后复习
-- **模糊**: 3天后复习  
+- **模糊**: 3天后复习
 - **记对啦**: 7天后复习
 
 ### 签到日历
@@ -160,6 +200,12 @@ memory-cards/
 - 🎨 莫兰迪 - 低饱和柔和色调，耐看舒适
 - 🔥 活力橙 - 热情活力，激发学习动力
 - ⬜ 极简白 - 简洁纯净，专注内容
+
+### 响应式布局
+使用 Tailwind CSS 实现完美的响应式设计：
+- 桌面端：侧边栏导航 + 宽屏布局
+- 平板端：优化间距和字体大小
+- 移动端：底部导航栏 + 紧凑布局
 
 ## 📝 开发说明
 
