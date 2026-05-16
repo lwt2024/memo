@@ -1,6 +1,7 @@
 import express from 'express';
 import cors from 'cors';
 import path from 'path';
+import { fileURLToPath } from 'url';
 import authRoutes from './routes/authRoutes.js';
 import deckRoutes from './routes/deckRoutes.js';
 import cardRoutes from './routes/cardRoutes.js';
@@ -10,7 +11,8 @@ import tagRoutes from './routes/tagRoutes.js';
 import shareRoutes from './routes/shareRoutes.js';
 import checkInRoutes from './routes/checkInRoutes.js';
 
-const __dirname = path.dirname(new URL(import.meta.url).pathname);
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
 const app = express();
 const PORT = process.env.PORT || 3001;
 
@@ -29,6 +31,13 @@ app.use('/api', checkInRoutes);
 
 app.get('/api/health', (req, res) => {
   res.json({ status: 'ok' });
+});
+
+const clientDistPath = path.join(__dirname, '../../client/dist');
+app.use(express.static(clientDistPath));
+
+app.get('*', (req, res) => {
+  res.sendFile(path.join(clientDistPath, 'index.html'));
 });
 
 app.listen(PORT, () => {
