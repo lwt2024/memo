@@ -2,6 +2,10 @@
 
 一款基于艾宾浩斯记忆法的智能卡片学习应用，帮助用户高效记忆知识。
 
+## 🚀 在线体验
+
+立即访问：**[https://memo-production-8f33.up.railway.app](https://memo-production-8f33.up.railway.app)**
+
 ## 🌟 功能特性
 
 ### 📚 核心功能
@@ -34,19 +38,11 @@
 ### 卡片复习页
 复习模式下显示问题，点击翻转卡片查看答案，然后根据记忆程度选择评级。支持进度条显示当前复习进度。
 
-![卡片复习-问题模式](https://raw.githubusercontent.com/lwt2024/memo/main/screenshots/review-question.png)
-![卡片复习-答案模式](https://raw.githubusercontent.com/lwt2024/memo/main/screenshots/review-answer.png)
-
 ### 个人中心
 包含用户信息、签到统计（连续签到天数、累计积分）、GitHub 风格学习活动热力图（近12个月）、外观设置等功能。
 
-![个人中心](https://raw.githubusercontent.com/lwt2024/memo/main/screenshots/profile.png)
-
 ### 卡片组管理
 展示用户创建和导入的所有卡片组，支持新建卡片组、通过邀请码导入、删除卡片组等操作。
-
-![卡片组管理-海洋蓝主题](https://raw.githubusercontent.com/lwt2024/memo/main/screenshots/decks-ocean.png)
-![卡片组管理-活力橙主题](https://raw.githubusercontent.com/lwt2024/memo/main/screenshots/decks-vibrant.png)
 
 ## 🛠️ 技术栈
 
