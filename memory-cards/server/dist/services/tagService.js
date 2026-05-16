@@ -39,6 +39,13 @@ export async function createTag(userId, name, color) {
     if (name.length < 2 || name.length > 20) {
         throw new Error('标签名称长度必须在2-20个字符之间');
     }
+    // 验证用户存在
+    const user = await prisma.user.findUnique({
+        where: { id: userId }
+    });
+    if (!user) {
+        throw new Error('用户不存在');
+    }
     const existingTag = await prisma.tag.findUnique({
         where: {
             userId_name: { userId, name },
@@ -89,6 +96,13 @@ export async function getDeckTags(deckId) {
     }));
 }
 export async function addTagToCard(cardId, tagId, userId) {
+    // 验证用户存在
+    const user = await prisma.user.findUnique({
+        where: { id: userId }
+    });
+    if (!user) {
+        throw new Error('用户不存在');
+    }
     const card = await prisma.card.findUnique({
         where: { id: cardId },
         include: { deck: true },
@@ -107,6 +121,15 @@ export async function addTagToCard(cardId, tagId, userId) {
     });
     if (currentTagsCount >= 3) {
         throw new Error('一张卡片最多只能添加3个标签');
+    }
+    // 检查是否已经存在关联
+    const existingCardTag = await prisma.cardTag.findUnique({
+        where: {
+            cardId_tagId: { cardId, tagId },
+        },
+    });
+    if (existingCardTag) {
+        return existingCardTag; // 已经关联过了，直接返回
     }
     return prisma.cardTag.create({
         data: {

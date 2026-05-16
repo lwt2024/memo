@@ -227,8 +227,7 @@ export default function DeckDetailPage() {
         }
       } else {
         const res = await api.post('/cards', { deckId: id, front: cardFront, back: cardBack });
-        const newCard = res.data;
-        cardId = newCard.id || newCard.card?.id;
+        cardId = res.data.id;
       }
       
       for (const tagId of selectedTagIds) {
