@@ -23,6 +23,7 @@ export async function getDecks(req: AuthRequest, res: Response) {
 
 export async function getDeck(req: AuthRequest, res: Response) {
   try {
+    console.log('Getting deck:', req.params.id, 'for user:', req.userId);
     const { sortBy, sortOrder, masteryLevel } = req.query;
     const filters: any = {};
     
@@ -38,10 +39,13 @@ export async function getDeck(req: AuthRequest, res: Response) {
 
     const deck = await deckService.getDeckById(req.params.id, req.userId!, filters);
     if (!deck) {
+      console.log('Deck not found');
       return res.status(404).json({ error: '卡片组不存在' });
     }
+    console.log('Deck found:', deck.id);
     res.json(deck);
   } catch (error: any) {
+    console.error('Error getting deck:', error);
     res.status(400).json({ error: error.message });
   }
 }
