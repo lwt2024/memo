@@ -30,4 +30,12 @@ export declare function removeTagFromCard(cardId: string, tagId: string, userId:
     cardId: string;
     tagId: string;
 }>;
+export declare function deleteTag(tagId: string, userId: string): Promise<{
+    id: string;
+    createdAt: Date;
+    name: string;
+    userId: string;
+    color: string;
+    isPreset: boolean;
+}>;
 //# sourceMappingURL=tagService.d.ts.map

@@ -10,6 +10,22 @@ export declare function getDueCards(userId: string): Promise<({
         lastReviewAt: Date | null;
         reviewCount: number;
     }[];
+    cardTags: ({
+        tag: {
+            id: string;
+            createdAt: Date;
+            name: string;
+            userId: string;
+            color: string;
+            isPreset: boolean;
+        };
+    } & {
+        id: string;
+        createdAt: Date;
+        userId: string;
+        cardId: string;
+        tagId: string;
+    })[];
     deck: {
         id: string;
         createdAt: Date;
@@ -17,10 +33,13 @@ export declare function getDueCards(userId: string): Promise<({
         userId: string;
         description: string | null;
         isPublic: boolean;
+        inviteCode: string | null;
+        originalCreatorId: string | null;
     };
 } & {
     id: string;
     createdAt: Date;
+    originalCreatorId: string | null;
     deckId: string;
     front: string;
     back: string;
@@ -39,9 +58,26 @@ export declare function getDeckReviewCards(deckId: string, userId: string): Prom
         lastReviewAt: Date | null;
         reviewCount: number;
     }[];
+    cardTags: ({
+        tag: {
+            id: string;
+            createdAt: Date;
+            name: string;
+            userId: string;
+            color: string;
+            isPreset: boolean;
+        };
+    } & {
+        id: string;
+        createdAt: Date;
+        userId: string;
+        cardId: string;
+        tagId: string;
+    })[];
 } & {
     id: string;
     createdAt: Date;
+    originalCreatorId: string | null;
     deckId: string;
     front: string;
     back: string;

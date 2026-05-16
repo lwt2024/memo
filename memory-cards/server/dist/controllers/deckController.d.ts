@@ -6,4 +6,6 @@ export declare function getDeck(req: AuthRequest, res: Response): Promise<Respon
 export declare function updateDeck(req: AuthRequest, res: Response): Promise<Response<any, Record<string, any>> | undefined>;
 export declare function deleteDeck(req: AuthRequest, res: Response): Promise<Response<any, Record<string, any>> | undefined>;
 export declare function getDeckStats(req: AuthRequest, res: Response): Promise<void>;
+export declare function togglePublic(req: AuthRequest, res: Response): Promise<void>;
+export declare function getShareInfo(req: AuthRequest, res: Response): Promise<void>;
 //# sourceMappingURL=deckController.d.ts.map

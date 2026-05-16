@@ -75,4 +75,22 @@ export async function getDeckStats(req, res) {
         res.status(400).json({ error: error.message });
     }
 }
+export async function togglePublic(req, res) {
+    try {
+        const result = await deckService.toggleDeckPublic(req.params.id, req.userId);
+        res.json(result);
+    }
+    catch (error) {
+        res.status(400).json({ error: error.message });
+    }
+}
+export async function getShareInfo(req, res) {
+    try {
+        const shareInfo = await deckService.getDeckShareInfo(req.params.id, req.userId);
+        res.json(shareInfo);
+    }
+    catch (error) {
+        res.status(400).json({ error: error.message });
+    }
+}
 //# sourceMappingURL=deckController.js.map

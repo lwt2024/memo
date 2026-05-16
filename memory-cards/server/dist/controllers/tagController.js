@@ -47,4 +47,14 @@ export async function removeTagFromCardHandler(req, res) {
         res.status(400).json({ error: error.message });
     }
 }
+export async function deleteTagHandler(req, res) {
+    try {
+        const { tagId } = req.params;
+        await tagService.deleteTag(tagId, req.userId);
+        res.json({ success: true });
+    }
+    catch (error) {
+        res.status(400).json({ error: error.message });
+    }
+}
 //# sourceMappingURL=tagController.js.map

@@ -8,6 +8,8 @@ router.get('/', deckController.getDecks);
 router.get('/:id', deckController.getDeck);
 router.get('/:id/stats', deckController.getDeckStats);
 router.put('/:id', deckController.updateDeck);
+router.put('/:id/public', deckController.togglePublic);
+router.get('/:id/share', deckController.getShareInfo);
 router.delete('/:id', deckController.deleteDeck);
 export default router;
 //# sourceMappingURL=deckRoutes.js.map

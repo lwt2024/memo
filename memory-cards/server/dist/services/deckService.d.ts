@@ -5,8 +5,20 @@ export declare function createDeck(userId: string, name: string, description?: s
     userId: string;
     description: string | null;
     isPublic: boolean;
+    inviteCode: string | null;
+    originalCreatorId: string | null;
 }>;
 export declare function getUserDecks(userId: string): Promise<({
+    user: {
+        id: string;
+        nickname: string | null;
+        avatar: string | null;
+    };
+    originalCreator: {
+        id: string;
+        nickname: string | null;
+        avatar: string | null;
+    } | null;
     _count: {
         cards: number;
     };
@@ -17,6 +29,8 @@ export declare function getUserDecks(userId: string): Promise<({
     userId: string;
     description: string | null;
     isPublic: boolean;
+    inviteCode: string | null;
+    originalCreatorId: string | null;
 })[]>;
 export declare function getDeckById(deckId: string, userId: string, filters?: {
     sortBy?: 'createdAt' | 'masteryLevel';
@@ -78,6 +92,7 @@ export declare function getDeckById(deckId: string, userId: string, filters?: {
     } & {
         id: string;
         createdAt: Date;
+        originalCreatorId: string | null;
         deckId: string;
         front: string;
         back: string;
@@ -91,6 +106,8 @@ export declare function getDeckById(deckId: string, userId: string, filters?: {
     userId: string;
     description: string | null;
     isPublic: boolean;
+    inviteCode: string | null;
+    originalCreatorId: string | null;
 }) | null>;
 export declare function updateDeck(deckId: string, userId: string, data: {
     name?: string;
@@ -108,5 +125,22 @@ export declare function getDeckStats(deckId: string, userId: string): Promise<{
     todayReviewedCount: number;
     masteredPercent: number;
     estimatedMinutes: number;
+}>;
+export declare function toggleDeckPublic(deckId: string, userId: string): Promise<{
+    id: string;
+    createdAt: Date;
+    name: string;
+    userId: string;
+    description: string | null;
+    isPublic: boolean;
+    inviteCode: string | null;
+    originalCreatorId: string | null;
+}>;
+export declare function getDeckShareInfo(deckId: string, userId: string): Promise<{
+    shareUrl: string | null;
+    id: string;
+    name: string;
+    isPublic: boolean;
+    inviteCode: string | null;
 }>;
 //# sourceMappingURL=deckService.d.ts.map

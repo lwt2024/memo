@@ -10,6 +10,12 @@ export async function getUserDecks(userId) {
         where: { userId },
         include: {
             _count: { select: { cards: true } },
+            user: {
+                select: { id: true, nickname: true, avatar: true },
+            },
+            originalCreator: {
+                select: { id: true, nickname: true, avatar: true },
+            },
         },
         orderBy: { createdAt: 'desc' },
     });
@@ -144,6 +150,36 @@ export async function getDeckStats(deckId, userId) {
         todayReviewedCount: todayReviews,
         masteredPercent,
         estimatedMinutes,
+    };
+}
+export async function toggleDeckPublic(deckId, userId) {
+    const deck = await prisma.deck.findFirst({
+        where: { id: deckId, userId },
+    });
+    if (!deck) {
+        throw new Error('卡片组不存在');
+    }
+    return prisma.deck.update({
+        where: { id: deckId },
+        data: { isPublic: !deck.isPublic },
+    });
+}
+export async function getDeckShareInfo(deckId, userId) {
+    const deck = await prisma.deck.findFirst({
+        where: { id: deckId, userId },
+        select: {
+            id: true,
+            name: true,
+            isPublic: true,
+            inviteCode: true,
+        },
+    });
+    if (!deck) {
+        throw new Error('卡片组不存在');
+    }
+    return {
+        ...deck,
+        shareUrl: deck.inviteCode ? `/import/${deck.inviteCode}` : null,
     };
 }
 //# sourceMappingURL=deckService.js.map

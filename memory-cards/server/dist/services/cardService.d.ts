@@ -1,6 +1,7 @@
 export declare function createCard(deckId: string, userId: string, front: string, back: string, cardType?: string, mediaUrls?: string[]): Promise<{
     id: string;
     createdAt: Date;
+    originalCreatorId: string | null;
     deckId: string;
     front: string;
     back: string;
@@ -10,6 +11,7 @@ export declare function createCard(deckId: string, userId: string, front: string
 export declare function getDeckCards(deckId: string, userId: string): Promise<{
     id: string;
     createdAt: Date;
+    originalCreatorId: string | null;
     deckId: string;
     front: string;
     back: string;
@@ -24,6 +26,7 @@ export declare function updateCard(cardId: string, userId: string, data: {
 }): Promise<{
     id: string;
     createdAt: Date;
+    originalCreatorId: string | null;
     deckId: string;
     front: string;
     back: string;
@@ -33,6 +36,7 @@ export declare function updateCard(cardId: string, userId: string, data: {
 export declare function deleteCard(cardId: string, userId: string): Promise<{
     id: string;
     createdAt: Date;
+    originalCreatorId: string | null;
     deckId: string;
     front: string;
     back: string;
