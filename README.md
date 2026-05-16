@@ -2,6 +2,10 @@
 
 一款基于艾宾浩斯记忆法的智能卡片学习应用，帮助用户高效记忆知识。
 
+## 🚀 在线体验
+
+立即访问：**[https://memo-production-8f33.up.railway.app](https://memo-production-8f33.up.railway.app)**
+
 ## 🌟 功能特性
 
 ### 📚 核心功能
